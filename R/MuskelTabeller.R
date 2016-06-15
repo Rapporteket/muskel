@@ -31,15 +31,24 @@ MuskelTabeller <- function(RegData, datoFra, datoTil, minald, maxald, erMann, en
     shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
   }
 
-
-  HovedDiagnoser <- table(RegData$RegInst_label, RegData$DiagICD10)
-
+  RegData$UtfyltAar <- as.POSIXlt(RegData$Utfyllingsdato, format="%Y-%m-%d")$year + 1900
 
 
+  ##### Kun Basisregistrering #############################################################################
+  BasisregPrAar <- addmargins(table(as.character(RegData$RegInst_label[RegData$ForlopsType1Num==1]),
+                                    RegData$UtfyltAar[RegData$ForlopsType1Num==1], useNA = 'ifany'))
+  HovedDiagnoser <- addmargins(table(as.character(RegData$RegInst_label[RegData$ForlopsType1Num==1]),
+                                     as.character(RegData$DiagICD10[RegData$ForlopsType1Num==1]), useNA = 'ifany'))
 
 
+  ############  UNDER ARBEID  ###################################################
+  ##### Nyeste registrering   #############################################################################
+  Nyeste <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+  Nyeste <- Nyeste[match(unique(Nyeste$PasientID), Nyeste$PasientID), ]
 
+  Oppfolges <- table(Nyeste$OppfInst_label)
 
+  Oppfolges2 <- table(RegData$OppfInst_label)
 
 
 

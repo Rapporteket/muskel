@@ -3,7 +3,18 @@ MuskelPreprosess <- function(RegData)
   RegData <- RegData[RegData$BasisRegStatus==1, ]
 
   # datoVar <- 'HovedDato'
-  RegData$HovedDato <- as.POSIXlt(RegData$HovedDato, format="%Y-%m-%d")
+  RegData$HovedDato <- as.POSIXlt(RegData$HovedDato, format="%Y-%m-%d") # Ordne datoformat
+  RegData$RegInst_label <- as.character(RegData$RegInst_label)  # Kombinere RegInst og RegInstAndre
+  RegData$RegInstAndre_label <- as.character(RegData$RegInstAndre_label)
+  RegData$RegInst_label[RegData$RegInst==99] <- RegData$RegInstAndre_label[RegData$RegInst==99]
+  RegData$RegInst[RegData$RegInst==99 & RegData$RegInstAndre!=99] <-
+    RegData$RegInstAndre[RegData$RegInst==99 & RegData$RegInstAndre!=99]+13
+  RegData$OppfInst_label <- as.character(RegData$OppfInst_label)  # Kombinere RegInst og RegInstAndre
+  RegData$OppfInstAndre_label <- as.character(RegData$OppfInstAndre_label)
+  RegData$OppfInst_label[which(RegData$OppfInst==99)] <- RegData$OppfInstAndre_label[which(RegData$OppfInst==99)]
+  RegData$OppfInst[which(RegData$OppfInst==99 & RegData$OppfInstAndre!=99)] <-
+    RegData$OppfInstAndre[which(RegData$OppfInst==99 & RegData$OppfInstAndre!=99)]+13
+
   RegData$Alder <- round(as.numeric(difftime(Sys.Date(),
                                              strptime(RegData$FodselsDato, format="%Y-%m-%d" ))/365.25),0)
   RegData$AlderVreg <- round(as.numeric(difftime(RegData$HovedDato,
