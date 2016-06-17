@@ -37,21 +37,43 @@ MuskelTabeller <- function(RegData, datoFra, datoTil, minald, maxald, erMann, en
   ##### Kun Basisregistrering #############################################################################
   BasisregPrAar <- addmargins(table(as.character(RegData$RegInst_label[RegData$ForlopsType1Num==1]),
                                     RegData$UtfyltAar[RegData$ForlopsType1Num==1], useNA = 'ifany'))
-  HovedDiagnoser <- addmargins(table(as.character(RegData$RegInst_label[RegData$ForlopsType1Num==1]),
+  HovedDiagnoserVedInkl <- addmargins(table(as.character(RegData$RegInst_label[RegData$ForlopsType1Num==1]),
                                      as.character(RegData$DiagICD10[RegData$ForlopsType1Num==1]), useNA = 'ifany'))
 
 
   ############  UNDER ARBEID  ###################################################
-  ##### Nyeste registrering   #############################################################################
+  ##### Nyeste ikke-tomme registrering   #############################################################################
   Nyeste <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+  Nyeste <- Nyeste[!is.na(Nyeste$OppfInst_label) & Nyeste$OppfInst_label != '', ]
   Nyeste <- Nyeste[match(unique(Nyeste$PasientID), Nyeste$PasientID), ]
 
-  Oppfolges <- table(Nyeste$OppfInst_label)
+  OppfolgingVed <- table(Nyeste$OppfInst_label, useNA = 'ifany')
+  OppfolgingVed[length(OppfolgingVed)+1] <- length(setdiff(RegData$PasientID, Nyeste$PasientID))
+  names(OppfolgingVed)[length(OppfolgingVed)] <- 'Ikke registrert'
 
-  Oppfolges2 <- table(RegData$OppfInst_label)
+
+  Nyeste <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+  Nyeste <- Nyeste[!is.na(Nyeste$DiagICD10) & Nyeste$DiagICD10 != '', ]
+  Nyeste <- Nyeste[match(unique(Nyeste$PasientID), Nyeste$PasientID), ]
+  pid_tommeICD10 <- setdiff(RegData$PasientID, Nyeste$PasientID)
+  Nyeste <- rbind(Nyeste, RegData[match(pid_tommeICD10, RegData$PasientID),])
+
+  HovedDiagnoserNyest <- addmargins(table(as.character(Nyeste$RegInst_label),
+                                          as.character(Nyeste$DiagICD10), useNA = 'ifany'))
+  colnames(HovedDiagnoserNyest)[colnames(HovedDiagnoserNyest)==''] <- 'Ikke reg.'
 
 
 
+  ## Diagnose stilt
+  Nyeste <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+  Nyeste <- Nyeste[!is.na(Nyeste$DiagnoseStiltAvPrim_label) & Nyeste$DiagnoseStiltAvPrim_label != '', ]
+  Nyeste <- Nyeste[match(unique(Nyeste$PasientID), Nyeste$PasientID), ]
+  pid_tommeDiagnoseStiltAv <- setdiff(RegData$PasientID, Nyeste$PasientID)
+  Nyeste <- rbind(Nyeste, RegData[match(pid_tommeICD10, RegData$PasientID),])
+
+  HovedDiagnoserNyest <- addmargins(table(as.character(Nyeste$DiagnoseStiltAvPrim_label),
+                                          as.character(Nyeste$Diagnosegr_label), useNA = 'ifany'))
+  colnames(HovedDiagnoserNyest)[colnames(HovedDiagnoserNyest)==''] <- 'Ikke reg.'
 
 }
 
