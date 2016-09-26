@@ -57,8 +57,7 @@ if(hentData){
                           "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
                           'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
                           'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
-
-                                   "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Arbeid')]
+                          "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Arbeid')]
   RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
   RegDataLabel <- read.table('C:/SVN/jasper/Muskel/data/AlleVar2016-08-26 13-37-30.txt', header=TRUE, sep=';')
   RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
@@ -66,22 +65,6 @@ if(hentData){
                                    'Arvegang', 'Gangfunksjon')]
   RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
 #
-#   ForlopsData <- read.table('C:/SVN/jasper/Muskel/data/ForlopsOversikt2016-07-28 10-41-35.txt', header=TRUE, sep=';')
-#   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "ErMann", "BasisRegStatus", "PasientAlder",
-#                                  "PasientID", "ForlopsType1Num", "ForlopsType1")]
-#   RegData <- read.table('C:/SVN/jasper/Muskel/data/AlleVarNum2016-07-28 10-41-34.txt', header=TRUE, sep=';')
-#   RegData <- RegData[ , c("ForlopsID", "FodselsDato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
-#                           "Utfyllingsdato", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
-#                           "RegInstSpes", "Undergruppe", "Undergruppe2", "GenetiskAarsakPaavist", "DiagEndret", "ORG_RESH",
-#                           "OppfInst", "OppfInstAndre", "Avdod", "AvdodDato", "HjerteAffAlder", "Fysioterapi", "Ergoterapi",
-#                           "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
-#                           'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', 'TrygdFraAlder',
-#                           'Uforetrygd', 'FysioManglerAarsak', 'Utdanning', "Sivilstatus")]
-#   RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-#   RegDataLabel <- read.table('C:/SVN/jasper/Muskel/data/AlleVar2016-07-28 10-41-33.txt', header=TRUE, sep=';')
-#   RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
-#                                    "Undergruppe", "Undergruppe2", "OppfInst", "OppfInstAndre", "Sivilstatus")]
-#   RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
   reshID <- 601159
   datoFra='2008-01-01'
   datoTil='2015-12-31'
