@@ -1,3 +1,15 @@
+#' Preprossesser data for Muskelregisterets rapporter
+#'
+#' Denne rensker og definerer opp nødvendige variabler
+#'
+#' Her kan detaljer skrives
+#'
+#' @inheritParams MuskelFigAndeler
+#'
+#' @return Et preprossessert datasett
+#'
+#' @export
+#'
 MuskelPreprosess <- function(RegData)
 {
   RegData <- RegData[RegData$BasisRegStatus==1, ]

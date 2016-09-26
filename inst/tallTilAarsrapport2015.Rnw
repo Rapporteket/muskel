@@ -57,7 +57,8 @@ if(hentData){
                           "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
                           'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
                           'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
-                          "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Arbeid')]
+
+                                   "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Arbeid')]
   RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
   RegDataLabel <- read.table('C:/SVN/jasper/Muskel/data/AlleVar2016-08-26 13-37-30.txt', header=TRUE, sep=';')
   RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
