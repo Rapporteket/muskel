@@ -1,0 +1,365 @@
+\documentclass[norsk,a4paper]{article} % ,twoside
+\usepackage[norsk]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{subfig}
+\usepackage{pdfpages}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+
+\newif\ifkolon
+\newif\ifrektum
+\newif\ifoesofagus
+\newif\ifventrikkel
+\newif\iflever
+\newif\ifwhipple
+
+\title{Resultater fra Muskelregisteret}
+\author{Muskelregisteret}
+
+\renewcommand\thempfootnote{\fnsymbol{mpfootnote}}
+\def\labelitemi{$\bullet$}
+\def\labelitemii{--}
+\def\labelitemiii{$\ast$}
+\def\labelitemiv{$\cdot$}
+
+%setter grå skrift fremfort sort
+\usepackage{xcolor}
+\usepackage{graphicx}
+\pagestyle{myheadings}
+% \definecolor{SKDE}{rgb}{0,0.32,0.61}
+\definecolor{lysblaa}{rgb}{0.27,0.51,0.71}
+% \definecolor{moerkblaa}{rgb}{0.0,0.0,0.47}
+% \definecolor{lysgraa}{rgb}{0.8,0.8,0.8}
+% \definecolor{middelsgraa}{rgb}{0.5,0.5,0.5}
+\definecolor{moerkgraa}{rgb}{0.25,0.25,0.25}
+\color{moerkgraa}
+% \color{lysblaa}
+
+<<'initOpts',include=FALSE>>=
+knitr::opts_chunk$set(warnings=FALSE,echo=FALSE)
+knitr::opts_knit$set(root.dir = './')
+@
+
+\begin{document}
+
+<<LastData, include=FALSE, cache=FALSE>>=
+hentData <- F
+## Hvis spørring skjer fra R på server. ######################
+if(hentData){
+  RegData <-  MuskelHentRegData(datoFra = datoFra, datoTil = datoTil)
+} else
+{library(muskel)
+  ForlopsData <- read.table('C:/SVN/jasper/Muskel/data/ForlopsOversikt2016-07-28 10-41-35.txt', header=TRUE, sep=';')
+  ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "ErMann", "BasisRegStatus", "PasientAlder",
+                                 "PasientID", "ForlopsType1Num", "ForlopsType1")]
+  RegData <- read.table('C:/SVN/jasper/Muskel/data/AlleVarNum2016-07-28 10-41-34.txt', header=TRUE, sep=';')
+  RegData <- RegData[ , c("ForlopsID", "FodselsDato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
+                          "Utfyllingsdato", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
+                          "RegInstSpes", "Undergruppe", "Undergruppe2", "GenetiskAarsakPaavist", "DiagEndret", "ORG_RESH",
+                          "OppfInst", "OppfInstAndre", "Avdod", "AvdodDato", "HjerteAffAlder", "Fysioterapi", "Ergoterapi",
+                          "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
+                          'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', 'TrygdFraAlder',
+                          'Uforetrygd')]
+  RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+  RegDataLabel <- read.table('C:/SVN/jasper/Muskel/data/AlleVar2016-07-28 10-41-33.txt', header=TRUE, sep=';')
+  RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAvPrim", "DiagnoseStiltAvSek", "RegInst", "RegInstAndre",
+                                   "Undergruppe", "Undergruppe2", "OppfInst", "OppfInstAndre")]
+  RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+  reshID <- 601159
+  datoFra='2008-01-01'
+  datoTil=as.character(Sys.Date())
+  flervalgsliste <- ''
+}
+valgtShus <- flervalgsliste
+RegData <- MuskelPreprosess(RegData=RegData)
+
+incl_N<-F
+minald=0
+maxald=120
+erMann=99
+diagnoseSatt=''
+enhetsUtvalg=0
+preprosess=F
+hentData=F
+diagnosegr <- ''
+forlop <- 99
+
+if (valgtShus[1] == '') {
+  shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+} else {
+  if (length(valgtShus)==1) {
+    reshID<-as.numeric(valgtShus[1])
+    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+  } else {
+    shtxt <- as.character(RegData$SykehusNavn[match(as.numeric(valgtShus), RegData$AvdRESH)])
+  }
+}
+
+figstr <- 0.61
+tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
+@
+
+%%%%% Forside
+% \thispagestyle{empty}
+% \includepdf[fitpaper]{\Sexpr{system.file(file='ForsideV1logo.pdf', package='norgast')}}
+\newgeometry{left=2.5cm,bottom=0.1cm, top=2.1cm}
+\begin{titlepage}
+\color{lysblaa}
+\begin{flushleft}
+\Huge
+\textbf{Muskelregisteret}\\
+\vspace{0.3cm}
+\LARGE
+Norsk register for arvelige og medfødte nevromuskulære sykdommer
+\end{flushleft}
+% \vspace{0.5cm}
+\vfill
+
+\begin{center}
+{\LARGE \textbf{RESULTATER}}
+\vspace{0.1cm}
+\vspace{1pt}\vspace{-\baselineskip}
+\rule{1.0\textwidth}{1pt}\par   % Horisontal linje
+\vspace{0.5cm}
+\includegraphics[width=1.0\textwidth]{\Sexpr{system.file(file='muskelforside.png', package='muskel')}} % Inkluder bilde
+% \vspace{1pt}\vspace{-\baselineskip}
+% {\color{moerkgraa} \small Bernard Safran: "A surgeon working", 37" x 48", oil on masonite, 1982}
+\end{center}
+
+\vfill
+\noindent
+\begin{minipage}[t]{6cm}
+\flushleft
+\textsc{Rapportdato:}
+
+\today\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{6cm}
+\flushright
+\textsc{For sykehus:}
+
+\textbf{\Sexpr{shtxt}}\\
+\end{minipage}
+\\ \\
+\noindent
+\begin{minipage}[t]{6cm}
+\flushleft
+\textsc{Data registrert:}
+
+\Sexpr{format(as.POSIXlt(datoFra), "%d. %B %Y")} til \Sexpr{format(as.POSIXlt(datoTil), "%d. %B %Y")}\\
+\end{minipage}
+
+\vfill
+
+\noindent
+\begin{minipage}[t]{6cm}
+\flushleft
+\includegraphics[width=0.7\textwidth]{\Sexpr{system.file(file='muskellogo.png', package='muskel')}} % Inkluder logo
+\end{minipage}
+\hfill
+\begin{minipage}[t]{6cm}
+\flushright
+\normalsize
+Templatversjon I, 2016
+\end{minipage}
+\end{titlepage}
+
+%%%%%%%%%%%%
+
+% \addtolength{\hoffset}{1.5cm}
+% \addtolength{\textwidth}{-3cm}
+% \restoregeometry
+\color{moerkgraa}
+\thispagestyle{empty}
+% \cleardoublepage
+% \setcounter{page}{1}
+
+\maketitle
+
+\tableofcontents
+\newpage
+\thispagestyle{empty}
+\listoffigures
+\newpage
+\thispagestyle{empty}
+\listoftables
+
+\clearpage
+
+\section{Bakgrunn}
+
+\newpage
+
+\section{Innledning}
+Dette er en samlerapport for Muskelregisteret og gir nasjonale tall samt tall for \textbf{\Sexpr{shtxt}} og dekker registrerte operasjoner i tidsrommet \Sexpr{datoFra} til \Sexpr{datoTil}.
+
+\section{Registrerende avdelinger}
+<<'Fig:Kumsum', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+valgtVar <- 'AntReg'
+outfile=paste0(valgtVar, '.pdf')
+MuskelFigKumsum(RegData=RegData, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(valgtVar, '.pdf')}}
+\caption{Kummulativ vekst i registeret siden oppstart}
+\end{figure}
+
+<<'TabDataKval', results='asis', echo=FALSE>>=
+regs <- apply(RegData[,c("DebutAlder", "AlderTapGang", "AlderRespStotte", "HjerteAffAlder", "TrygdFraAlder", "AvdodDato")],
+                     2, function(x){y<-length(which(!is.na(x)))})
+
+Nufor <- length(which(RegData$Uforetrygd %in% 1:7))
+Nrullestol <- length(which(RegData$Gangfunksjon == 3))
+Nrespirasjon <- length(which(RegData$RespStotte == 1))
+Nhjerteaff <- length(which(RegData$HjerteAff == 1))
+Ndod <- length(which(RegData$Avdod == 1))
+N <- dim(RegData)[1]
+
+tmp <- as.data.frame(cbind(regs, N = c(N, Nrullestol, Nrespirasjon, Nhjerteaff, Nufor, Ndod)))
+
+tabDataKval <- data.frame('Antall registreringer'= apply(tmp, 1, function(x){paste0(x[1], ' av ', x[2])}),
+                          'Andel registreringer (%)'= paste0(round(tmp$regs/tmp$N*100, 1)))
+
+colnames(tabDataKval) <- c('Antall registreringer', 'Andel registreringer (%)')
+
+xtable::xtable(tabDataKval, align=c('l', 'c', 'r'),
+		caption='Antall registreringer ift. antall mulige registreringer for ikke-obligatoriske variable.',
+		label='tab:DataKval')
+@
+
+
+<<'TabReg', results='asis', echo=FALSE>>=
+BasisReg <- RegData[RegData$ForlopsType1Num == 1, ]
+# BasisReg <- RegData
+RegAvd <- addmargins(table(BasisReg$HFreg, BasisReg$Aar), 2)
+RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
+RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
+colnames(RegAvd)[dim(RegAvd)[2]] <- 'Alle år'
+RegAvd <- rbind(RegAvd, Totalt = colSums(RegAvd))
+
+xtable::xtable(RegAvd, digits=0, align=c('l', rep('r', ncol(RegAvd))), caption='Antall registrert av deltagende avdelinger (basisregistreringer)',
+               label='tab:RegistrertAv')
+@
+
+<<'TabDiag', results='asis', echo=FALSE>>=
+RegAvd <- addmargins(table(BasisReg$HFdiag, BasisReg$Aar), 2)
+RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
+RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
+colnames(RegAvd)[dim(RegAvd)[2]] <- 'Alle år'
+RegAvd <- rbind(RegAvd, Total = colSums(RegAvd))
+
+xtable::xtable(RegAvd, digits=0, align=c('l', rep('r', ncol(RegAvd))), caption='Antall diagnostisert av deltagende avdelinger (basisregistreringer)',
+               label='tab:DiagnostisertAv')
+@
+
+<<'TabFollowup', results='asis', echo=FALSE>>=
+RegAvd <- addmargins(table(BasisReg$HFoppf, BasisReg$Aar), 2)
+RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
+RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
+colnames(RegAvd)[dim(RegAvd)[2]] <- 'Alle år'
+rownames(RegAvd)[rownames(RegAvd)==''] <- 'Ikke registrert'
+RegAvd <- rbind(RegAvd, Totalt = colSums(RegAvd))
+
+xtable::xtable(RegAvd, digits=0, align=c('l', rep('r', ncol(RegAvd))), caption='Antall som følges opp av deltagende avdelinger',
+               label='tab:FoelgesOppAv')
+@
+
+\clearpage
+
+\section{Resultater}
+
+\subsection{Diagnoser}
+
+<<'Fig:Diagnoser', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+varNavn <- c('DiagICD10', 'Diagnosegr', 'Diagnoser_muskel', 'Diagnoser_atrofier', 'Diagnoser_nevropatier', 'Muskeldystrofier',
+             'LGMD')
+
+for (p in 1:length(varNavn)){
+  outfile=paste0(varNavn[p], '.pdf')
+  MuskelFigAndeler(RegData=RegData, valgtVar=varNavn[p], datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                       minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                       enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+}
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[1], '.pdf')}}
+\caption{Fordeling av alle diagnoser}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[2], '.pdf')}}
+\caption{Fordeling av diagnosegrupper}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[3], '.pdf')}}
+\caption{Fordeling av diagnoser blandt muskelsykdommer}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[4], '.pdf')}}
+\caption{Fordeling av diagnoser blandt spinale muskelatrofier}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[5], '.pdf')}}
+\caption{Fordeling av diagnoser blandt polynevropatier}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[6], '.pdf')}}
+\caption{Fordeling av undergrupper av muskeldystrofier}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[7], '.pdf')}}
+\caption{Fordeling av undergruper av Limb-girdle muskeldystrofi}
+\end{figure}
+
+
+\clearpage
+
+\subsection{Behandling}
+
+<<'testfig', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+varNavn <- c('Fysioterapi', 'Ergoterapi')
+
+for (p in 1:length(varNavn)){
+  outfile=paste0(varNavn[p], '.pdf')
+  MuskelFigAndelStabel(RegData=RegData, valgtVar=varNavn[p], datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                       minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                       enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+}
+@
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[1], '.pdf')}}
+\caption{Andel som får fysioterapi}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[2], '.pdf')}}
+\caption{Andel som får ergoterapi}
+\end{figure}
+
+
+
+\end{document}
