@@ -9,7 +9,7 @@
 #'
 #' @export
 #'
-MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
+MuskelFigCumAndel_flereShus <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
                              enhetsUtvalg=1, preprosess=F, hentData=F)
 {
@@ -41,6 +41,8 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
+  RegData <- RegData[which(RegData$HFdiag %in% c('OUS', 'UNN', 'Helse Bergen')), ]
+  RegData$HFdiag <- as.character(RegData$HFdiag)
 
   if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag')) {
     RegData$Variabel <- RegData[, valgtVar]
@@ -56,8 +58,10 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
                      TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'))
     cexgr <- 0.8
     subtxt <- 'Antall år'
-    CumAndel <- cumsum(table(RegData$Variabel))/N*100
-    grtxt <- as.numeric(names(CumAndel))
+    aux <- apply(table(RegData$HFdiag, RegData$Variabel, useNA = 'ifany'), 1, cumsum)
+    Ngr <- tapply(RegData$Variabel, RegData$HFdiag, length)
+    CumAndel <- 100 * aux / t(matrix(Ngr, nrow = dim(aux)[2], ncol = dim(aux)[1]))
+    grtxt <- as.numeric(rownames(aux))
   }
 
   FigTypUt <- figtype(outfile)
@@ -66,12 +70,15 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   NutvTxt <- length(utvalgTxt)
   par('fig'=c(0, 1, 0, 1-0.02*(NutvTxt-1)))
 
-  plot(grtxt, CumAndel, type='l', ylim= c(0,110),  lwd=2, col=farger[1],
+  plot(grtxt, CumAndel[ , 1], type='l', ylim= c(0,110), lwd=2, col=farger[3],
        xlab = 'Antall år', ylab='Kumulativ andel (%)', frame.plot=FALSE)
+  lines(grtxt, CumAndel[ , 2], type='l', lwd=2, lty=2, col='red')
+  lines(grtxt, CumAndel[ , 3], type='l', lwd=2, lty=3, col=farger[1])
   # title(tittel, line=1, font.main=1)
   abline(h=c(20,40,60,80,100), col=farger[3], lwd=1)
-  text(x=(0+max(grtxt))/2, y=105, paste('Totalt antall registreringer: ', N, ' (=100%)', sep=''),
-       adj=0.5, cex=0.85)
+#   text(x=(0+max(grtxt))/2, y=105, paste('Totalt antall registreringer: ', N, ' (=100%)', sep=''),
+#        adj=0.5, cex=0.85)
+  legend(x="top", legend = c(paste0('HUS, N = ', Ngr[1]), paste0('OUS, N = ', Ngr[2]), paste0('UNN, N = ', Ngr[3])), lty = 1:3, col = c(farger[3], 'red', farger[1]), lwd=2, cex=.8, bty='n')
 
   krymp <- .9
   title(main = tittel, line=1, font.main=1, cex.main=1.3*cexgr)

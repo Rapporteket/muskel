@@ -3,7 +3,7 @@
 #' Denne funksjonen gjør utvalg av dataene og returnerer det filtrerte datasettet, utvalgsteksten
 #' og fargepaletten for bruk i figuren
 #'
-#' @inheritParams FigAndeler
+#' @inheritParams MuskelFigAndeler
 #' @param fargepalett Hvilken fargepalett skal brukes i figurer (Default: BlaaRapp)
 #'
 #' @return UtData En liste bestående av det filtrerte datasettet, utvalgstekst for figur og tekststreng som angir fargepalett
@@ -31,7 +31,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
   utvalgTxt <- c(paste('Registrert: ',
                        min(RegData$HovedDato, na.rm=T), ' til ', max(RegData$HovedDato, na.rm=T), sep='' ),
                  if ((minald>0) | (maxald<120)) {
-                   paste('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år', sep='')},
+                   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  if (diagnoseSatt %in% c(1:13, 99)){paste0('Først diagnostisert: ', RegData$DiagnoseStiltAvPrim_label
                                                            [match(diagnoseSatt, RegData$DiagnoseStiltAvPrim)])},

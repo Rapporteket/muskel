@@ -77,7 +77,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
   Nrest <- 0
 
-  if (valgtVar %in% c('AndelGenVerifisert')) {
+  if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',  'KonkrUndGrDuchBeck')) {
     flerevar <- 1
   } else {
     flerevar <- 0
@@ -85,7 +85,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
 
   if (flerevar == 0 ) {
     ## Forbered variabler for fremstilling i figur
-    PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar, enhetsUtvalg=enhetsUtvalg)
+    PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
     RegData <- PlotParams$RegData
     PlotParams$RegData <- NA
     if (enhetsUtvalg==1) {
@@ -105,17 +105,17 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   if (flerevar == 1){
 
     if (enhetsUtvalg==1) {
-      PlotParams <- MuskelPrepVar(RegData[ind$Hoved, ], valgtVar, enhetsUtvalg) # Hovegruppe
+      PlotParams <- MuskelPrepVar(RegData[ind$Hoved, ], valgtVar) # Hovegruppe
       AntHoved <- PlotParams$AntVar
       NHoved <- max(PlotParams$NVar, na.rm=T)
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
-      PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar, enhetsUtvalg) # Sammenligningsgruppe
+      PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar) # Sammenligningsgruppe
       AntRest <- PlotParams2$AntVar
       NRest <- max(PlotParams2$NVar,na.rm=T)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*PlotParams2$AntVar/PlotParams2$NVar
       rm(PlotParams2)
     } else {
-      PlotParams <- MuskelPrepVar(RegData, valgtVar, enhetsUtvalg)
+      PlotParams <- MuskelPrepVar(RegData, valgtVar)
       AntHoved <- PlotParams$AntVar
       NHoved <- max(PlotParams$NVar, na.rm=T)
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
@@ -129,7 +129,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
 
 
   ##-----------Figur---------------------------------------
-  tittel <- PlotParams$tittel; grtxt <- PlotParams$grtxt; grtxt2 <- PlotParams$grtxt2;
+  tittel <- PlotParams$tittel; grtxt <- PlotParams$grtxt; #grtxt2 <- PlotParams$grtxt2;
   subtxt <- PlotParams$subtxt; retn <- PlotParams$retn; cexgr <- PlotParams$cexgr;
   FigTypUt <- figtype(outfile=outfile, fargepalett=MuskelUtvalg$fargepalett, pointsizePDF=12)
 
@@ -147,11 +147,14 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     farger <- FigTypUt$farger
     NutvTxt <- length(utvalgTxt)
     grtxtpst <- paste(rev(grtxt), ' (', rev(sprintf('%.1f', Andeler$Hoved)), '%)', sep='')
+    grtxt2 <- paste(sprintf('%.1f',Andeler$Hoved), '%', sep='')
     # if (incl_pst) {grtxtpst <- paste(rev(grtxt), ' (', rev(sprintf('%.1f', Andeler$Hoved)), '%)', sep='')}
-    # if (incl_N) {grtxtpst <- paste(rev(grtxt), ' (n=', rev(sprintf('%.0f', Andeler$Hoved*NHoved/100)), ')', sep='')}
+    if (incl_N) {
+      grtxtpst <- paste(rev(grtxt), ' (n=', rev(sprintf('%.0f', Andeler$Hoved*NHoved/100)), ')', sep='')
+      grtxt2 <- paste('n=', sprintf('%.0f',Andeler$Hoved*NHoved/100), sep='')
+      }
     vmarg <- switch(retn, V=0, H=max(0, strwidth(grtxtpst, units='figure', cex=cexgr)*0.8))
     par('fig'=c(vmarg, 1, 0, 1-0.02*(NutvTxt-1)))  #Har alltid datoutvalg med
-    if (grtxt2 == '') {grtxt2 <- paste(sprintf('%.1f',Andeler$Hoved), '%', sep='')}
 
     fargeHoved <- farger[1]
     fargeRest <- farger[3]
