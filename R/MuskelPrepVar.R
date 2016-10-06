@@ -443,9 +443,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Variabel <- RegData$Uforetrygd
-    RegData$Variabel[RegData$Variabel %in% 1:6] <- 1
-    gr <- c(0, 1, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Ufør, helt el. delvis', 'Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
+    gr <- c(0, 1, 2, 7, 9)
+    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Arbeidsuførhet: LGMD2I'
@@ -458,9 +458,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Variabel <- RegData$Uforetrygd
-    RegData$Variabel[RegData$Variabel %in% 1:6] <- 1
-    gr <- c(0, 1, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Ufør, helt el. delvis', 'Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
+    gr <- c(0, 1, 2, 7, 9)
+    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Arbeidsuførhet: LGMD'
@@ -474,9 +474,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Variabel <- RegData$Uforetrygd
-    RegData$Variabel[RegData$Variabel %in% 1:6] <- 1
-    gr <- c(0, 1, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Ufør, helt el. delvis', 'Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
+    gr <- c(0, 1, 2, 7, 9)
+    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Arbeidsuførhet: DM1'
@@ -489,9 +489,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Variabel <- RegData$Uforetrygd
-    RegData$Variabel[RegData$Variabel %in% 1:6] <- 1
-    gr <- c(0, 1, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Ufør, helt el. delvis', 'Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
+    gr <- c(0, 1, 2, 7, 9)
+    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Arbeidsuførhet: DM2'

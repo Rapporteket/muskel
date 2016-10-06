@@ -12,7 +12,7 @@
 #'
 MuskelPreprosess <- function(RegData)
 {
-  RegData <- RegData[RegData$BasisRegStatus==1, ]
+  RegData <- RegData[which(RegData$BasisRegStatus==1), ]
 
   # datoVar <- 'HovedDato'
   RegData$HovedDato <- as.POSIXlt(RegData$HovedDato, format="%Y-%m-%d") # Ordne datoformat
