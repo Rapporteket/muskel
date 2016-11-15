@@ -268,6 +268,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
   if (valgtVar == 'Diagnosegr') {
     RegData$Variabel <- RegData[, valgtVar]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- c(1:3)
     grtxt <- c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati')
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
@@ -279,6 +281,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'Diagnoser_muskel') {
     RegData$Variabel <- as.character(RegData$DiagICD10)
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData <- RegData[RegData$Diagnosegr == 1, ]
     RegData$VariabelGr <- as.factor(RegData$Variabel)
     grtxt <- levels(RegData$VariabelGr)
@@ -290,6 +294,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'Diagnoser_atrofier') {
     RegData$Variabel <- as.character(RegData$DiagICD10)
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData <- RegData[RegData$Diagnosegr == 2, ]
     RegData$VariabelGr <- as.factor(RegData$Variabel)
     grtxt <- levels(RegData$VariabelGr)
@@ -300,6 +306,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'Diagnoser_nevropatier') {
     RegData$Variabel <- as.character(RegData$DiagICD10)
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData <- RegData[RegData$Diagnosegr == 3, ]
     RegData$VariabelGr <- as.factor(RegData$Variabel)
     grtxt <- levels(RegData$VariabelGr)
@@ -311,6 +319,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'DiagICD10') {
     RegData$VariabelGr <- as.character(RegData$DiagICD10)
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$VariabelGr[RegData$VariabelGr==''] <- 'Ikke registrert'
     RegData$VariabelGr <- as.factor(RegData$VariabelGr)
     grtxt <- levels(RegData$VariabelGr)
@@ -322,6 +332,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'Muskeldystrofier') {
     RegData <- RegData[RegData$DiagICD10 == c('G71.0') | RegData$Undergruppe %in% c(20, 21),]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Undergruppe[is.na(RegData$Undergruppe)] <- 9999
     RegData$Undergruppe_label <- as.character(RegData$Undergruppe_label)
     RegData$Undergruppe_label[RegData$Undergruppe==9999] <- 'Ikke registrert'
@@ -336,6 +348,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'SMA') {
     RegData <- RegData[which(RegData$DiagICD10 %in% c('G12.0', 'G12.1', 'G12.8', 'G12.9')), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Undergruppe_label <- as.character(RegData$Undergruppe_label)
@@ -355,6 +369,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'LGMD') {
     RegData <- RegData[RegData$Undergruppe == 4,]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Undergruppe2[is.na(RegData$Undergruppe2)] <- 9999
     RegData$Undergruppe2_label <- as.character(RegData$Undergruppe2_label)
     RegData$Undergruppe2_label[RegData$Undergruppe2==9999] <- 'Ikke registrert'
@@ -376,7 +392,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$Undergruppe2_label <- as.character(RegData$Undergruppe2_label)
     RegData$Undergruppe2_label[which(RegData$Undergruppe == 1100)] <- 'Annen'
     RegData$Undergruppe2_label[which(RegData$Undergruppe == 2100)] <- 'Ukjent undergruppe'
-
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- sort(unique(RegData$Undergruppe2))
     grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
     RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
