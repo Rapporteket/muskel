@@ -47,7 +47,12 @@ MuskelPreprosess <- function(RegData)
 
   RegData$Diagnosegr_label <- factor(RegData$Diagnosegr, levels = c(1:3, 99),
                                labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati', 'Ikke reg.'))
-
+  # RegData$DiagnoserHyppige <- 99
+  # RegData$DiagnoserHyppige[RegData$Undergruppe == 1] <- 1 #Duchenne
+  # RegData$DiagnoserHyppige[RegData$Undergruppe == 2] <- 2 #Becker
+  # RegData$DiagnoserHyppige[RegData$Undergruppe == 4] <- 3 #Limb-girdle (LGMD)
+  # RegData$DiagnoserHyppige[RegData$Undergruppe == 20] <- 4 #DM 1
+  # RegData$DiagnoserHyppige[RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13] <- 5 #LGMD 2I (FKRP-mutasjon)
 
   RegData$Debut <- as.POSIXlt(RegData$FodselsDato, format="%Y-%m-%d")$year+1900 + RegData$DebutAlder
   RegData$DiagnoseAlder <- RegData$DiagnoseAar - (as.POSIXlt(RegData$FodselsDato, format="%Y-%m-%d")$year+1900)
@@ -58,27 +63,27 @@ MuskelPreprosess <- function(RegData)
   RegData$Aar <- as.POSIXlt(RegData$HovedDato, format="%Y-%m-%d")$year+1900
 
   RegData$NyRESH <- RegData$ORG_RESH
-  RegData$NyRESH[RegData$RegInst %in% c(14,15)] <- 100065
-  RegData$NyRESH[RegData$RegInst %in% c(2)] <- 100082
-  RegData$NyRESH[RegData$RegInst %in% c(7)] <- 100083
-  RegData$NyRESH[RegData$RegInst %in% c(17)] <- 100084
-  RegData$NyRESH[RegData$RegInst %in% c(18)] <- 100085
-  RegData$NyRESH[RegData$RegInst %in% c(1)] <- 100089
-  RegData$NyRESH[RegData$RegInst %in% c(8,26)] <- 100091
-  RegData$NyRESH[RegData$RegInst %in% c(11)] <- 100092
-  RegData$NyRESH[RegData$RegInst %in% c(24)] <- 100093
-  RegData$NyRESH[RegData$RegInst %in% c(10)] <- 100100
-  RegData$NyRESH[RegData$RegInst %in% c(9)] <- 100132
-  RegData$NyRESH[RegData$RegInst %in% c(12,25)] <- 100133
-  RegData$NyRESH[RegData$RegInst %in% c(21,22)] <- 100317
-  RegData$NyRESH[RegData$RegInst %in% c(6)] <- 100320
-  RegData$NyRESH[RegData$RegInst %in% c(3,23)] <- 101051
-  RegData$NyRESH[RegData$RegInst %in% c(13,27)] <- 101719
-  RegData$NyRESH[RegData$RegInst %in% c(16)] <- 101971
-  RegData$NyRESH[RegData$RegInst %in% c(28,29)] <- 700272
-  RegData$NyRESH[RegData$RegInst %in% c(4,5)] <- 4001031
-  RegData$NyRESH[RegData$RegInst %in% c(19,20)] <- 4201115
-  RegData$NyRESH[RegData$RegInst %in% c(99)] <- 9999999
+  RegData$NyRESH[RegData$RegInst %in% c(14,15)] <- 100065 # Helgelandssykehuset HF
+  RegData$NyRESH[RegData$RegInst %in% c(2)] <- 100082 # Helse Bergen HF
+  RegData$NyRESH[RegData$RegInst %in% c(7)] <- 100083 # Helse Stavanger HF
+  RegData$NyRESH[RegData$RegInst %in% c(17)] <- 100084 # Helse Fonna HF
+  RegData$NyRESH[RegData$RegInst %in% c(18)] <- 100085 # Helse Førde HF
+  RegData$NyRESH[RegData$RegInst %in% c(1)] <- 100089 # Akershus universitetssykehus HF
+  RegData$NyRESH[RegData$RegInst %in% c(8,26)] <- 100091 # Sykehuset Innlandet HF
+  RegData$NyRESH[RegData$RegInst %in% c(11)] <- 100092 # Sykehuset Østfold HF
+  RegData$NyRESH[RegData$RegInst %in% c(24)] <- 100093 # SUNNAAS SYKEHUS HF
+  RegData$NyRESH[RegData$RegInst %in% c(10)] <- 100100 # Sykehuset i Vestfold HF
+  RegData$NyRESH[RegData$RegInst %in% c(9)] <- 100132 # Sykehuset Telemark HF
+  RegData$NyRESH[RegData$RegInst %in% c(12,25)] <- 100133 # Sørlandet Sykehus HF
+  RegData$NyRESH[RegData$RegInst %in% c(21,22)] <- 100317 # Helse Nord-Trøndelag HF
+  RegData$NyRESH[RegData$RegInst %in% c(6)] <- 100320 # St Olavs Hospital HF
+  RegData$NyRESH[RegData$RegInst %in% c(3,23)] <- 101051 # Nordlandssykehuset HF
+  RegData$NyRESH[RegData$RegInst %in% c(13,27)] <- 101719 # Universitetssykehuset Nord-Norge HF
+  RegData$NyRESH[RegData$RegInst %in% c(16)] <- 101971 # Finnmarkssykehuset HF
+  RegData$NyRESH[RegData$RegInst %in% c(28,29)] <- 700272 # Vestre Viken HF
+  RegData$NyRESH[RegData$RegInst %in% c(4,5)] <- 4001031 # Oslo universitetssykehus HF
+  RegData$NyRESH[RegData$RegInst %in% c(19,20)] <- 4201115 # Helse Møre og Romsdal HF
+  RegData$NyRESH[RegData$RegInst %in% c(99)] <- 9999999 #
 
   aux <- RegData[which(RegData$ForlopsType1Num == 1), c("PasientID", "NyRESH")]
   RegData <- merge(RegData, aux, by.x = 'PasientID', by.y = 'PasientID', suffixes = c('_opprinnelig', ''))

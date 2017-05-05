@@ -43,7 +43,7 @@
 
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
-                             enhetsUtvalg=1, preprosess=F, hentData=F)
+                             undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -68,7 +68,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt)
+                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt,
+                               undergr=undergr, undergr2=undergr2)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
@@ -77,7 +78,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
   Nrest <- 0
 
-  if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',  'KonkrUndGrDuchBeck')) {
+  if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',
+                      'KonkrUndGrDuchBeck', 'AndelSteroider')) {
     flerevar <- 1
   } else {
     flerevar <- 0
@@ -118,6 +120,9 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       PlotParams <- MuskelPrepVar(RegData, valgtVar)
       AntHoved <- PlotParams$AntVar
       NHoved <- max(PlotParams$NVar, na.rm=T)
+      if (valgtVar=='AndelSteroider') {
+        NHoved <- sum(PlotParams$NVar, na.rm=T)
+      }
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
     }
   }   #end sjekk om figuren inneholder flere variable
@@ -149,9 +154,9 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     grtxtpst <- paste(rev(grtxt), ' (', rev(sprintf('%.1f', Andeler$Hoved)), '%)', sep='')
     grtxt2 <- paste(sprintf('%.1f',Andeler$Hoved), '%', sep='')
     # if (incl_pst) {grtxtpst <- paste(rev(grtxt), ' (', rev(sprintf('%.1f', Andeler$Hoved)), '%)', sep='')}
-    if (incl_N) {
-      grtxtpst <- paste(rev(grtxt), ' (n=', rev(sprintf('%.0f', Andeler$Hoved*NHoved/100)), ')', sep='')
-      grtxt2 <- paste('n=', sprintf('%.0f',Andeler$Hoved*NHoved/100), sep='')
+    if (PlotParams$incl_N) {
+      grtxtpst <- paste(rev(grtxt), ' (n=', rev(sprintf('%.0f', AntHoved)), ')', sep='')  #################  AD-HOC, farlig
+      grtxt2 <- paste('n=', sprintf('%.0f',Andeler$Hoved*NHoved/100), sep='')             #################
       }
     vmarg <- switch(retn, V=0, H=max(0, strwidth(grtxtpst, units='figure', cex=cexgr)*0.8))
     par('fig'=c(vmarg, 1, 0, 1-0.02*(NutvTxt-1)))  #Har alltid datoutvalg med
@@ -191,6 +196,9 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       pos <- barplot(rev(as.numeric(Andeler$Hoved)), horiz=TRUE, beside=TRUE, las=1, xlab=xlabel, #main=tittel,
                      col=fargeHoved, border='white', font.main=1, xlim=c(0, xmax), ylim=c(0.05,1.4)*antGr)	#
       mtext(at=pos+0.05, text=grtxtpst, side=2, las=1, cex=cexgr, adj=1, line=0.25)
+      if (PlotParams$N_colwise) {
+        text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = rev(PlotParams$NVar), pos=4)
+      }
 
       if (enhetsUtvalg == 1) {
         points(as.numeric(rev(Andeler$Rest)), pos, col=fargeRest,  cex=2, pch=18) #c("p","b","o"),

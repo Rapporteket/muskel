@@ -10,7 +10,8 @@
 #'
 #' @export
 
-MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt, diagnosegr, forlop, fargepalett='BlaaRapp')
+MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt, diagnosegr, forlop,
+                         undergr='', undergr2='', fargepalett='BlaaRapp')
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -22,9 +23,11 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
   indDiagSatt <- if (diagnoseSatt %in% c(1:13, 99)) {which(RegData$DiagnoseStiltAvPrim == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
   indDiagnosegr <- if (diagnosegr %in% c(1:3)) {which(RegData$Diagnosegr == diagnosegr)} else {indDiagnosegr <- 1:Ninn}
+  indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% undergr)} else {indUndergr <- 1:Ninn}
+  indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% undergr2)} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
 
-  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagSatt %i% indDiagnosegr %i% indForlop
+  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagSatt %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2
   RegData <- RegData[indMed,]
 
   if (dim(RegData)[1] > 0){
@@ -37,6 +40,10 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
                                                            [match(diagnoseSatt, RegData$DiagnoseStiltAvPrim)])},
                  if (diagnosegr %in% c(1:3)) {paste0('Diagnosegruppe: ', c('Muskelsykdommer', 'Spinal muskelatrofi',
                                                                                 'Polynevropati')[diagnosegr])},
+                 if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(RegData$Undergruppe_label[match(as.numeric(undergr),
+                                                                                      RegData$Undergruppe)], collapse=', '))},
+                 if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(RegData$Undergruppe2_label[match(as.numeric(undergr2),
+                                                                                                        RegData$Undergruppe2)], collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])}
   )
   } else {

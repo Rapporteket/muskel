@@ -10,7 +10,7 @@
 #' @export
 #'
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
+                             undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
                              enhetsUtvalg=1, preprosess=F, hentData=F)
 {
 
@@ -37,7 +37,8 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt)
+                               undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, diagnosegr=diagnosegr,
+                               diagnoseSatt=diagnoseSatt)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
@@ -60,18 +61,59 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     grtxt <- as.numeric(names(CumAndel))
   }
 
+  if (valgtVar == 'AlderHjAff_cumsum') {
+    RegData$Variabel <- RegData$HjerteAffAlder
+    N_tot <- length(unique(RegData$PasientID))
+    aux <- RegData[which(RegData$HjerteAff %in% c(2,9) | is.na(RegData$HjerteAff)), ]
+    RegData <- RegData[which(RegData$HjerteAff == 1), ]
+    # RegData <- RegData[!is.na(RegData$Variabel),]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    N_ikkekjent <- length(setdiff(aux$PasientID, RegData$PasientID))
+    N_ukjent <- sum(is.na(RegData$HjerteAffAlder))
+    RegData <- RegData[!is.na(RegData$HjerteAffAlder), ]
+    N <- dim(RegData)[1] + N_ukjent
+    # N_ukjent <- sum(is.na(RegData$HjerteAffAlder))
+    tittel <- c('Alder ved hjerteaffeksjon') #, paste0(N_ukjent, ' ukjente'))
+
+    # tittel <- c('Andel med hjerteaffeksjon', paste0('Totalen inkuderer ', N_ukjent, ' ukjente'))
+    maksAld <- max(RegData$Variabel, na.rm = T)
+    CumAndel <- cumsum(table(factor(RegData$Variabel, levels = 0:maksAld)))/N*100
+    cexgr <- 0.8
+    subtxt <- 'Alder'
+    grtxt <- as.numeric(names(CumAndel))
+  }
+
+  # x11()
   FigTypUt <- figtype(outfile)
   farger <- FigTypUt$farger
 
   NutvTxt <- length(utvalgTxt)
   par('fig'=c(0, 1, 0, 1-0.02*(NutvTxt-1)))
+  xmax<-ceiling(max(grtxt)/10)*10
+  ymax<-ceiling(max(CumAndel)*1.2)
+  # if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag')) {
+    ymax <- 110
+    # }
 
-  plot(grtxt, CumAndel, type='l', ylim= c(0,110),  lwd=2, col=farger[1],
-       xlab = 'Antall år', ylab='Kumulativ andel (%)', frame.plot=FALSE)
+  plot(grtxt, CumAndel, type='l', lwd=2, col=farger[1], xlim = c(0,xmax), ylim= c(0,ymax),
+       xlab = subtxt, ylab='Kumulativ andel (%)', frame.plot=FALSE)
+  # axis(side=1, at = xskala, labels = Tidtxt, cex.axis=0.9)
+  grid(NA, 6, lwd = 1)
   # title(tittel, line=1, font.main=1)
-  abline(h=c(20,40,60,80,100), col=farger[3], lwd=1)
-  text(x=(0+max(grtxt))/2, y=105, paste('Totalt antall registreringer: ', N, ' (=100%)', sep=''),
-       adj=0.5, cex=0.85)
+  # abline(h=c(20,40,60,80,100), col=farger[3], lwd=1)
+  if (valgtVar == 'AlderHjAff_cumsum'){
+    text(x=(0+max(grtxt))/2, y=ymax, paste0('Antall med hjerteaffeksjon: ', N, ' (=100 %), hvorav ', N_ukjent, ' mangler alder for hjerteaffeksjon'),
+         adj=0.5, cex=0.85)
+    text(x=(0+max(grtxt))/2, y=ymax-7, paste0('Totalt antall med gitt diagnose: ', N_tot, ', der ', N_ikkekjent, ' har ukjent status for hjerteaffeksjon'),
+         adj=0.5, cex=0.85)
+  } else {
+    text(x=(0+max(grtxt))/2, y=ymax, paste0('Antall pasienter: ', N, ' (=100 %)'),
+         adj=0.5, cex=0.85)
+  }
+
+
+
 
   krymp <- .9
   title(main = tittel, line=1, font.main=1, cex.main=1.3*cexgr)

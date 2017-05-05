@@ -67,7 +67,7 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
 
   par('fig'=c(0, 1, 0, 1-0.02*(NutvTxt-1)))  #Har alltid datoutvalg med
 
-  if (length(stabeltxt) == 2){
+  if (length(stabeltxt) == 2 & !stabel){
     ymax <- min(1.1*max(AndelVar[1,]), 100)
     ylabel <- "Andel pasienter"
     pos <- barplot(AndelVar[1,], beside=TRUE, las=1, ylab=ylabel,  #main=tittel,
