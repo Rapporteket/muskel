@@ -197,7 +197,12 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
                      col=fargeHoved, border='white', font.main=1, xlim=c(0, xmax), ylim=c(0.05,1.4)*antGr)	#
       mtext(at=pos+0.05, text=grtxtpst, side=2, las=1, cex=cexgr, adj=1, line=0.25)
       if (PlotParams$N_colwise) {
-        text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = rev(PlotParams$NVar), pos=4)
+        if (flerevar == 1) {
+          text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = rev(PlotParams$NVar), pos=4)
+        }
+        else {
+          text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = paste0('n=', rev(sprintf('%.0f', Andeler$Hoved*NHoved/100))), pos=4)
+        }
       }
 
       if (enhetsUtvalg == 1) {

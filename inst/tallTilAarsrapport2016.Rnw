@@ -1,0 +1,211 @@
+\documentclass[norsk,a4paper]{article} % ,twoside
+\usepackage[norsk]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{subfig}
+\usepackage{pdfpages}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+
+
+\title{Figurer og tabeller til årsrapport for Muskelregisteret 2016}
+\author{Muskelregisteret}
+
+\renewcommand\thempfootnote{\fnsymbol{mpfootnote}}
+\def\labelitemi{$\bullet$}
+\def\labelitemii{--}
+\def\labelitemiii{$\ast$}
+\def\labelitemiv{$\cdot$}
+
+%setter grå skrift fremfort sort
+\usepackage{xcolor}
+\usepackage{graphicx}
+\pagestyle{myheadings}
+% \definecolor{SKDE}{rgb}{0,0.32,0.61}
+\definecolor{lysblaa}{rgb}{0.27,0.51,0.71}
+% \definecolor{moerkblaa}{rgb}{0.0,0.0,0.47}
+% \definecolor{lysgraa}{rgb}{0.8,0.8,0.8}
+% \definecolor{middelsgraa}{rgb}{0.5,0.5,0.5}
+\definecolor{moerkgraa}{rgb}{0.25,0.25,0.25}
+\color{moerkgraa}
+% \color{lysblaa}
+
+<<'initOpts',include=FALSE>>=
+knitr::opts_chunk$set(warnings=FALSE,echo=FALSE)
+knitr::opts_knit$set(root.dir = './')
+@
+
+\begin{document}
+
+<<LastData, include=FALSE, cache=FALSE>>=
+library(muskel)
+hentData <- F
+
+ForlopsData <- read.table('P:/MinData/muskel/ForlopsOversikt2017-09-12 08-24-03.txt', header=TRUE, sep=';')
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('P:/MinData/muskel/AlleVarNum2017-09-12 08-23-59.txt', header=TRUE, sep=';')
+RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
+                        "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
+                        "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
+                        "Fysioterapi", "Ergoterapi", "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","HjerteAffAnnet",
+                        "HjerteAffAnnetSpes", "DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
+                        'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
+                        'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
+                        "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Steroider')] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('P:/MinData/muskel/AlleVar2017-09-12 08-24-01.txt', header=TRUE, sep=';')
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
+                                 "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
+                                 'Arvegang', 'Gangfunksjon')]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
+RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+# RegData <- MuskelPreprosess(RegData=RegData)
+#
+reshID <- 601159
+datoFra='2008-01-01'
+datoTil='2016-12-31'
+# datoTil=as.character(Sys.Date())
+flervalgsliste <- ''
+
+valgtShus <- flervalgsliste
+RegData <- MuskelPreprosess(RegData=RegData)
+RegData <- RegData[RegData$HovedDato <= as.POSIXlt(datoTil), ]
+
+RegData$SykehusNavn <- iconv(RegData$SykehusNavn, from = 'UTF-8', to = '')  # Fiks lokale encoding issues
+
+
+incl_N<-F
+minald=0
+maxald=120
+erMann=99
+diagnoseSatt=99
+enhetsUtvalg=0
+preprosess=F
+diagnosegr <- ''
+forlop <- 99
+
+if (valgtShus[1] == '') {
+  shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+} else {
+  if (length(valgtShus)==1) {
+    reshID<-as.numeric(valgtShus[1])
+    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+  } else {
+    shtxt <- as.character(RegData$SykehusNavn[match(as.numeric(valgtShus), RegData$AvdRESH)])
+  }
+}
+
+dekn_grad <- read.table('C:/GIT/muskel/doc/dekn_grad2016.csv', header=TRUE, sep=';', stringsAsFactors = F)
+
+figstr <- 0.61
+tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
+@
+
+%%%%% Forside
+
+\color{moerkgraa}
+\thispagestyle{empty}
+
+\maketitle
+%
+% \tableofcontents
+% \newpage
+\thispagestyle{empty}
+\listoffigures
+% \newpage
+% \thispagestyle{empty}
+\listoftables
+
+\clearpage
+
+\newpage
+
+
+<<'TabReg', results='asis', echo=FALSE>>=
+library(xtable)
+print(xtable(dekn_grad, caption = 'Antallet registrert i Muskelreisteret og i NPR etter bostedsfylke'),include.rownames=F)
+
+BasisReg <- RegData[RegData$ForlopsType1Num == 1, ]
+BasisReg <- BasisReg[BasisReg$Aar<2017, ]
+
+RegAvd <- addmargins(table(BasisReg$SykehusNavn, BasisReg$Aar), 2)
+RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
+RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
+colnames(RegAvd)[dim(RegAvd)[2]] <- 'Alle år'
+RegAvd <- rbind(RegAvd, Totalt = colSums(RegAvd))
+
+xtable::xtable(RegAvd, digits=0, align=c('l', rep('r', ncol(RegAvd))), caption='Antall basisregistreringer etter registrerende HF')
+
+BasisReg <- RegData[RegData$ForlopsType1Num == 2, ]
+BasisReg <- BasisReg[BasisReg$Aar<2017, ]
+
+RegAvd <- addmargins(table(BasisReg$SykehusNavn, BasisReg$Aar), 2)
+# RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
+# RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
+# RegAvd <- names(RegAvd)[4] <- 'Alle år'
+RegAvd <- as.data.frame(RegAvd)
+
+RegAvd <- tidyr::spread(RegAvd, Var2, Freq)[,-1]
+rownames(RegAvd) <- 'Oppfølginger'
+# rownames(RegAvd) <- 'Oppfølginger'
+
+xtable::xtable(RegAvd, digits=0, caption='Antall oppfølginger etter år')
+@
+
+\clearpage
+
+
+<<'Fig:Diagnoser', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+
+varNavn <- c('Alder', 'Diagnosegr', 'DiagICD10', 'Muskeldystrofier', 'LGMD')
+
+# varNavn <- c('DiagICD10', 'Diagnosegr', 'Diagnoser_muskel', 'Diagnoser_atrofier', 'Diagnoser_nevropatier',
+#              'Muskeldystrofier', 'LGMD', 'Alder', 'CMT', 'HjerteAff_DM1', 'HjerteAff_DM2', 'HjerteAff_LGMD2I',
+#              'FysioManglerAarsak', 'UtdanningDM1', 'UtdanningLGMD', 'Arbeid_DM1', 'Arbeid_LGMD', 'SMA')
+
+for (p in 1:length(varNavn)){
+  outfile=paste0(varNavn[p], '.pdf')
+  MuskelFigAndeler(RegData=RegData, valgtVar=varNavn[p], datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                       minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                       enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+}
+
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[1], '.pdf')}}
+\caption{Aldersfordeling ved førstegangsregistrering}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[2], '.pdf')}}
+\caption{Fordeling av diagnosegrupper}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[3], '.pdf')}}
+\caption{Fordeling av ICD10-diagnoser}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[4], '.pdf')}}
+\caption{Fordeling av undergrupper av muskeldystrofier}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{\Sexpr{paste0(varNavn[5], '.pdf')}}
+\caption{Fordeling av undergrupper av Limb-girdle muskeldystrofi (LGMD)}
+\end{figure}
+
+
+\end{document}

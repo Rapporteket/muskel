@@ -16,6 +16,25 @@ MuskelPrepVar <- function(RegData, valgtVar)
   cexgr <- 1.0; grtxt <- ''; grtxt2 <- ''; subtxt <- ''; incl_N=F; N_colwise=F
 
 
+  if (valgtVar == 'Aar') {
+    tittel <- 'Oppfølginger etter år'
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    gr <- sort(unique(RegData$Aar))
+    grtxt <- as.character(gr)
+    # aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    # aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    # gr <- as.numeric(aux$listeverdier)
+    # grtxt <- aux$listetekst
+    # gr <- c(0:2, 9)
+    # gr <- sort(as.numeric(Klokebok$listeverdier[Klokebok$navn_i_rapporteket == valgtVar]))
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[which(RegData$Variabel %in% gr), ]
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    # RegData$Gr <- factor(RegData$Diagnosegr_label)
+  }
+
+
 
   if (valgtVar=='Alder') {
     RegData$Variabel <- RegData$AlderVreg
@@ -74,14 +93,14 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'AndelSteroider') { #### Hvilken alder?!!!!!!
     tittel <- c('Andel pr. aldersgruppe med steroidbehandling')
-    RegData <- RegData[!is.na(RegData$Sterioider), ]
+    RegData <- RegData[!is.na(RegData$Steroider), ]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- c(0,4,6,9,13,18,25,31,120)	#c(0,16,31,46,61,76,200)
     RegData$aldersgr <- cut(RegData$Alder, breaks=gr, include.lowest=TRUE, right=FALSE)
-    AntVar <- tapply(RegData$Sterioider, RegData$aldersgr, sum)
-    NVar <- tapply(RegData$Sterioider, RegData$aldersgr, length)
+    AntVar <- tapply(RegData$Steroider, RegData$aldersgr, sum)
+    NVar <- tapply(RegData$Steroider, RegData$aldersgr, length)
     # grtxt <- names(AntVar)
     grtxt <- c('<4', '4-5', '6-8', '9-12', '13-17', '18-24', '25-30', '>30')
     retn='H'
@@ -327,6 +346,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
     tittel <- 'Fordeling av diagnosegrupper'
     subtxt <- 'Diagnosegrupper'
     retn <- 'H'
+    N_colwise <- T
     # cexgr <- .8
   }
 
@@ -335,8 +355,14 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData <- RegData[RegData$Diagnosegr == 1, ]
-    RegData$VariabelGr <- as.factor(RegData$Variabel)
-    grtxt <- levels(RegData$VariabelGr)
+
+    aux <- sort(table(RegData$Variabel), decreasing = T)
+    grtxt <- names(aux)
+    RegData$VariabelGr <- factor(RegData$Variabel, levels=grtxt)
+    N_colwise <- T
+
+    # RegData$VariabelGr <- as.factor(RegData$Variabel)
+    # grtxt <- levels(RegData$VariabelGr)
     tittel <- 'Fordeling av diagnoser blandt muskelsykdommer'
     subtxt <- 'Diagnosekoder'
     retn <- 'H'
@@ -372,9 +398,14 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$VariabelGr <- as.character(RegData$DiagICD10)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- sort(table(RegData$VariabelGr[RegData$VariabelGr!='']), decreasing = T)
     RegData$VariabelGr[RegData$VariabelGr==''] <- 'Ikke registrert'
-    RegData$VariabelGr <- as.factor(RegData$VariabelGr)
-    grtxt <- levels(RegData$VariabelGr)
+    grtxt <- c(names(aux), 'Ikke registrert')
+    # gr <- 1:length(grtxt)
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels=grtxt)
+    N_colwise <- T
+    # RegData$VariabelGr <- as.factor(RegData$VariabelGr)
+    # grtxt <- levels(RegData$VariabelGr)
     tittel <- 'Fordeling av diagnoser'
     subtxt <- 'Diagnosekoder'
     retn <- 'H'
@@ -388,9 +419,10 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$Undergruppe[is.na(RegData$Undergruppe)] <- 9999
     RegData$Undergruppe_label <- as.character(RegData$Undergruppe_label)
     RegData$Undergruppe_label[RegData$Undergruppe==9999] <- 'Ikke registrert'
-    gr <- sort(unique(RegData$Undergruppe))
-    grtxt <- RegData$Undergruppe_label[match(gr, RegData$Undergruppe)]
-    RegData$VariabelGr <- factor(RegData$Undergruppe, levels=gr, labels=grtxt)
+    aux <- sort(table(RegData$Undergruppe_label), decreasing = T)
+    grtxt <- names(aux)
+    RegData$VariabelGr <- factor(RegData$Undergruppe_label, levels=grtxt)
+    N_colwise <- T
     tittel <- 'Fordeling av undergrupper av muskeldystrofier'
     subtxt <- 'Diagnoser'
     cexgr <- .8
@@ -419,15 +451,20 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
 
   if (valgtVar == 'LGMD') {
-    RegData <- RegData[RegData$Undergruppe == 4,]
+    RegData <- RegData[RegData$Undergruppe == 'Limb-girdle muskeldystrofi',]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Undergruppe2[is.na(RegData$Undergruppe2)] <- 9999
     RegData$Undergruppe2_label <- as.character(RegData$Undergruppe2_label)
     RegData$Undergruppe2_label[RegData$Undergruppe2==9999] <- 'Ikke registrert'
-    gr <- sort(unique(RegData$Undergruppe2))
-    grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
-    RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
+    aux <- sort(table(RegData$Undergruppe2_label), decreasing = T)
+    grtxt <- names(aux)
+    RegData$VariabelGr <- factor(RegData$Undergruppe2_label, levels=grtxt)
+    N_colwise <- T
+
+    # gr <- sort(unique(RegData$Undergruppe2))
+    # grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
+    # RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
     tittel <- 'Fordeling av undergrupper av LGMD'
     subtxt <- 'Diagnoser'
     cexgr <- .8
@@ -445,9 +482,11 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$Undergruppe2_label[which(RegData$Undergruppe == 2100)] <- 'Ukjent undergruppe'
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    gr <- sort(unique(RegData$Undergruppe2))
-    grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
-    RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
+
+
+    # gr <- sort(unique(RegData$Undergruppe2))
+    # grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
+    # RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
     tittel <- 'Fordeling av undergrupper av CMT'
     subtxt <- 'Diagnoser'
     cexgr <- .8

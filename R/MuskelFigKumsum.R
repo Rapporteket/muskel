@@ -34,7 +34,7 @@ MuskelFigKumsum <- function(RegData, valgtVar='AntReg', datoFra='2000-01-01', da
     shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
   }
 
-  RegData <- RegData[RegData$ForlopsType1Num == 1, ]    # Velger basisregistreringene
+  # RegData <- RegData[RegData$ForlopsType1Num == 1, ]    # Velger basisregistreringene
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
