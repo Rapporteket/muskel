@@ -55,7 +55,8 @@ MuskelFigKumsum <- function(RegData, valgtVar='AntReg', datoFra='2000-01-01', da
                  col=farger[1], border='white', ylim=c(0, ymax))
   text(pos, Andeler+max(Andeler)/50, labels = Andeler, cex=cexgr)
   mtext(at=pos, names(Andeler), side=1, las=1, cex=cexgr, adj=0.5, line=0.5)
-  title(main = paste0('Antall registrerte per ', Sys.Date()), line=1, font.main=1, cex.main=1.3*cexgr)
+  # title(main = paste0('Antall registrerte per ', Sys.Date()), line=1, font.main=1, cex.main=1.3*cexgr)
+  title(main = 'Antall registrerte', line=1, font.main=1, cex.main=1.3*cexgr)
   mtext(utvalgTxt, side=3, las=1, cex=.9*cexgr, adj=0, col=FigTypUt$farger[1], line=c(3+0.8*((length(utvalgTxt) -1):0)))
   par('fig'=c(0, 1, 0, 1))
   if ( outfile != '') {dev.off()}

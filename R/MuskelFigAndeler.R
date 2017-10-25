@@ -79,7 +79,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   Nrest <- 0
 
   if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',
-                      'KonkrUndGrDuchBeck', 'AndelSteroider')) {
+                      'KonkrUndGrDuchBeck', 'AndelSteroider', 'TypeHjerteaffeksjon')) {
     flerevar <- 1
   } else {
     flerevar <- 0
@@ -198,7 +198,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       mtext(at=pos+0.05, text=grtxtpst, side=2, las=1, cex=cexgr, adj=1, line=0.25)
       if (PlotParams$N_colwise) {
         if (flerevar == 1) {
-          text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = rev(PlotParams$NVar), pos=4)
+          text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = paste0('n=', rev(PlotParams$NVar)), pos=4)
         }
         else {
           text(x=rev(as.numeric(Andeler$Hoved)), y=pos+0.05, labels = paste0('n=', rev(sprintf('%.0f', Andeler$Hoved*NHoved/100))), pos=4)
