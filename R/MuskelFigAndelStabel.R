@@ -48,12 +48,25 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
   #-------------------------Beregninger-----------------------------------------
   # RegData$Gr <- factor(RegData$Diagnosegr_label)
   # grtxt <- levels(factor(RegData$Gr))
-  grtxt <- levels(RegData$Gr)
-  stabeltxt <- levels(RegData$VariabelGr)
-  NVarGr <- ftable(RegData[ , c('VariabelGr','Gr')])	#ftable(list(RegData$Var, RegData$Gr))
-  NGr <- colSums(NVarGr)
-  AndelVar <- prop.table(NVarGr,2)*100
-
+  if (PlotParams$flerevar == 0) {
+    grtxt <- levels(RegData$Gr)
+    stabeltxt <- levels(RegData$VariabelGr)
+    NVarGr <- ftable(RegData[ , c('VariabelGr','Gr')])	#ftable(list(RegData$Var, RegData$Gr))
+    NGr <- colSums(NVarGr)
+    AndelVar <- prop.table(NVarGr,2)*100
+  }
+  if (PlotParams$flerevar == 1) {
+    # grtxt <- levels(RegData$Gr)
+    # AntVar <- PlotParams$AntVar
+    # stabeltxt <- as.character(AntVar$Group.1)
+    grtxt <- levels(RegData$Gr)
+    tmp <- tidyr::gather(PlotParams$AntVar, VariabelGr, Antall, -Group.1)
+    AndelVar <- tidyr::spread(tmp, Group.1, Antall)
+    stabeltxt <- AndelVar$VariabelGr
+    AndelVar <- AndelVar[,-1]/t(matrix(PlotParams$NVar, nrow = length(grtxt), ncol = length(stabeltxt)))*100
+    NGr <- PlotParams$NVar
+    # rep(PlotParams$NVar, 2,2)
+  }
 
   ##-----------Figur---------------------------------------
   tittel <- PlotParams$tittel; stabel <- PlotParams$stabel;
@@ -86,9 +99,9 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
       mtext(at=koord, cex=0.9, side=1, line=0, adj=0.5, grtxt)	#
       text(koord, 102.7, paste('N=',NGr,sep=''), cex=0.75)
     } else {
-      koord <- barplot(AndelVar, beside=T, las=2, #names.arg=grtxt, cex.names=0.95,
-                       col=farger, ylab="Andel (%)", ylim=c(0,max(AndelVar)*1.2),	 #xlim=c(0, length(grtxt)*1.2),
-                       cex.main=1, font.main=1, axes=F, cex.axis=.9, cex.lab=.95, border=NA) #
+      koord <- barplot(as.matrix(AndelVar), beside=T, las=2, #names.arg=grtxt, cex.names=0.95,
+                       col=farger[1:length(stabeltxt)], ylab="Andel (%)", ylim=c(0,max(AndelVar)*1.2),	 #xlim=c(0, length(grtxt)*1.2),
+                       cex.main=1, font.main=1, axes=F, cex.axis=.9, cex.lab=.95, border=NA, xaxt='n', ann=FALSE) #
       axis(side=2, at=c(0,20,40,60,80,100))
       legend('top', legend=rev(stabeltxt), bty='n', cex=.8, 	#max(koord+0.5)*1.35, y=80,
              xjust=0.5, fill=farger[length(stabeltxt):1], border=farger[length(stabeltxt):1], ncol=1)

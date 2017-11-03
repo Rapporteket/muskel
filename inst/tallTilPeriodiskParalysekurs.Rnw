@@ -1,0 +1,205 @@
+\documentclass[norsk,a4paper]{article} % ,twoside
+\usepackage[norsk]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{subfig}
+\usepackage{pdfpages}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+
+
+\title{Figurer og tabeller til årsrapport for Muskelregisteret 2016}
+\author{Muskelregisteret}
+
+\renewcommand\thempfootnote{\fnsymbol{mpfootnote}}
+\def\labelitemi{$\bullet$}
+\def\labelitemii{--}
+\def\labelitemiii{$\ast$}
+\def\labelitemiv{$\cdot$}
+
+%setter grå skrift fremfort sort
+\usepackage{xcolor}
+\usepackage{graphicx}
+\pagestyle{myheadings}
+% \definecolor{SKDE}{rgb}{0,0.32,0.61}
+\definecolor{lysblaa}{rgb}{0.27,0.51,0.71}
+% \definecolor{moerkblaa}{rgb}{0.0,0.0,0.47}
+% \definecolor{lysgraa}{rgb}{0.8,0.8,0.8}
+% \definecolor{middelsgraa}{rgb}{0.5,0.5,0.5}
+\definecolor{moerkgraa}{rgb}{0.25,0.25,0.25}
+\color{moerkgraa}
+% \color{lysblaa}
+
+<<'initOpts',include=FALSE>>=
+knitr::opts_chunk$set(warnings=FALSE,echo=FALSE)
+knitr::opts_knit$set(root.dir = './')
+@
+
+\begin{document}
+
+<<LastData, include=FALSE, cache=FALSE>>=
+# setwd('C:/GIT/muskel/doc/')
+library(muskel)
+rm(list=ls())
+
+ForlopsData <- read.table('P:/MinData/muskel/ForlopsOversikt2017-10-23 11-04-40.txt', header=TRUE, sep=';', stringsAsFactors = F)
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('P:/MinData/muskel/AlleVarNum2017-10-23 11-04-38.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegData <- RegData[ , c("GenetiskAarsakPaavist", "ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar",
+                        "Utredningsstart", "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
+                        "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
+                        "Fysioterapi", "Ergoterapi", "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","HjerteAffAnnet",
+                        "HjerteAffAnnetSpes", "DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
+                        'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
+                        'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
+                        "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Steroider', 'AngiGenetiskAarsak')] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('P:/MinData/muskel/AlleVar2017-10-23 11-04-36.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
+                                 "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
+                                 'Arvegang', 'Gangfunksjon')]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+RegData <- MuskelPreprosess(RegData=RegData)
+RegData <- RegData[RegData$Avdod == 'Nei', ]
+
+RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
+
+RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
+RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
+RegData$AngiGenetiskAarsak <- iconv(RegData$AngiGenetiskAarsak, from = 'UTF-8', to = '')
+
+
+incl_N <- T
+datoFra='2000-01-01'
+datoTil='2099-12-31'
+minald=0
+maxald=120
+erMann=99
+outfile=''
+# outfile= paste0(valgtVar, '.pdf')
+diagnoseSatt= 99#101719
+enhetsUtvalg=0
+preprosess=F
+hentData=F
+reshID <- 101719
+diagnosegr <- 99
+forlop <- 99
+undergr <- ''
+undergr2 <- ''
+
+figstr <- 0.61
+tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
+
+dekn_grad <- read.table('C:/GIT/muskel/doc/dekn_grad2016.csv', header=TRUE, sep=';', stringsAsFactors = F)
+innbyggere <- read.table('C:/GIT/muskel/doc/Innbyggere2015aldkj.csv', header=TRUE, sep=';', stringsAsFactors = F, encoding = 'UTF-8')
+innbygg_fylk <- tapply(innbyggere$AntInnb, innbyggere$Fylke, sum)
+rm(innbyggere)
+innbygg_fylk <- as.data.frame(innbygg_fylk)
+
+@
+
+%%%%% Forside
+
+\color{moerkgraa}
+\thispagestyle{empty}
+
+\maketitle
+%
+% \tableofcontents
+% \newpage
+\thispagestyle{empty}
+\listoffigures
+% \newpage
+% \thispagestyle{empty}
+\listoftables
+
+\clearpage
+
+\newpage
+
+<<'Fig1', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+valgtVar <- 'PeriodiskeParalyser'
+outfile=paste0(valgtVar, '.pdf')
+MuskelFigAndeler(RegData=RegData, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                 undergr = undergr, undergr2=undergr2, enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{PeriodiskeParalyser.pdf}
+\caption{Periodiske paralyser}
+\end{figure}
+
+<<'Tab1', results='asis', echo=FALSE>>=
+RegDataOld <- RegData
+RegData$Variabel <- RegData$Undergruppe
+RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
+gr <- c(22, 23, 24, 25, 60, 61, 1060, 2060)
+RegData <- RegData[RegData$Variabel %in% gr, ]
+grtxt <- RegData$Undergruppe_label[match(gr, RegData$Undergruppe)]
+RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+tab1 <- table(RegData[, c("VariabelGr", "GenetiskAarsakPaavist")], useNA = 'ifany')
+
+xtable::xtable(tab1,
+		caption='Periodiske paralyser')
+
+@
+
+
+<<'Tab2', results='asis', echo=FALSE>>=
+
+GenetiskAarsak_Undergruppe60 <- RegData$AngiGenetiskAarsak[which(RegData$Undergruppe==60)]
+GenetiskAarsak_Undergruppe60 <- GenetiskAarsak_Undergruppe60[GenetiskAarsak_Undergruppe60!='']
+xtable::xtable(as.data.frame(GenetiskAarsak_Undergruppe60))
+
+
+GenetiskAarsak_Undergruppe61 <- RegData$AngiGenetiskAarsak[which(RegData$Undergruppe==61)]
+GenetiskAarsak_Undergruppe61 <- GenetiskAarsak_Undergruppe61[GenetiskAarsak_Undergruppe61!='']
+xtable::xtable(as.data.frame(GenetiskAarsak_Undergruppe61))
+
+
+RegData <- RegDataOld
+@
+
+
+<<'Fig2', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+valgtVar <- 'SMA_periodiskepar'
+outfile=paste0(valgtVar, '.pdf')
+MuskelFigAndeler(RegData=RegData, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, diagnoseSatt=diagnoseSatt, forlop=forlop,
+                 undergr = undergr, undergr2=undergr2, enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData)
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{SMA_periodiskepar.pdf}
+\caption{SMA}
+\end{figure}
+
+<<'Tab3', results='asis', echo=FALSE>>=
+dekn_grad$Dekningsgrad <- dekn_grad$Muskelregisteret/dekn_grad$NPR*100
+dekn_grad <- dekn_grad[order(dekn_grad$Dekningsgrad, decreasing = T), ]
+# dekn_grad$Dekningsgrad[dekn_grad$Bostedsfylke == 'Ukjent'] <- ''
+dekn_grad <- dekn_grad[c(2:7, 9:21,1,8), ]
+names(dekn_grad)[4] <- 'Dekningsgrad (%)'
+
+dekn_grad$Korrigert <- dekn_grad$`Dekningsgrad (%)` *5529/4000
+
+dekn_grad$`Dekningsgrad (%)` <- sprintf("%.1f", dekn_grad$`Dekningsgrad (%)`)
+dekn_grad$Korrigert <- sprintf("%.1f", dekn_grad$Korrigert)
+dekn_grad$`Dekningsgrad (%)`[dekn_grad$Bostedsfylke == 'Ukjent'] <- ''
+dekn_grad$Korrigert[dekn_grad$Bostedsfylke == 'Ukjent'] <- ''
+
+print(xtable::xtable(dekn_grad, align=c('l', 'l', rep('r', ncol(dekn_grad)-1)), caption = 'Antallet registrert i Muskelregisteret og i NPR per 31.12.2016 etter bostedsfylke. Korrigert dekningsgrad er basert på et estimat på 4000 tilgjengelige totalt, utifra internasjonale prevalensstudier, samt UNN-studie der man ved gjennomgang av 500 epikriser (i perioden 2002-2014) med relevant diagnosekode for Muskelregisteret, fant at 29.2 prosent var kodet feil og ikke var arvelig nevromuskulær sykdom.'),include.rownames=F)
+@
+
+
+\end{document}

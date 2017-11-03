@@ -10,18 +10,20 @@
 #'
 #' @export
 
-MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt, diagnosegr, forlop,
+MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt = 99, diagnosegr, forlop,
                          undergr='', undergr2='', fargepalett='BlaaRapp')
 {
   # Definerer intersect-operator
   "%i%" <- intersect
+
+  # mapping <- data.frame(AvdRESH = unique(RegData$AvdRESH), SykehusNavn = RegData$SykehusNavn[match(unique(RegData$AvdRESH), RegData$AvdRESH)])
 
   Ninn <- dim(RegData)[1]
   indVarMed <- 1:Ninn
   indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald)
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
-  indDiagSatt <- if (diagnoseSatt %in% c(1:13, 99)) {which(RegData$DiagnoseStiltAvPrim == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
+  indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
   indDiagnosegr <- if (diagnosegr %in% c(1:3)) {which(RegData$Diagnosegr == diagnosegr)} else {indDiagnosegr <- 1:Ninn}
   indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% undergr)} else {indUndergr <- 1:Ninn}
   indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% undergr2)} else {indUndergr2 <- 1:Ninn}
@@ -36,8 +38,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
                  if ((minald>0) | (maxald<120)) {
                    paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
-                 if (diagnoseSatt %in% c(1:13, 99)){paste0('Først diagnostisert: ', RegData$DiagnoseStiltAvPrim_label
-                                                           [match(diagnoseSatt, RegData$DiagnoseStiltAvPrim)])},
+                 if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
                  if (diagnosegr %in% c(1:3)) {paste0('Diagnosegruppe: ', c('Muskelsykdommer', 'Spinal muskelatrofi',
                                                                                 'Polynevropati')[diagnosegr])},
                  if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(RegData$Undergruppe_label[match(as.numeric(undergr),
