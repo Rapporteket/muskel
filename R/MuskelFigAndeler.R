@@ -95,6 +95,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     ## Forbered variabler for fremstilling i figur
     PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
     RegData <- PlotParams$RegData
+    print(dim(RegData))
+
     PlotParams$RegData <- NA
     if (enhetsUtvalg==1) {
       AntHoved <- table(RegData$VariabelGr[ind$Hoved])
