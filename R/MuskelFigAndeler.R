@@ -52,6 +52,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   }
 
   print(dim(RegData))
+  print(reshID)
 
   # Hvis RegData ikke har blitt preprosessert
   if (preprosess){
