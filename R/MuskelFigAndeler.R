@@ -58,6 +58,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
+  print(dim(RegData))
+
   # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
   if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
 
@@ -74,6 +76,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
                                undergr=undergr, undergr2=undergr2)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
+
+  print(dim(RegData))
 
   # Initialiserer nødvendige størrelser
   Andeler <- list(Hoved = 0, Rest =0)
