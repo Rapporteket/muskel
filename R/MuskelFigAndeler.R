@@ -136,9 +136,9 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   }   #end sjekk om figuren inneholder flere variable
 
 
-
-
-
+  print(NHoved)
+  print(Nrest)
+  print(enhetsUtvalg)
 
 
   ##-----------Figur---------------------------------------
