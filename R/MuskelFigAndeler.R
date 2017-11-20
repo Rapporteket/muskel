@@ -51,6 +51,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelHentRegData()
   }
 
+  print(dim(RegData))
+
   # Hvis RegData ikke har blitt preprosessert
   if (preprosess){
     RegData <- MuskelPreprosess(RegData=RegData)
