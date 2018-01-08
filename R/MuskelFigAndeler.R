@@ -50,7 +50,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   if(hentData){
     RegData <- MuskelHentRegData()
   }
-
+  print(diagnose)
   print(dim(RegData))
   print(reshID)
 
@@ -59,7 +59,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  print(dim(RegData))
+  # print(dim(RegData))
 
   # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
   if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
@@ -78,7 +78,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
-  print(dim(RegData))
+  # print(dim(RegData))
 
   # Initialiserer nødvendige størrelser
   Andeler <- list(Hoved = 0, Rest =0)
@@ -137,9 +137,9 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   }   #end sjekk om figuren inneholder flere variable
 
 
-  print(NHoved)
-  print(Nrest)
-  print(enhetsUtvalg)
+  # print(NHoved)
+  # print(Nrest)
+  # print(enhetsUtvalg)
 
 
   ##-----------Figur---------------------------------------
@@ -237,84 +237,4 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   }
 
 }
-
-
-#
-# #.....Må få med denne:
-# if (retn == 100){
-# #(dim(RegData)[1]==0 | (NSh==0 & egenavd==1)) {
-# 	#-----------Figur---------------------------------------
-# #figtype(outfile)
-# 	plot.new()
-# 	title(main=tittel)
-# 	text(0.5, 0.7, 'Ingen egne data registrert for dette utvalget',cex=1.3)
-# 	if ( outfile != '') {dev.off()}
-# } else {
-#
-# #-----------Figur---------------------------------------
-# #Inn parametre: subtxt, grtxt, grtxt2, tittel, Andeler
-#
-# # source(paste(libkat, 'LibFigFilType.R', sep=''), encoding="UTF-8")
-# FigTypUt <- figtype(outfile)
-# farger <- FigTypUt$farger
-#
-# #Plottspesifikke parametre:
-# #farger <- hsv(7/12, c(1,0.55,0.35,0.1,0), v=c(0.62,0.75,0.9,0.95,1))
-# #source(paste(libkat, 'fun_FigFilType.R', sep=''), encoding="UTF-8")
-# #figtype(outfile)
-#
-# # plotType <- 'S'	#'L'-linje, 'S'-søyle. Søyler er standard.
-# antGr <- length(grtxt)
-#
-#
-# if (retn == 'V' ) {
-# #Vertikale søyler eller linje
-# 	par('fig'=c(0, 1, 0, 0.9))
-# 	ymax <- min(max(Andeler, na.rm=T)*1.25, 110)
-# 	pos <- barplot(as.numeric(Andeler), beside=TRUE, las=txtretn, ylab="Andel (%)",	#main=tittel,
-# 		#sub=subtxt,	#names.arg=grtxt, cex.names=cexgr,
-# 		col=farger[1], border='white', ylim=c(0, ymax))	#farger[c(1,3)]
-# 	mtext(at=pos, grtxt, side=1, las=1, cex=0.8, adj=0.5, line=0.5)
-# 	mtext(at=pos, grtxt2, side=1, las=txtretn, cex=0.8, adj=0.5, line=1.5)
-# #	text(pos, Andeler+0.015*ymax, topsoyletxt, cex=0.75)
-# 	text(pos, 0, pos=3, topsoyletxt, cex=0.75, col=farger[4])
-# 	mtext(at=min(pos)-0.5, cex=0.8, side=1, line=3, adj=0, undertxt)
-# 	mtext(side=1, line=2, adj=0.5, subtxt)
-# }
-#
-# if (retn == 'H') {
-# #Horisontale søyler
-# 	ymax <- antGr*1.4
-# 	xmax <- switch(type, andel=min(max(Andeler,na.rm=T)*1.25, 100), ant=max(Andeler)*1.1)
-# 	par('fig'=c(0.15, 1, 0, 0.9))
-# 	pos <- barplot(rev(as.numeric(Andeler)), horiz=TRUE, beside=TRUE, las=1, #xlab="Andel(%)", #main=tittel,
-# 		col=farger[1], border='white', font.main=1, xlim=c(0, xmax), ylim=c(0,ymax))	#
-# #	text(rev(Andeler)+0.015*ymax, pos+0, rev(as.numeric(Ngr)), cex=0.75)
-# 	mtext(at=pos+0.15, rev(grtxt), side=2, las=1, cex=0.8, adj=1, line=0.25)
-# 	mtext(side=1, line=2, adj=0.5, switch(type, andel='Andel (%)', ant='Antall registrerte'))
-# #	mtext(at=min(pos)-0.5, cex=0.8, side=1, line=3, adj=0, 'Tall ved søylene angir antall registreringer')
-# }
-# legend('top', paste('Totalt antall registreringer: ', N, sep=''),
-# 		border=NA, fill='white', bty='n', ncol=1, cex=0.9)
-#
-# utvpos <- 5.2
-# avst <- 0.8
-# krymp <- 0.8
-# title(tittel, font.main=1)	#line=1,
-# mtext(utvalgTxt[1], side=3, las=1, cex=krymp, adj=0, line=utvpos, col=farger[1])
-# mtext(utvalgTxt[2], side=3, las=1, cex=krymp, adj=0, line=utvpos-avst, col=farger[1])
-# mtext(utvalgTxt[3], side=3, las=1, cex=krymp, adj=0, line=utvpos-2*avst, col=farger[1])
-# mtext(utvalgTxt[4], side=3, las=1, cex=krymp, adj=0, line=utvpos-3*avst, col=farger[1])
-# mtext(utvalgTxt[5], side=3, las=1, cex=krymp, adj=0, line=utvpos-4*avst, col=farger[1])
-#
-# par('fig'=c(0, 1, 0, 1))
-# if ( outfile != '') {dev.off()}
-#
-# }
-# }
-# For variabler som går på person, ikke per operasjon
-# if (valgtVar %in% c()) {
-#     RegData <- RegData[order(RegData$InnDato, decreasing = T), ]   # Sorter slik at man velger nyeste operasjon når flere
-#     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-# }
 
