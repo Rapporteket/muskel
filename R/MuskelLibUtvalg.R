@@ -16,19 +16,19 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
   # Definerer intersect-operator
   "%i%" <- intersect
 
-  diagnosegr <- as.numeric(diagnosegr)
+  # diagnosegr <- as.numeric(diagnosegr)
   # mapping <- data.frame(AvdRESH = unique(RegData$AvdRESH), SykehusNavn = RegData$SykehusNavn[match(unique(RegData$AvdRESH), RegData$AvdRESH)])
 
   Ninn <- dim(RegData)[1]
   indVarMed <- 1:Ninn
-  indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald)
+  indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
   indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
-  indDiagnosegr <- if (diagnosegr [1] != '') {which(RegData$Diagnosegr %in% diagnosegr)} else {indDiagnosegr <- 1:Ninn}
+  indDiagnosegr <- if (diagnosegr[1] != '') {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
   indDiagnose <- if (diagnose[1] != '') {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
-  indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% undergr)} else {indUndergr <- 1:Ninn}
-  indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% undergr2)} else {indUndergr2 <- 1:Ninn}
+  indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
+  indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
 
   indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagSatt %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose
