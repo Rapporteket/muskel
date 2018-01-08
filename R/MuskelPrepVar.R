@@ -58,9 +58,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
   }
 
   if (valgtVar=='AlderDagens') {
-    RegData$Variabel <- RegData$AlderVreg
+    RegData$Variabel <- RegData$Alder
     RegData <- RegData[RegData$ForlopsType1Num == 1, ]
-    tittel <- 'Alder ved førstegangsregistrering'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Dagens alder'	#bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')

@@ -43,7 +43,7 @@
 
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
-                             undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F)
+                             diagnose='', undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -74,7 +74,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
                                maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt,
-                               undergr=undergr, undergr2=undergr2)
+                               diagnose=diagnose, undergr=undergr, undergr2=undergr2)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
