@@ -65,4 +65,3 @@ En figur med kummulativt vekst i registeret
 Denne funksjonen lager et søylediagram som viser kummulativ vekst over år
 filtrert på de utvalg som er gjort.
 }
-

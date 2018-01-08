@@ -13,4 +13,3 @@ FigFordeling(RegData, libkat, outfile = "", valgtVar,
 S' - Vertikale eller hor. søyler
 L' - Linjer
 }
-

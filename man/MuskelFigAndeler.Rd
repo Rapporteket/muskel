@@ -7,7 +7,8 @@
 MuskelFigAndeler(RegData, valgtVar, datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
   maxald = 120, erMann = 99, outfile = "", diagnoseSatt = 99,
-  forlop = 99, enhetsUtvalg = 1, preprosess = F, hentData = F)
+  forlop = 99, diagnose = "", undergr = "", undergr2 = "",
+  enhetsUtvalg = 1, preprosess = F, hentData = F)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -65,4 +66,3 @@ En figur med søylediagram av ønsket variabel
 Denne funksjonen lager et søylediagram som viser andeler av valgt variabel
 filtrert på de utvalg som er gjort.
 }
-

@@ -4,8 +4,9 @@
 \alias{MuskelUtvalg}
 \title{Gjør utvalg av dataene}
 \usage{
-MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt,
-  diagnosegr, forlop, fargepalett = "BlaaRapp")
+MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
+  diagnoseSatt = 99, diagnosegr = "", forlop, diagnose = "",
+  undergr = "", undergr2 = "", fargepalett = "BlaaRapp")
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -44,4 +45,3 @@ UtData En liste bestående av det filtrerte datasettet, utvalgstekst for figur o
 Denne funksjonen gjør utvalg av dataene og returnerer det filtrerte datasettet, utvalgsteksten
 og fargepaletten for bruk i figuren
 }
-

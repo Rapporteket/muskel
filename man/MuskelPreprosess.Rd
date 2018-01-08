@@ -18,4 +18,3 @@ Denne rensker og definerer opp nødvendige variabler
 \details{
 Her kan detaljer skrives
 }
-

@@ -68,4 +68,3 @@ Denne funksjonen lager grupperte stabelplot for valgte variabler
 \details{
 Her kan detaljer skrives
 }
-

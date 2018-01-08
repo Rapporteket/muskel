@@ -50,9 +50,12 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   if(hentData){
     RegData <- MuskelHentRegData()
   }
+  print(diagnosegr)
   print(diagnose)
+  print(undergr)
+  print(undergr2)
   print(dim(RegData))
-  print(reshID)
+  # print(reshID)
 
   # Hvis RegData ikke har blitt preprosessert
   if (preprosess){

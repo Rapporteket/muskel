@@ -65,4 +65,3 @@ Et plot som viser kummulativ andel av valgt variabel
 Denne funksjonen lager et plot som viser kummulativ andel av valgt variabel
 filtrert på de utvalg som er gjort.
 }
-
