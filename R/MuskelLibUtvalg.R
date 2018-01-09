@@ -41,13 +41,12 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
                    paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
-                 if (diagnosegr[1] != '') {paste0('Diagnosegruppe: ', paste(c('Muskelsykdommer', 'Spinal muskelatrofi',
-                                                                                'Polynevropati')[as.numeric(diagnosegr)], collapse = ', '))},
-                 if (diagnose[1] != ''){paste0('Diagnose(r): ', paste(diagnose, collapse=', '))},
-                 if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(RegData$Undergruppe_label[match(as.numeric(undergr),
-                                                                                      RegData$Undergruppe)], collapse=', '))},
-                 if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(RegData$Undergruppe2_label[match(as.numeric(undergr2),
-                                                                                                        RegData$Undergruppe2)], collapse=', '))},
+                 if (diagnosegr[1] != '') {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
+                 if (diagnose[1] != ''){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
+                 if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
+                                                                        collapse=', '))},
+                 if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
+                                                                                collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])}
   )
   } else {
