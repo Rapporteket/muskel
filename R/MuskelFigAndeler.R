@@ -50,19 +50,11 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   if(hentData){
     RegData <- MuskelHentRegData()
   }
-  # print(diagnosegr)
-  # paste0(diagnose)
-  # print(undergr)
-  # print(undergr2)
-  # print(dim(RegData))
-  # print(reshID)
 
   # Hvis RegData ikke har blitt preprosessert
   if (preprosess){
     RegData <- MuskelPreprosess(RegData=RegData)
   }
-
-  # print(dim(RegData))
 
   # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
   if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
@@ -99,7 +91,6 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     ## Forbered variabler for fremstilling i figur
     PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
     RegData <- PlotParams$RegData
-    print(dim(RegData))
 
     PlotParams$RegData <- NA
     if (enhetsUtvalg==1) {
@@ -138,11 +129,6 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
     }
   }   #end sjekk om figuren inneholder flere variable
-
-
-  # print(NHoved)
-  # print(Nrest)
-  # print(enhetsUtvalg)
 
 
   ##-----------Figur---------------------------------------
