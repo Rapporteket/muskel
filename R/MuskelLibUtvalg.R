@@ -11,7 +11,7 @@
 #' @export
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diagnoseSatt = 99, diagnosegr='', forlop,
-                         diagnose='', undergr='', undergr2='', fargepalett='BlaaRapp')
+                         diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp')
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -21,8 +21,10 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
 
   Ninn <- dim(RegData)[1]
   indVarMed <- 1:Ninn
-  indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
+  # indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
+  indAld <- which(RegData$Alder >= minald & RegData$Alder <= maxald)
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
+  indAvdod <- if (avdod %in% c('Ja', 'Nei')) {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
   indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
   indDiagnosegr <- if (diagnosegr[1] != '') {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
@@ -31,14 +33,17 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, diag
   indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
 
-  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagSatt %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose
+  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagSatt %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod
   RegData <- RegData[indMed,]
 
   if (dim(RegData)[1] > 0){
   utvalgTxt <- c(paste('Registrert: ',
                        min(RegData$HovedDato, na.rm=T), ' til ', max(RegData$HovedDato, na.rm=T), sep='' ),
+                 # if ((minald>0) | (maxald<120)) {
+                 #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if ((minald>0) | (maxald<120)) {
-                   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
+                   paste('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år', sep='')},
+                 if (avdod %in% c('Ja', 'Nei')) {paste0('Avdød: ', avdod)},
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
                  if (diagnosegr[1] != '') {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
