@@ -26,7 +26,7 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
   }
 
   # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
+  # if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
 
 #   # Sykehustekst avhengig av bruker og brukervalg
 #   if (enhetsUtvalg==0) {
@@ -37,7 +37,7 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt)
+                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, reshID=reshID, enhetsUtvalg=enhetsUtvalg)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 

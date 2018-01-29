@@ -36,13 +36,17 @@
 #' @param hentData Gjør spørring mot database
 #'                 FALSE: Nei, RegData gis som input til funksjonen (Default)
 #'                 TRUE: Ja
+#' @param egenavd  0: Registrert ved HF
+#'                 1: Følges opp ved HF
+#'                 2: Diagnostisert ved HF
+#'                 3: Bostatt i fylke
 #'
 #' @return En figur med søylediagram av ønsket variabel
 #'
 #' @export
 
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
+                             minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0,
                              diagnose='', undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F, avdod='')
 {
 
@@ -56,28 +60,29 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-
-  # Sykehustekst avhengig av bruker og brukervalg
-  if (enhetsUtvalg==0) {
-    shtxt <- 'Hele landet'
-  } else {
-    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-  }
+  # # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
+  # if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
+  #
+  # # Sykehustekst avhengig av bruker og brukervalg
+  # if (enhetsUtvalg==0) {
+  #   shtxt <- 'Hele landet'
+  # } else {
+  #   shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+  # }
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt,
-                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, avdod=avdod)
+                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, enhetsUtvalg,
+                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, avdod=avdod, egenavd=egenavd, reshID=reshID)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
+  shtxt <- MuskelUtvalg$shtxt
 
   # print(dim(RegData))
 
   # Initialiserer nødvendige størrelser
   Andeler <- list(Hoved = 0, Rest =0)
-  ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+  ind <- MuskelUtvalg$ind
   Nrest <- 0
 
   if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',
@@ -94,6 +99,11 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
 
     PlotParams$RegData <- NA
     if (enhetsUtvalg==1) {
+      if (egenavd ==3) {
+        ind <- list(Hoved=which(RegData$Fylke == MuskelUtvalg$fylke), Rest=which(RegData$Fylke != MuskelUtvalg$fylke))
+      } else {
+        ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+      }
       AntHoved <- table(RegData$VariabelGr[ind$Hoved])
       NHoved <- sum(AntHoved)
       Andeler$Hoved <- 100*AntHoved/NHoved

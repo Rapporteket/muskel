@@ -4,9 +4,9 @@
 \alias{MuskelUtvalg}
 \title{Gjør utvalg av dataene}
 \usage{
-MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
-  diagnoseSatt = 99, diagnosegr = "", forlop, diagnose = "",
-  undergr = "", undergr2 = "", fargepalett = "BlaaRapp")
+MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0,
+  enhetsUtvalg, diagnosegr = "", forlop, diagnose = "", undergr = "",
+  undergr2 = "", avdod = "", fargepalett = "BlaaRapp", reshID)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -24,7 +24,15 @@ MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
 0: kvinner
 99: begge (Default)}
 
-\item{diagnoseSatt}{Hvor ble pasienten opprinnelig utredet}
+\item{egenavd}{0: Registrert ved HF
+1: Følges opp ved HF
+2: Diagnostisert ved HF
+3: Bostatt i fylke}
+
+\item{enhetsUtvalg}{Lag figur for
+0: Hele landet
+1: Egen enhet mot resten av landet (Default)
+2: Egen enhet}
 
 \item{diagnosegr}{Diagnosegruppe
 1: Muskelsykdommer
@@ -37,6 +45,9 @@ MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
 3: Annet}
 
 \item{fargepalett}{Hvilken fargepalett skal brukes i figurer (Default: BlaaRapp)}
+
+\item{reshID}{Parameter følger fra innlogging helseregister.no og angir
+hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 }
 \value{
 UtData En liste bestående av det filtrerte datasettet, utvalgstekst for figur og tekststreng som angir fargepalett
