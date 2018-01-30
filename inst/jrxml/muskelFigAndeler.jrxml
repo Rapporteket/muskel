@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.2.final using JasperReports Library version 5.6.1  -->
-<!-- 2018-01-10T15:28:37 -->
+<!-- 2018-01-30T15:32:02 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MuskelFigAndeler" language="groovy" pageWidth="595" pageHeight="595" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" scriptletClass="no.skde.tools.report.CommonReport" isIgnorePagination="true" uuid="9ca92060-e90f-4e3c-acec-23662a03f059">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
@@ -38,7 +38,7 @@
 		<defaultValueExpression><![CDATA[new String("muskel")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rFunctionCallString" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new String("MuskelFigAndeler(RegData, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, minald=minald, maxald=maxald, erMann=erMann, enhetsUtvalg=enhetsUtvalg, diagnosegr=multiValg_4, diagnose=multiValg_1, undergr=multiValg_3, undergr2=multiValg_2, forlop=integer_1, avdod=streng_1, outfile=outfile, preprosess=T, hentData=T)")]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new String("MuskelFigAndeler(RegData, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, minald=minald, maxald=maxald, erMann=erMann, enhetsUtvalg=enhetsUtvalg, egenavd = integer_2, diagnosegr=multiValg_4, diagnose=multiValg_1, undergr=multiValg_3, undergr2=multiValg_2, forlop=integer_1, avdod=streng_1, outfile=outfile, preprosess=T, hentData=T)")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="valgtVar" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new String("Alder")]]></defaultValueExpression>
@@ -57,6 +57,9 @@
 	</parameter>
 	<parameter name="integer_1" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[new Integer(99)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="integer_2" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[new Integer(0)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="alternativer" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[new Integer(0)]]></defaultValueExpression>
