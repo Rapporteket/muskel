@@ -10,7 +10,7 @@
 #' @export
 #'
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
+                             diagnose='', undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
                              enhetsUtvalg=0, egenavd =0, preprosess=F, hentData=F)
 {
 
