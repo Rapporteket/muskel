@@ -1,4 +1,4 @@
-#' Lag søylediagram eller som viser andeler av ulike variabler
+#' Lag søylediagram som viser andeler av ulike variabler
 #'
 #' Denne funksjonen lager et søylediagram som viser andeler av valgt variabel
 #' filtrert på de utvalg som er gjort.
@@ -17,7 +17,6 @@
 #'    til systemets default output device (som regel skjerm))
 #' @param reshID Parameter følger fra innlogging helseregister.no og angir
 #'    hvilken enhet i spesialisthelsetjenesten brukeren tilhører
-#' @param diagnoseSatt Hvor ble pasienten opprinnelig utredet
 #' @param diagnosegr Diagnosegruppe
 #'                 1: Muskelsykdommer
 #'                 2: Spinal muskelatrofi

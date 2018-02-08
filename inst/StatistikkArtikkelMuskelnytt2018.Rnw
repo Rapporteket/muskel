@@ -311,6 +311,7 @@ MuskelFigAndelStabel(RegData=RegData, valgtVar='Hjerteoppf_samlet', datoFra=dato
 <<'TabICD10', results='asis', echo=FALSE>>=
 PerPasient <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
 PerPasient <- PerPasient[match(unique(PerPasient$PasientID), PerPasient$PasientID), ]
+PerPasient <- PerPasient[PerPasient$Avdod == 'Nei', ]
 
 aux <- as.data.frame(addmargins(table(PerPasient[, c("Fylke")])))
 # aux <- tidyr::spread(aux, key = Undergruppe_label, value = Freq)
@@ -332,7 +333,35 @@ aux$Innbyggere[21] <- sum(aux$Innbyggere[1:19])
 
 print(xtable::xtable(aux, digits=0), include.rownames = F)
 
+
+sorost <- sum(aux$Registrerte[which(aux$Fylke %in% c('Vest-Agder', 'Aust-Agder', 'Telemark', 'Vestfold',
+                                                    'Buskerud', 'Østfold', 'Akershus', 'Oslo', 'Hedmark', 'Oppland'))])
+vest <- sum(aux$Registrerte[which(aux$Fylke %in% c('Rogaland', 'Hordaland', 'Sogn og Fjordane'))])
+midt <- sum(aux$Registrerte[which(aux$Fylke %in% c('Møre og Romsdal', 'Sør-Trøndelag', 'Nord-Trøndelag'))])
+nord <- sum(aux$Registrerte[which(aux$Fylke %in% c('Nordland', 'Troms', 'Finnmark'))])
+
+reg_pr_rhf <- c(sorost, vest, midt, nord)
+
+figTyp <- figtype(outfile = 'reg_pr_rhf.pdf')
+vmarg <- max(0, strwidth(c('Helse Sør-øst', 'Helse Vest', 'Helse Midt-Norge', 'Helse Nord'), units='figure', cex=1))*0.8
+par('fig'=c(vmarg, 1, 0, 1))
+
+pos <- barplot(reg_pr_rhf, col = figTyp$farger[1], horiz = T, xlab = 'Antall registrerte')
+mtext(mtext(at=pos, text=c('Helse Sør-øst', 'Helse Vest', 'Helse Midt-Norge', 'Helse Nord'), side=2, las=1, cex=1, adj=1, line=0.25))
+text(x = 30, y = pos, labels = reg_pr_rhf, col = 'white')
+title(main = 'Antall registrerte etter bosteds-RHF')
+
+par('fig'=c(0, 1, 0, 1))
+
 @
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{reg_pr_rhf.pdf}
+\caption{Antall registrerte etter hvilket RHF de er bosatt i. Avdøde er ikke inkluderte.}
+\end{figure}
+
 
 
 
