@@ -11,8 +11,8 @@
 #' @export
 #'
 MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                          minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
-                          enhetsUtvalg=1, preprosess=F, hentData=F, incl_N=F)
+                          minald=0, maxald=120, erMann=99, outfile='', forlop = 99, diagnose=diagnose, undergr=undergr,
+                          undergr2=undergr2, enhetsUtvalg=1, egenavd = egenavd, preprosess=F, hentData=F, incl_N=F, avdod='')
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -25,19 +25,10 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  # if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-
-#   # Sykehustekst avhengig av bruker og brukervalg
-#   if (enhetsUtvalg==0) {
-#     shtxt <- 'Hele landet'
-#   } else {
-#     shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-#   }
-
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, reshID=reshID, enhetsUtvalg=enhetsUtvalg)
+                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann,
+                               diagnosegr=diagnosegr, reshID=reshID, enhetsUtvalg=enhetsUtvalg, egenavd = egenavd, avdod=avdod)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
