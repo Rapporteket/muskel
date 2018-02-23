@@ -153,7 +153,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
 
   if (valgtVar == 'AndelSteroider') { #### Hvilken alder?!!!!!!
-    tittel <- c('Duchenne muskeldystrofi - ', 'Andel pr. aldersgruppe med steroidbehandling')
+    tittel <- c('Andel pr. aldersgruppe med steroidbehandling')
     RegData <- RegData[!is.na(RegData$Steroider), ]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
@@ -502,6 +502,10 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$VariabelGr <- RegData$DiagICD10
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+
+    ######### må endres
+
+
     aux <- sort(table(RegData$VariabelGr[RegData$VariabelGr!='']), decreasing = T)
     # RegData$VariabelGr[RegData$VariabelGr==''] <- 'Ikke registrert'
     # grtxt <- c(names(aux), 'Ikke registrert')
@@ -715,7 +719,27 @@ MuskelPrepVar <- function(RegData, valgtVar)
     stabel <- 0
   }
 
-  if (valgtVar == 'Hjerteoppf_samlet') {
+  if (valgtVar == 'HjerteAff') {
+    tittel <- c('Hjerteaffeksjon')
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData$Variabel <- RegData[, "HjerteAff"]
+    gr <- c(0,1,2,9)
+    grtxt <- c('Nei', 'Ja', 'Henvist kardiolog', 'Ukjent')
+    RegData <- RegData[which(RegData$Variabel %in% gr), ]
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    # RegData$Gr <- NA
+    # RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
+    # RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
+    # RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
+    # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
+    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Dystrophia myotonica 2', 'LGMD 2I'))
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    stabel <- 0
+  }
+
+
+  if (valgtVar == 'Hjerteoppf') {
     tittel <- c('Hjerteoppfølging')
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData$Variabel <- RegData[ , "Hjerteoppfoelging"]
@@ -723,12 +747,12 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- c('Nei', 'Ja', 'Ikke relevant', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    RegData$Gr <- NA
-    RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
-    RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
-    RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
-    RegData <- RegData[which(RegData$Gr %in% 1:3), ]
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Dystrophia myotonica type 2', 'LGMD 2I'))
+    # RegData$Gr <- NA
+    # RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
+    # RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
+    # RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
+    # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
+    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Dystrophia myotonica type 2', 'LGMD 2I'))
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     stabel <- 0
