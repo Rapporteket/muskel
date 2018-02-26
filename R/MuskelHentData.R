@@ -60,6 +60,7 @@ MuskelHentRegData <- function() {
                   AlleVarNum.HjerteAffAnnet,
                   AlleVarNum.Hjerteoppfoelging,
                   AlleVarNum.Arbeid,
+                  AlleVarNum.SympFamilie,
                   AlleVar.DiagnoseStiltAv AS DiagnoseStiltAv_label,
                   AlleVar.Undergruppe AS Undergruppe_label,
                   AlleVar.Undergruppe2 AS Undergruppe2_label,

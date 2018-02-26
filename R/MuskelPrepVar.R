@@ -755,6 +755,28 @@ MuskelPrepVar <- function(RegData, valgtVar)
     stabel <- 0
   }
 
+  if (valgtVar == 'SympFamilie') {
+    tittel <- c('Tilsvarende sykdom/symptomer i familien')
+    RegData <- RegData[!is.na(RegData$SympFamilie), ] # Fjerner tomme reg.
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Per pasient, velger nyeste registrering
+    gr <- c(0,1,9)
+    grtxt <- c('Nei', 'Ja', 'Ukjent')
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    # retn='H'
+  }
+
+  if (valgtVar == 'RespStotte') {
+    tittel <- c('Respirasjonsstøtte')
+    RegData <- RegData[!is.na(RegData$RespStotte), ] # Fjerner tomme reg.
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Per pasient, velger nyeste registrering
+    gr <- c(0,1,9)
+    grtxt <- c('Nei', 'Ja', 'Ukjent')
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    # retn='H'
+  }
+
   if (valgtVar == 'TypeHjerteaffeksjon') {
     tittel <- c('Type hjerteaffeksjon')
     RegData <- RegData[which(RegData$HjerteAff==1), ] # Kun for de med hjerteaffekson
