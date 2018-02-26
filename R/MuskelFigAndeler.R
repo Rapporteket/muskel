@@ -76,7 +76,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   ind <- MuskelUtvalg$ind
   Nrest <- 0
 
-  if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',
+  if (valgtVar %in% c('DiagByggerPaa', 'DiagGenVerifisert',
                       'KonkrUndGrDuchBeck', 'AndelSteroider', 'TypeHjerteaffeksjon')) {
     flerevar <- 1
   } else {
