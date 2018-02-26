@@ -871,7 +871,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
 
   if (valgtVar == 'AndelGenVerifisert') { # per pasient
-    grtxt <- c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati')
+    grtxt <- c('Ja', 'Nei', 'Ukjent', 'Ikke registrert')
     RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
     # SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],   ####### KOMMENTER INN HVIS MAN DET HOLDER AT GENETISK VERIFISERING
     #                          by=list(RegData$PasientID), function(x){if (1 %in% x) {y <- 1} else  ####### NOEN GANG ER REGISTRERT
@@ -882,9 +882,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = c('Ja', 'Nei', 'Ukjent', 'Ikke registrert'))
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = grtxt)
     RegData$Gr <- RegData$Diagnosegr
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati'))
     tittel <- c('Andel pasienter med genetisk verifisert diagnose')
   }
 
