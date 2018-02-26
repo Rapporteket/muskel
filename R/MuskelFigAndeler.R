@@ -45,8 +45,9 @@
 #' @export
 
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0,
-                             diagnose='', undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F, avdod='')
+                             minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0, diagnose='',
+                             undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F, avdod='',
+                             UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -59,20 +60,11 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  # # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  # if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-  #
-  # # Sykehustekst avhengig av bruker og brukervalg
-  # if (enhetsUtvalg==0) {
-  #   shtxt <- 'Hele landet'
-  # } else {
-  #   shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-  # }
-
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, enhetsUtvalg,
-                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, avdod=avdod, egenavd=egenavd, reshID=reshID)
+                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, enhetsUtvalg, diagnose=diagnose,
+                               undergr=undergr, undergr2=undergr2, avdod=avdod, egenavd=egenavd, reshID=reshID,
+                               UtredningsaarFra=UtredningsaarFra, UtredningsaarTil=UtredningsaarTil)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
   shtxt <- MuskelUtvalg$shtxt
@@ -125,7 +117,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
       PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar) # Sammenligningsgruppe
       AntRest <- PlotParams2$AntVar
-      NRest <- max(PlotParams2$NVar,na.rm=T)	#length(indRest)- Kan inneholde NA
+      Nrest <- max(PlotParams2$NVar, na.rm=T)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*PlotParams2$AntVar/PlotParams2$NVar
       rm(PlotParams2)
     } else {

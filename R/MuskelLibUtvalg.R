@@ -11,7 +11,8 @@
 #' @export
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr='', forlop,
-                         diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID)
+                         diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
+                         UtredningsaarTil=2100)
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -62,6 +63,8 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indVarMed <- 1:Ninn
   # indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
   indAld <- which(RegData$Alder >= minald & RegData$Alder <= maxald)
+  indUtredningAar <- if (UtredningsaarFra != 1900 | UtredningsaarTil != 2100) {
+    which(RegData$Utredningsstart >= UtredningsaarFra & RegData$Utredningsstart <= UtredningsaarTil)} else {indUtredningAar <- 1:Ninn}
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indAvdod <- if (avdod %in% c('Ja', 'Nei')) {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
@@ -72,7 +75,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
 
-  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod
+  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar
   RegData <- RegData[indMed,]
 
   if (dim(RegData)[1] > 0){
@@ -81,7 +84,9 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                  # if ((minald>0) | (maxald<120)) {
                  #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if ((minald>0) | (maxald<120)) {
-                   paste('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år', sep='')},
+                   paste0('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år')},
+                 if (UtredningsaarFra != 1900 | UtredningsaarTil != 2100){
+                   paste0('Utredningstart fra år ', min(RegData$Utredningsstart, na.rm=T), ' til ', max(RegData$Utredningsstart, na.rm=T))},
                  if (avdod %in% c('Ja', 'Nei')) {paste0('Inkluder avdøde: ', avdod)}, # Ikke korrekt for valg "Ja"
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  # if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},

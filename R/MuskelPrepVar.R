@@ -500,12 +500,9 @@ MuskelPrepVar <- function(RegData, valgtVar)
   if (valgtVar == 'DiagICD10') {
     # RegData$VariabelGr <- as.character(RegData$DiagICD10)
     RegData$VariabelGr <- RegData$DiagICD10
+    RegData <- RegData[RegData$VariabelGr!='', ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-
-    ######### må endres
-
-
     aux <- sort(table(RegData$VariabelGr[RegData$VariabelGr!='']), decreasing = T)
     # RegData$VariabelGr[RegData$VariabelGr==''] <- 'Ikke registrert'
     # grtxt <- c(names(aux), 'Ikke registrert')
