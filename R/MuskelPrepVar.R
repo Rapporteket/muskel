@@ -453,6 +453,48 @@ MuskelPrepVar <- function(RegData, valgtVar)
     # cexgr <- .8
   }
 
+  if (valgtVar == 'KognitivSvikt') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Kognitiv svikt'
+  }
+
+  if (valgtVar == 'MedikBehandling') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Medikamentell behandling'
+  }
+
+  if (valgtVar == 'TypeMedikBehandling') {
+    tittel <- c('Type medikamentell behandling')
+    RegData <- RegData[which(RegData$MedikBehandling==1), ] # Kun for de med medikamentell behandling
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Per pasient, velger nyeste registrering
+    AntVar <- colSums(RegData[, c("Steroider", "Smertestillende", "Antiarytmika", "ACEHemmer", "AnnetHjerteMed", "AnnenMedikBeh")], na.rm = T)
+    N <- dim(RegData)[1]
+    NVar<-rep(N, length(AntVar))
+    grtxt <- c("Steroider", "Smertestillende", "Antiarytmika", "ACE-hemmer", "Andre hjertemed.", "Annet")
+    retn='H'
+  }
+
+
+
   if (valgtVar == 'Diagnoser_muskel') {
     RegData$Variabel <- as.character(RegData$DiagICD10)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
