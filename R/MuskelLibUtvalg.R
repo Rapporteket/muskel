@@ -102,12 +102,15 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
     utvalgTxt <- paste0('Dato: ', datoFra, ' til ', datoTil)
   }
 
-  if (egenavd ==3) {
-    ind <- list(Hoved=which(RegData$Fylke == fylke), Rest=which(RegData$Fylke != fylke))
+  if (enhetsUtvalg==0) {
+    ind <- list(Hoved=1:dim(RegData)[1], Rest=NA)
   } else {
-    ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+    if (egenavd ==3) {
+      ind <- list(Hoved=which(RegData$Fylke == fylke), Rest=which(RegData$Fylke != fylke))
+    } else {
+      ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+    }
   }
-
 
   UtData <- list(RegData=RegData, utvalgTxt=utvalgTxt, fargepalett=fargepalett, shtxt=shtxt, ind=ind, fylke=fylke) #GronnHNpms624,
   return(invisible(UtData))
