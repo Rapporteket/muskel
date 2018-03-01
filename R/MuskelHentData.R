@@ -68,7 +68,7 @@ MuskelHentRegData <- function() {
                   AlleVarNum.OppfolgBarnelegeNevrolog,
                   AlleVarNum.PsykiskHelsetjeneste,
                   AlleVarNum.OppholdRehab,
-                  AlleVarNum.TilbudKostveiledning.
+                  AlleVarNum.TilbudKostveiledning,
                   AlleVarNum.TilbudGenetiskVeiledning,
                   AlleVarNum.AnsvarsgruppeIP,
                   AlleVarNum.BPA,
