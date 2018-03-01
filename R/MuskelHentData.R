@@ -64,6 +64,7 @@ MuskelHentRegData <- function() {
                   AlleVarNum.Antiarytmika,
                   AlleVarNum.ACEHemmer,
                   AlleVarNum.AnnetHjerteMed,
+                  AlleVarNum.MedikBehandling,
                   AlleVarNum.AnnenMedikBeh,
                   AlleVarNum.OppfolgBarnelegeNevrolog,
                   AlleVarNum.PsykiskHelsetjeneste,
