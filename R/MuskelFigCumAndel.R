@@ -11,7 +11,7 @@
 #'
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              diagnose='', undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
-                             enhetsUtvalg=0, egenavd =0, preprosess=F, hentData=F)
+                             enhetsUtvalg=0, egenavd =0, avdod='', preprosess=F, hentData=F)
 {
 
 
@@ -37,7 +37,8 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop, egenavd = egenavd, enhetsUtvalg=enhetsUtvalg,
-                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, reshID = reshID)
+                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, diagnosegr=diagnosegr,
+                               avdod=avdod, reshID = reshID)
   RegData <- MuskelUtvalg$RegData
   RegData <- RegData[MuskelUtvalg$ind$Hoved, ]
   utvalgTxt <- MuskelUtvalg$utvalgTxt
