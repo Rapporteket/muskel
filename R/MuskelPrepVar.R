@@ -632,28 +632,6 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- names(aux)
     RegData$VariabelGr <- factor(RegData$Undergruppe2_label, levels=grtxt)
     N_colwise <- T
-    # 1 LGMD1A (myotilin)
-    # 2 LGMD1B (lamin A/C)
-    # 3 LGMD1C (Caveolin-3)
-    # 4 LGMD1D
-    # 5 LGMD2A (Calpain-3)
-    # 6 LGMD2B (Dysferlin)
-    # 7 LGMD2C (γ-sarkoglykan)
-    # 8 LGMD2D (α-sarkoglykan)
-    # 9 LGMD2E (β-sarkoglykan)
-    # 10 LGMD2F (δ-sarkoglykan)
-    # 11 LGMD2G (Telethonin)
-    # 12 LGMD2H (TRIM 32)
-    # 13 LGMD2I (Fkrp)
-    # 14 LGMD2J (Titin)
-    # 15 LGMD2K (POMT1)
-    # 16 LGMD2L (ANO5)
-    # 1000 Annen
-    # 2010 Ukjent undergruppe
-
-    # gr <- sort(unique(RegData$Undergruppe2))
-    # grtxt <- RegData$Undergruppe2_label[match(gr, RegData$Undergruppe2)]
-    # RegData$VariabelGr <- factor(RegData$Undergruppe2, levels=gr, labels=grtxt)
     tittel <- c('Fordeling av undergrupper av', 'Limb-girdle muskeldystrofi')
     subtxt <- 'Diagnoser'
     cexgr <- .8
@@ -808,9 +786,12 @@ MuskelPrepVar <- function(RegData, valgtVar)
     # retn='H'
   }
 
+
+  ############ OBS! MÅ FIKSES
   if (valgtVar == 'RespStotte') {
     tittel <- c('Respirasjonsstøtte')
-    RegData <- RegData[!is.na(RegData$RespStotte), ] # Fjerner tomme reg.
+    RegData$Variabel <- RegData$RespStotte
+    RegData <- RegData[!is.na(RegData$Variabel), ] # Fjerner tomme reg.
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Per pasient, velger nyeste registrering
     gr <- c(0,1,9)
