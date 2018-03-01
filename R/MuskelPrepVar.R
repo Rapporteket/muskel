@@ -243,25 +243,6 @@ MuskelPrepVar <- function(RegData, valgtVar)
     stabel <- 0
   }
 
-
-  if (valgtVar == 'Sivilstatus') {
-    RegData$Variabel <- RegData[, valgtVar]
-    RegData$Sivilstatus_label <- as.character(RegData$Sivilstatus_label)
-    RegData$Sivilstatus_label[is.na(RegData$Variabel)] <- 'Ikke registrert'
-    RegData$Variabel[is.na(RegData$Variabel)] <- 99
-#     SamletPrPID <- aggregate(RegData$Variabel,
-#                              by=list(RegData$PasientID), function(x){if (max(x %in% 1:4)==1){y <- max(x)} else {y <- min(x)}})
-#     names(SamletPrPID)[names(SamletPrPID)=='x'] <- 'VariabelGr'
-#     RegData <- merge(RegData, SamletPrPID, by.x = 'PasientID', by.y = 'Group.1')
-    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
-    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    gr <- sort(unique(RegData$Variabel))
-    grtxt <- RegData$Sivilstatus_label[match(gr, RegData$Variabel)]
-    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- c('Sivilstatus')
-    retn= 'H'
-  }
-
   if (valgtVar == 'Arvegang') {
     RegData$Variabel <- RegData[, valgtVar]
     RegData$Arvegang_label <- as.character(RegData$Arvegang_label)
@@ -465,6 +446,150 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Kognitiv svikt'
+  }
+
+
+  if (valgtVar == 'OppfolgBarnelegeNevrolog') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Oppfølging hos barnelege/nevrolog'
+  }
+
+  if (valgtVar == 'PsykiskHelsetjeneste') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Psykisk helsetjeneste'
+  }
+
+  if (valgtVar == 'OppholdRehab') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- c('Hatt/venter opphold på', 'rehabiliteringsinstitusjon')
+  }
+
+  if (valgtVar == 'TilbudKostveiledning') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Tilbud om kostveiledning'
+  }
+
+  if (valgtVar == 'TilbudGenetiskVeiledning') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Tilbud om genetisk veiledning'
+  }
+
+  if (valgtVar == 'AnsvarsgruppeIP') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Ansvarsgruppe/Individuell plan'
+  }
+
+  if (valgtVar == 'BPA') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Brukerstyrt personlig assistent (BPA)'
+  }
+
+  if (valgtVar == 'Arbeid') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'I arbeid/utdanning'
+    retn <- 'H'
+  }
+
+  if (valgtVar == 'Uforetrygd') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Uføretrygd'
+    retn <- 'H'
+  }
+
+  if (valgtVar == 'Sivilstatus') {
+    RegData$Variabel <- RegData[, valgtVar]
+    RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- aux[order(as.numeric(aux$listeverdier)), ]
+    gr <- as.numeric(aux$listeverdier)
+    grtxt <- aux$listetekst
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    tittel <- 'Sivilstatus'
+    retn <- 'H'
   }
 
   if (valgtVar == 'MedikBehandling') {
@@ -744,12 +869,6 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- c('Nei', 'Ja', 'Henvist kardiolog', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    # RegData$Gr <- NA
-    # RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
-    # RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
-    # RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
-    # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
-    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Dystrophia myotonica 2', 'LGMD 2I'))
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     stabel <- 0
@@ -764,12 +883,6 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- c('Nei', 'Ja', 'Ikke relevant', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    # RegData$Gr <- NA
-    # RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
-    # RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
-    # RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
-    # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
-    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Dystrophia myotonica type 2', 'LGMD 2I'))
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     stabel <- 0
@@ -786,8 +899,6 @@ MuskelPrepVar <- function(RegData, valgtVar)
     # retn='H'
   }
 
-
-  ############ OBS! MÅ FIKSES
   if (valgtVar == 'RespStotte') {
     tittel <- c('Respirasjonsstøtte')
     RegData$Variabel <- RegData$RespStotte
