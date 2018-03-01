@@ -43,7 +43,7 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   utvalgTxt <- MuskelUtvalg$utvalgTxt
   shtxt <- MuskelUtvalg$shtxt
 
-  if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag')) {
+  if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag', 'AlderTapGang', 'AlderRespStotte', 'TrygdFraAlder')) {
     RegData$Variabel <- RegData[, valgtVar]
     if (valgtVar %in% c('TidDebDiag', 'TidUtredDiag')) {
       RegData <- RegData[which(!(RegData$DiagICD10 %in% c('G71.9', 'G12.9', 'G60.9'))), ]}
@@ -54,7 +54,10 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     tittel <- switch(valgtVar,
                      TidDebDiag = 'Tid fra symptomdebut til spesifikk diagnose',
                      TidDebUtred = 'Tid fra symptomdebut til utredningsstart',
-                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'))
+                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'),
+                     AlderTapGang = 'Alder ved tap av gangfunksjon',
+                     AlderRespStotte = 'Alder for respirasjonsstøtte',
+                     TrygdFraAlder = 'Alder for motak av trygd')
     cexgr <- 0.8
     subtxt <- 'Antall år'
     CumAndel <- cumsum(table(RegData$Variabel))/N*100
