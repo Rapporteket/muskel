@@ -890,7 +890,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
   if (valgtVar == 'SympFamilie') {
     tittel <- c('Tilsvarende sykdom/symptomer i familien')
-    RegData <- RegData[!is.na(RegData$SympFamilie), ] # Fjerner tomme reg.
+    RegData$Variabel <- RegData[ ,valgtVar]
+    RegData <- RegData[!is.na(RegData$Variabel), ] # Fjerner tomme reg.
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Per pasient, velger nyeste registrering
     gr <- c(0,1,9)
