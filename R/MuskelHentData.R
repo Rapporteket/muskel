@@ -72,7 +72,6 @@ MuskelHentRegData <- function() {
                   AlleVarNum.TilbudGenetiskVeiledning,
                   AlleVarNum.AnsvarsgruppeIP,
                   AlleVarNum.BPA,
-                  AlleVarNum.Arbeid,
                   AlleVar.DiagnoseStiltAv AS DiagnoseStiltAv_label,
                   AlleVar.Undergruppe AS Undergruppe_label,
                   AlleVar.Undergruppe2 AS Undergruppe2_label,
