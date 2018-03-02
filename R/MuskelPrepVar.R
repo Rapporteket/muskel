@@ -373,7 +373,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$Variabel <- RegData[, valgtVar]
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    RegData$Gr <- factor(RegData$Diagnosegr_label)
+    # RegData$Gr <- factor(RegData$Diagnosegr_label)
     retn= 'H'
   }
 
@@ -1045,76 +1045,46 @@ MuskelPrepVar <- function(RegData, valgtVar)
     tittel <- c('Andel pasienter med genetisk verifisert diagnose')
   }
 
+
+  if (valgtVar == 'AndelGenVerifisertSpes') { # per pasient
+    grtxt <- c('Ja', 'Nei', 'Ukjent', 'Ikke registrert')
+    RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
+    RegData <- RegData[which(!(RegData$DiagICD10 %in% c('G71.9', 'G12.9', 'G60.9'))), ]
+    SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],
+                             by=list(RegData$PasientID), function(x){if (1 %in% x) {y <- 1} else
+                             {if (0 %in% x) {y <- 0} else {if (9 %in% x) {y <- 9} else {y <- 99}}}})
+    names(SamletPrPID)[names(SamletPrPID)=='x'] <- 'VariabelGr'
+    RegData <- merge(RegData, SamletPrPID, by.x = 'PasientID', by.y = 'Group.1')
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = grtxt)
+    RegData$Gr <- RegData$Diagnosegr
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati'))
+    tittel <- c('Andel pasienter med genetisk verifisert diagnose', 'av de med spesifikk diagnose')
+    # stabel <- 0
+  }
+
   if (valgtVar == 'AndelGenVerifisert_subgr') { # per pasient
+    grtxt <- c('Ja', 'Nei', 'Ukjent', 'Ikke registrert')
     RegData$VariabelGr <- RegData$GenetiskAarsakPaavist
     RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = c('Ja', 'Nei', 'Ukjent', 'Ikke registrert'))
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = grtxt)
     RegData$Gr <- NA
     RegData$Gr[which(RegData$Undergruppe %in% c(70,81:83))] <- 1
     RegData$Gr[which(RegData$Undergruppe == 4)] <- 2
     RegData$Gr[which(RegData$DiagICD10 == 'G60.0')] <- 3
     RegData <- RegData[!is.na(RegData$Gr), ]
-    grtxt <- c('SMA 1-4', 'LGMD', 'CMT')
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
+
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('SMA 1-4', 'LGMD', 'CMT'))
     tittel <- c('Andel pasienter med genetisk verifisert diagnose')
   }
 
-  if (valgtVar == 'PsykiskHelsetjeneste_subgr') { # per pasient
-    RegData$VariabelGr <- RegData$PsykiskHelsetjeneste
-    RegData <- RegData[!is.na(RegData$VariabelGr), ]
-    # RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
-    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
-    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,8,9), labels = c('Ja', 'Nei', 'Ikke relevant', 'Ukjent'))
-    RegData$Gr <- NA
-    RegData$Gr[which(RegData$Undergruppe == 20)] <- 1
-    RegData$Gr[which(RegData$Undergruppe == 21)] <- 2
-    RegData$Gr[which(RegData$Undergruppe == 4)] <- 3
-    RegData <- RegData[!is.na(RegData$Gr), ]
-    grtxt <- c('DM1', 'DM2', 'LGMD')
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Psykisk helsetjeneste')
-  }
-
-  if (valgtVar == 'Kostveiledning_subgr') { # per pasient
-    grtxt <- c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati')
-    RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
-    RegData$VariabelGr <- RegData$TilbudKostveiledning
-    RegData <- RegData[!is.na(RegData$VariabelGr), ]
-    # RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
-    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
-    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,8,9), labels = c('Ja', 'Nei', 'Ikke relevant', 'Ukjent'))
-    RegData$Gr <- factor(RegData$Diagnosegr, levels = 1:3, labels = grtxt)
-    tittel <- 'Tilbud om kostveiledning'
-  }
-
-
-
-  if (valgtVar == 'AndelGenVerifisertSpes') { # per pasient
-    grtxt <- c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati')
-    RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
-    RegData <- RegData[which(!(RegData$DiagICD10 %in% c('G71.9', 'G12.9', 'G60.9'))), ]
-    SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],
-                             by=list(RegData$PasientID), function(x){if (1 %in% x) {y <- 1} else
-                               {if (0 %in% x) {y <- 0} else {if (9 %in% x) {y <- 9} else {y <- 99}}}})
-    names(SamletPrPID)[names(SamletPrPID)=='x'] <- 'VariabelGr'
-    RegData <- merge(RegData, SamletPrPID, by.x = 'PasientID', by.y = 'Group.1')
-    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
-    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = c('Ja', 'Nei', 'Ukjent', 'Ikke registrert'))
-    RegData$Gr <- RegData$Diagnosegr
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Andel pasienter med genetisk verifisert diagnose', 'av de med spesifikk diagnose')
-    # stabel <- 0
-  }
-
   if (valgtVar == 'AndelGenVerifisertSpesUndergr') { # per pasient
-    tittel <- c('Andel pasienter med genetisk verifisert diagnose', 'av de med spesifikk diagnose')
+    tittel <- c('Andel pasienter med genetisk verifisert diagnose', 'pr. diagnose')
     subtxt <- 'Diagnoser'
-    grtxt <- sort(c('G71.0', 'G71.1', 'G71.2', 'G71.3', 'G12.0', 'G12.1', 'G60.0'))
+    grtxt <- c('Ja', 'Nei', 'Ukjent', 'Ikke registrert')
     RegData <- RegData[which(as.character(RegData$DiagICD10) %in% grtxt), ]
     SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],
                              by=list(RegData$PasientID), function(x){if (1 %in% x) {y <- 1} else
@@ -1123,12 +1093,40 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- merge(RegData, SamletPrPID, by.x = 'PasientID', by.y = 'Group.1')
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = c('Ja', 'Nei', 'Ukjent', 'Ikke registrert'))
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,9,99), labels = grtxt)
     RegData$Gr <- as.factor(as.character(RegData$DiagICD10))
-    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
+    # RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = sort(c('G71.0', 'G71.1', 'G71.2', 'G71.3', 'G12.0', 'G12.1', 'G60.0')))
   }
 
+  if (valgtVar == 'PsykiskHelsetjeneste_subgr') { # per pasient
+    grtxt <- c('Ja', 'Nei', 'Ikke relevant', 'Ukjent')
+    RegData$VariabelGr <- RegData$PsykiskHelsetjeneste
+    RegData <- RegData[!is.na(RegData$VariabelGr), ]
+    # RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,8,9), labels = grtxt)
+    RegData$Gr <- NA
+    RegData$Gr[which(RegData$Undergruppe == 20)] <- 1
+    RegData$Gr[which(RegData$Undergruppe == 21)] <- 2
+    RegData$Gr[which(RegData$Undergruppe == 4)] <- 3
+    RegData <- RegData[!is.na(RegData$Gr), ]
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('DM1', 'DM2', 'LGMD'))
+    tittel <- c('Psykisk helsetjeneste')
+  }
 
+  if (valgtVar == 'Kostveiledning_subgr') { # per pasient
+    grtxt <- c('Ja', 'Nei', 'Ikke relevant', 'Ukjent')
+    RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
+    RegData$VariabelGr <- RegData$TilbudKostveiledning
+    RegData <- RegData[!is.na(RegData$VariabelGr), ]
+    # RegData$VariabelGr[is.na(RegData$VariabelGr)] <- 99
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0,8,9), labels = grtxt)
+    RegData$Gr <- factor(RegData$Diagnosegr, levels = 1:3, labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati'))
+    tittel <- 'Tilbud om kostveiledning'
+  }
 
   if (valgtVar == 'DiagByggerPaa') { # per pasient
     SamletPrPID <- aggregate(RegData[, c("DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA', 'DiagBiopsi')],
