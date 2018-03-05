@@ -224,12 +224,13 @@ MuskelPrepVar <- function(RegData, valgtVar)
 
 
   if (valgtVar == 'HoyesteUtdanning') {
-    tittel <- c('Høyest oppnådde utdanningsnivå', 'pasienter over 25 år')
-    RegData <- RegData[which(RegData$PasientAlder>25), ]
+    tittel <- c('Høyest oppnådde utdanningsnivå')
+    # RegData <- RegData[which(RegData$PasientAlder>25), ]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     RegData$Variabel <- RegData[, "Utdanning"]
+    RegData$Variabel[RegData$Variabel==3] <- 2
     gr <- c(1,2,4,9)
     grtxt <- c('Grunnskole', 'Videregående skole', 'Høyskole eller universitetet', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
