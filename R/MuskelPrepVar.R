@@ -575,8 +575,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- aux$listetekst
     # grtxt <- iconv(aux$listetekst, from = '', to = '') # aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    # tittel <- 'Uføretrygd'
-    tittel <- grtxt[2]  #### Kun til debugging
+    tittel <- 'Uføretrygd'
     retn <- 'H'
   }
 

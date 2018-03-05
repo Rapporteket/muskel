@@ -50,6 +50,8 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
                              UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
 
+  print(getwd())
+
   ## Hvis spørring skjer fra R på server. ######################
   if(hentData){
     RegData <- MuskelHentRegData()
