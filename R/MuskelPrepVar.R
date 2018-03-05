@@ -572,9 +572,11 @@ MuskelPrepVar <- function(RegData, valgtVar)
     aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
     aux <- aux[order(as.numeric(aux$listeverdier)), ]
     gr <- as.numeric(aux$listeverdier)
-    grtxt <- iconv(aux$listetekst, from = 'UTF-8', to = '') # aux$listetekst
+    grtxt <- aux$listetekst
+    # grtxt <- iconv(aux$listetekst, from = '', to = '') # aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Uføretrygd'
+    # tittel <- 'Uføretrygd'
+    tittel <- grtxt[2]  #### Kun til debugging
     retn <- 'H'
   }
 
