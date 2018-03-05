@@ -6,8 +6,8 @@
 \usage{
 MuskelFigKumsum(RegData, valgtVar = "AntReg", datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
-  maxald = 120, erMann = 99, outfile = "", diagnoseSatt = 99,
-  forlop = 99, enhetsUtvalg = 1, preprosess = F, hentData = F)
+  maxald = 120, erMann = 99, outfile = "", forlop = 99, avdod = "",
+  enhetsUtvalg = 0, preprosess = F, hentData = F)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -37,8 +37,6 @@ hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 
 \item{outfile}{Navn på fil figuren skrives til. Default: '' (Figur skrives
 til systemets default output device (som regel skjerm))}
-
-\item{diagnoseSatt}{Hvor ble pasienten opprinnelig utredet}
 
 \item{forlop}{Forløpstype
 1: Basisregistrering

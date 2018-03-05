@@ -563,13 +563,17 @@ MuskelPrepVar <- function(RegData, valgtVar)
     retn <- 'H'
   }
 
+  Klokebok2 <- read.table(system.file('extdata', 'Muskelregisteret_klokeboken.csv_28.02.2018.csv', package = 'muskel'), header=TRUE, sep=';',
+                          stringsAsFactors = F, fileEncoding = 'UTF-8-BOM')
+    # system.file('data/Muskelregisteret_klokeboken.csv_28.02.2018.csv', package = muskel)
+
   if (valgtVar == 'Uforetrygd') {
     RegData$Variabel <- RegData[, valgtVar]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[!is.na(RegData$Variabel), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
+    aux <- Klokebok2[Klokebok2$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
     aux <- aux[order(as.numeric(aux$listeverdier)), ]
     gr <- as.numeric(aux$listeverdier)
     grtxt <- aux$listetekst

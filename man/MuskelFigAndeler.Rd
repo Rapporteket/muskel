@@ -2,13 +2,14 @@
 % Please edit documentation in R/MuskelFigAndeler.R
 \name{MuskelFigAndeler}
 \alias{MuskelFigAndeler}
-\title{Lag søylediagram eller som viser andeler av ulike variabler}
+\title{Lag søylediagram som viser andeler av ulike variabler}
 \usage{
 MuskelFigAndeler(RegData, valgtVar, datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
   maxald = 120, erMann = 99, outfile = "", forlop = 99, egenavd = 0,
   diagnose = "", undergr = "", undergr2 = "", enhetsUtvalg = 1,
-  preprosess = F, hentData = F, avdod = "")
+  preprosess = F, hentData = F, avdod = "", UtredningsaarFra = 1900,
+  UtredningsaarTil = 2100)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -61,8 +62,6 @@ TRUE: Ja}
 \item{hentData}{Gjør spørring mot database
 FALSE: Nei, RegData gis som input til funksjonen (Default)
 TRUE: Ja}
-
-\item{diagnoseSatt}{Hvor ble pasienten opprinnelig utredet}
 }
 \value{
 En figur med søylediagram av ønsket variabel
