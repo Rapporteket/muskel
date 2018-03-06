@@ -12,7 +12,7 @@
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr='', forlop,
                          diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
-                         UtredningsaarTil=2100)
+                         UtredningsaarTil=2100, debutAlderFra=0, debutAlderTil=120)
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -74,8 +74,10 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
   indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
+  indDebutAlder <- if (debutAlderFra != 0 | debutAlderTil != 120) {
+    which(RegData$DebutAlder >= debutAlderFra & RegData$DebutAlder <= debutAlderTil)} else {indDebutAlder <- 1:Ninn}
 
-  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar
+  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar %i% indDebutAlder
   RegData <- RegData[indMed,]
 
   if (dim(RegData)[1] > 0){
@@ -96,7 +98,8 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                                                                         collapse=', '))},
                  if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
                                                                                 collapse=', '))},
-                 if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])}
+                 if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])},
+                 if (debutAlderFra != 0 | debutAlderTil != 120) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' år')}
   )
   } else {
     utvalgTxt <- paste0('Dato: ', datoFra, ' til ', datoTil)
