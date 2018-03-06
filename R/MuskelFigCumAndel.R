@@ -15,9 +15,6 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
                              UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
 
-  print(egenavd)
-  print(enhetsUtvalg)
-
 
   ## Hvis spørring skjer fra R på server. ######################
   if(hentData){
