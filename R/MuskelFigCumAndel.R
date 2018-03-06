@@ -11,9 +11,12 @@
 #'
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              diagnose='', undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
-                             enhetsUtvalg=0, egenavd =0, avdod='', preprosess=F, hentData=F, debutAlderFra=0, debutAlderTil=120,
+                             enhetsUtvalg=0, egenavd=0, avdod='', preprosess=F, hentData=F, debutAlderFra=0, debutAlderTil=120,
                              UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
+
+  print(egenavd)
+  print(enhetsUtvalg)
 
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -25,16 +28,6 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   if (preprosess){
     RegData <- MuskelPreprosess(RegData=RegData)
   }
-
-  # # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  # if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-  #
-  # # Sykehustekst avhengig av bruker og brukervalg
-  # if (enhetsUtvalg==0) {
-  #   shtxt <- 'Hele landet'
-  # } else {
-  #   shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-  # }
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop, egenavd = egenavd, enhetsUtvalg=enhetsUtvalg,
