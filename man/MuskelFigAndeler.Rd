@@ -2,12 +2,14 @@
 % Please edit documentation in R/MuskelFigAndeler.R
 \name{MuskelFigAndeler}
 \alias{MuskelFigAndeler}
-\title{Lag søylediagram eller som viser andeler av ulike variabler}
+\title{Lag søylediagram som viser andeler av ulike variabler}
 \usage{
 MuskelFigAndeler(RegData, valgtVar, datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
-  maxald = 120, erMann = 99, outfile = "", diagnoseSatt = 99,
-  forlop = 99, enhetsUtvalg = 1, preprosess = F, hentData = F)
+  maxald = 120, erMann = 99, outfile = "", forlop = 99, egenavd = 0,
+  diagnose = "", undergr = "", undergr2 = "", enhetsUtvalg = 1,
+  preprosess = F, hentData = F, avdod = "", UtredningsaarFra = 1900,
+  UtredningsaarTil = 2100)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -38,12 +40,15 @@ hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 \item{outfile}{Navn på fil figuren skrives til. Default: '' (Figur skrives
 til systemets default output device (som regel skjerm))}
 
-\item{diagnoseSatt}{Hvor ble pasienten opprinnelig utredet}
-
 \item{forlop}{Forløpstype
 1: Basisregistrering
 2: Oppfølging
 3: Annet}
+
+\item{egenavd}{0: Registrert ved HF
+1: Følges opp ved HF
+2: Diagnostisert ved HF
+3: Bostatt i fylke}
 
 \item{enhetsUtvalg}{Lag figur for
 0: Hele landet
@@ -65,4 +70,3 @@ En figur med søylediagram av ønsket variabel
 Denne funksjonen lager et søylediagram som viser andeler av valgt variabel
 filtrert på de utvalg som er gjort.
 }
-

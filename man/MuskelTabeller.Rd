@@ -33,4 +33,3 @@ Tabeller til bruk i samlerapport eller annet
 \description{
 Denne funksjonen lager et utvalg av tabeller for muskelregisteret
 }
-

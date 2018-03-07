@@ -10,8 +10,9 @@
 #' @export
 #'
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
-                             enhetsUtvalg=1, preprosess=F, hentData=F)
+                             diagnose='', undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
+                             enhetsUtvalg=0, egenavd=0, avdod='', preprosess=F, hentData=F, debutAlderFra=0, debutAlderTil=120,
+                             UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
 
 
@@ -25,25 +26,17 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-
-  # Sykehustekst avhengig av bruker og brukervalg
-  if (enhetsUtvalg==0) {
-    shtxt <- 'Hele landet'
-  } else {
-    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-  }
-
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
-  MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, diagnosegr=diagnosegr,
-                               diagnoseSatt=diagnoseSatt)
+  MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop, egenavd = egenavd, enhetsUtvalg=enhetsUtvalg,
+                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, diagnosegr=diagnosegr,
+                               avdod=avdod, debutAlderFra=debutAlderFra, debutAlderTil=debutAlderTil, reshID = reshID,
+                               UtredningsaarFra=UtredningsaarFra, UtredningsaarTil=UtredningsaarTil)
   RegData <- MuskelUtvalg$RegData
+  RegData <- RegData[MuskelUtvalg$ind$Hoved, ]
   utvalgTxt <- MuskelUtvalg$utvalgTxt
+  shtxt <- MuskelUtvalg$shtxt
 
-
-  if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag')) {
+  if (valgtVar %in% c('TidDebDiag', 'TidDebUtred', 'TidUtredDiag', 'AlderTapGang', 'AlderRespStotte', 'TrygdFraAlder')) {
     RegData$Variabel <- RegData[, valgtVar]
     if (valgtVar %in% c('TidDebDiag', 'TidUtredDiag')) {
       RegData <- RegData[which(!(RegData$DiagICD10 %in% c('G71.9', 'G12.9', 'G60.9'))), ]}
@@ -54,9 +47,13 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     tittel <- switch(valgtVar,
                      TidDebDiag = 'Tid fra symptomdebut til spesifikk diagnose',
                      TidDebUtred = 'Tid fra symptomdebut til utredningsstart',
-                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'))
+                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'),
+                     AlderTapGang = 'Alder ved tap av gangfunksjon',
+                     AlderRespStotte = 'Alder for respirasjonsstøtte',
+                     TrygdFraAlder = 'Alder for mottak av trygd')
     cexgr <- 0.8
     subtxt <- 'Antall år'
+    if (valgtVar %in% c('AlderTapGang', 'AlderRespStotte', 'TrygdFraAlder')) {subtxt <- 'Alder'}
     CumAndel <- cumsum(table(RegData$Variabel))/N*100
     grtxt <- as.numeric(names(CumAndel))
   }
@@ -100,6 +97,7 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
        xlab = subtxt, ylab='Kumulativ andel (%)', frame.plot=FALSE)
   # axis(side=1, at = xskala, labels = Tidtxt, cex.axis=0.9)
   grid(NA, 6, lwd = 1)
+  legend('bottomright', shtxt, lty=1, col = farger[1], bty='n', cex = 0.8)
   # title(tittel, line=1, font.main=1)
   # abline(h=c(20,40,60,80,100), col=farger[3], lwd=1)
   if (valgtVar == 'AlderHjAff_cumsum'){

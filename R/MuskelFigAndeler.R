@@ -1,4 +1,4 @@
-#' Lag søylediagram eller som viser andeler av ulike variabler
+#' Lag søylediagram som viser andeler av ulike variabler
 #'
 #' Denne funksjonen lager et søylediagram som viser andeler av valgt variabel
 #' filtrert på de utvalg som er gjort.
@@ -17,7 +17,6 @@
 #'    til systemets default output device (som regel skjerm))
 #' @param reshID Parameter følger fra innlogging helseregister.no og angir
 #'    hvilken enhet i spesialisthelsetjenesten brukeren tilhører
-#' @param diagnoseSatt Hvor ble pasienten opprinnelig utredet
 #' @param diagnosegr Diagnosegruppe
 #'                 1: Muskelsykdommer
 #'                 2: Spinal muskelatrofi
@@ -36,14 +35,19 @@
 #' @param hentData Gjør spørring mot database
 #'                 FALSE: Nei, RegData gis som input til funksjonen (Default)
 #'                 TRUE: Ja
+#' @param egenavd  0: Registrert ved HF
+#'                 1: Følges opp ved HF
+#'                 2: Diagnostisert ved HF
+#'                 3: Bostatt i fylke
 #'
 #' @return En figur med søylediagram av ønsket variabel
 #'
 #' @export
 
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                             minald=0, maxald=120, erMann=99, outfile='', diagnoseSatt=99, forlop = 99,
-                             undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F)
+                             minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0, diagnose='',
+                             undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F, avdod='',
+                             UtredningsaarFra=1900, UtredningsaarTil=2100)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -56,29 +60,23 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     RegData <- MuskelPreprosess(RegData=RegData)
   }
 
-  # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
-  if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$AvdRESH == reshID), ]}
-
-  # Sykehustekst avhengig av bruker og brukervalg
-  if (enhetsUtvalg==0) {
-    shtxt <- 'Hele landet'
-  } else {
-    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
-  }
-
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
   MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, diagnoseSatt=diagnoseSatt,
-                               undergr=undergr, undergr2=undergr2)
+                               maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, enhetsUtvalg, diagnose=diagnose,
+                               undergr=undergr, undergr2=undergr2, avdod=avdod, egenavd=egenavd, reshID=reshID,
+                               UtredningsaarFra=UtredningsaarFra, UtredningsaarTil=UtredningsaarTil)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
+  shtxt <- MuskelUtvalg$shtxt
+
+  # print(dim(RegData))
 
   # Initialiserer nødvendige størrelser
   Andeler <- list(Hoved = 0, Rest =0)
-  ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+  ind <- MuskelUtvalg$ind
   Nrest <- 0
 
-  if (valgtVar %in% c('AndelGenVerifisert', 'DiagByggerPaa', 'DiagGenVerifisert',
+  if (valgtVar %in% c('DiagByggerPaa', 'DiagGenVerifisert', 'TypeMedikBehandling',
                       'KonkrUndGrDuchBeck', 'AndelSteroider', 'TypeHjerteaffeksjon')) {
     flerevar <- 1
   } else {
@@ -89,8 +87,14 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
     ## Forbered variabler for fremstilling i figur
     PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
     RegData <- PlotParams$RegData
+
     PlotParams$RegData <- NA
     if (enhetsUtvalg==1) {
+      if (egenavd ==3) {
+        ind <- list(Hoved=which(RegData$Fylke == MuskelUtvalg$fylke), Rest=which(RegData$Fylke != MuskelUtvalg$fylke))
+      } else {
+        ind <- list(Hoved=which(RegData$AvdRESH == reshID), Rest=which(RegData$AvdRESH != reshID))
+      }
       AntHoved <- table(RegData$VariabelGr[ind$Hoved])
       NHoved <- sum(AntHoved)
       Andeler$Hoved <- 100*AntHoved/NHoved
@@ -113,7 +117,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
       PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar) # Sammenligningsgruppe
       AntRest <- PlotParams2$AntVar
-      NRest <- max(PlotParams2$NVar,na.rm=T)	#length(indRest)- Kan inneholde NA
+      Nrest <- max(PlotParams2$NVar, na.rm=T)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*PlotParams2$AntVar/PlotParams2$NVar
       rm(PlotParams2)
     } else {
@@ -126,11 +130,6 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
     }
   }   #end sjekk om figuren inneholder flere variable
-
-
-
-
-
 
 
   ##-----------Figur---------------------------------------
@@ -228,84 +227,4 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   }
 
 }
-
-
-#
-# #.....Må få med denne:
-# if (retn == 100){
-# #(dim(RegData)[1]==0 | (NSh==0 & egenavd==1)) {
-# 	#-----------Figur---------------------------------------
-# #figtype(outfile)
-# 	plot.new()
-# 	title(main=tittel)
-# 	text(0.5, 0.7, 'Ingen egne data registrert for dette utvalget',cex=1.3)
-# 	if ( outfile != '') {dev.off()}
-# } else {
-#
-# #-----------Figur---------------------------------------
-# #Inn parametre: subtxt, grtxt, grtxt2, tittel, Andeler
-#
-# # source(paste(libkat, 'LibFigFilType.R', sep=''), encoding="UTF-8")
-# FigTypUt <- figtype(outfile)
-# farger <- FigTypUt$farger
-#
-# #Plottspesifikke parametre:
-# #farger <- hsv(7/12, c(1,0.55,0.35,0.1,0), v=c(0.62,0.75,0.9,0.95,1))
-# #source(paste(libkat, 'fun_FigFilType.R', sep=''), encoding="UTF-8")
-# #figtype(outfile)
-#
-# # plotType <- 'S'	#'L'-linje, 'S'-søyle. Søyler er standard.
-# antGr <- length(grtxt)
-#
-#
-# if (retn == 'V' ) {
-# #Vertikale søyler eller linje
-# 	par('fig'=c(0, 1, 0, 0.9))
-# 	ymax <- min(max(Andeler, na.rm=T)*1.25, 110)
-# 	pos <- barplot(as.numeric(Andeler), beside=TRUE, las=txtretn, ylab="Andel (%)",	#main=tittel,
-# 		#sub=subtxt,	#names.arg=grtxt, cex.names=cexgr,
-# 		col=farger[1], border='white', ylim=c(0, ymax))	#farger[c(1,3)]
-# 	mtext(at=pos, grtxt, side=1, las=1, cex=0.8, adj=0.5, line=0.5)
-# 	mtext(at=pos, grtxt2, side=1, las=txtretn, cex=0.8, adj=0.5, line=1.5)
-# #	text(pos, Andeler+0.015*ymax, topsoyletxt, cex=0.75)
-# 	text(pos, 0, pos=3, topsoyletxt, cex=0.75, col=farger[4])
-# 	mtext(at=min(pos)-0.5, cex=0.8, side=1, line=3, adj=0, undertxt)
-# 	mtext(side=1, line=2, adj=0.5, subtxt)
-# }
-#
-# if (retn == 'H') {
-# #Horisontale søyler
-# 	ymax <- antGr*1.4
-# 	xmax <- switch(type, andel=min(max(Andeler,na.rm=T)*1.25, 100), ant=max(Andeler)*1.1)
-# 	par('fig'=c(0.15, 1, 0, 0.9))
-# 	pos <- barplot(rev(as.numeric(Andeler)), horiz=TRUE, beside=TRUE, las=1, #xlab="Andel(%)", #main=tittel,
-# 		col=farger[1], border='white', font.main=1, xlim=c(0, xmax), ylim=c(0,ymax))	#
-# #	text(rev(Andeler)+0.015*ymax, pos+0, rev(as.numeric(Ngr)), cex=0.75)
-# 	mtext(at=pos+0.15, rev(grtxt), side=2, las=1, cex=0.8, adj=1, line=0.25)
-# 	mtext(side=1, line=2, adj=0.5, switch(type, andel='Andel (%)', ant='Antall registrerte'))
-# #	mtext(at=min(pos)-0.5, cex=0.8, side=1, line=3, adj=0, 'Tall ved søylene angir antall registreringer')
-# }
-# legend('top', paste('Totalt antall registreringer: ', N, sep=''),
-# 		border=NA, fill='white', bty='n', ncol=1, cex=0.9)
-#
-# utvpos <- 5.2
-# avst <- 0.8
-# krymp <- 0.8
-# title(tittel, font.main=1)	#line=1,
-# mtext(utvalgTxt[1], side=3, las=1, cex=krymp, adj=0, line=utvpos, col=farger[1])
-# mtext(utvalgTxt[2], side=3, las=1, cex=krymp, adj=0, line=utvpos-avst, col=farger[1])
-# mtext(utvalgTxt[3], side=3, las=1, cex=krymp, adj=0, line=utvpos-2*avst, col=farger[1])
-# mtext(utvalgTxt[4], side=3, las=1, cex=krymp, adj=0, line=utvpos-3*avst, col=farger[1])
-# mtext(utvalgTxt[5], side=3, las=1, cex=krymp, adj=0, line=utvpos-4*avst, col=farger[1])
-#
-# par('fig'=c(0, 1, 0, 1))
-# if ( outfile != '') {dev.off()}
-#
-# }
-# }
-# For variabler som går på person, ikke per operasjon
-# if (valgtVar %in% c()) {
-#     RegData <- RegData[order(RegData$InnDato, decreasing = T), ]   # Sorter slik at man velger nyeste operasjon når flere
-#     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-# }
 

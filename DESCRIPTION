@@ -11,9 +11,7 @@ LazyData: TRUE
 Encoding: UTF-8
 Depends: R (>= 3.0.2), rapbase
 Imports:
-  xtable,
-  gplots
-RoxygenNote: 5.0.1
-Suggests: knitr,
-    rmarkdown
+  xtable
+RoxygenNote: 6.0.1
+Suggests: knitr
 VignetteBuilder: knitr
