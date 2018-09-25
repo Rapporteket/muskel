@@ -47,7 +47,7 @@
 MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0, diagnose='',
                              undergr='', undergr2='', enhetsUtvalg=1, preprosess=F, hentData=F, avdod='',
-                             UtredningsaarFra=1900, UtredningsaarTil=2100)
+                             UtredningsaarFra=1900, UtredningsaarTil=2100, inkl_tittel=T)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -85,7 +85,7 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
 
   if (flerevar == 0 ) {
     ## Forbered variabler for fremstilling i figur
-    PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
+    PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar, inkl_tittel=inkl_tittel)
     RegData <- PlotParams$RegData
 
     PlotParams$RegData <- NA
@@ -111,17 +111,17 @@ MuskelFigAndeler <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2
   if (flerevar == 1){
 
     if (enhetsUtvalg==1) {
-      PlotParams <- MuskelPrepVar(RegData[ind$Hoved, ], valgtVar) # Hovegruppe
+      PlotParams <- MuskelPrepVar(RegData[ind$Hoved, ], valgtVar, inkl_tittel=inkl_tittel) # Hovegruppe
       AntHoved <- PlotParams$AntVar
       NHoved <- max(PlotParams$NVar, na.rm=T)
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
-      PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar) # Sammenligningsgruppe
+      PlotParams2 <- MuskelPrepVar(RegData[ind$Rest, ], valgtVar, inkl_tittel=inkl_tittel) # Sammenligningsgruppe
       AntRest <- PlotParams2$AntVar
       Nrest <- max(PlotParams2$NVar, na.rm=T)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*PlotParams2$AntVar/PlotParams2$NVar
       rm(PlotParams2)
     } else {
-      PlotParams <- MuskelPrepVar(RegData, valgtVar)
+      PlotParams <- MuskelPrepVar(RegData, valgtVar, inkl_tittel=inkl_tittel)
       AntHoved <- PlotParams$AntVar
       NHoved <- max(PlotParams$NVar, na.rm=T)
       if (valgtVar=='AndelSteroider') {

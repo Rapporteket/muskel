@@ -12,7 +12,7 @@
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                              diagnose='', undergr='', undergr2='', minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
                              enhetsUtvalg=0, egenavd=0, avdod='', preprosess=F, hentData=F, debutAlderFra=0, debutAlderTil=120,
-                             UtredningsaarFra=1900, UtredningsaarTil=2100)
+                             UtredningsaarFra=1900, UtredningsaarTil=2100, inkl_tittel=T)
 {
 
 
@@ -44,13 +44,16 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     N <- dim(RegData)[1]
-    tittel <- switch(valgtVar,
+    if (inkl_tittel) {tittel <- switch(valgtVar,
                      TidDebDiag = 'Tid fra symptomdebut til spesifikk diagnose',
                      TidDebUtred = 'Tid fra symptomdebut til utredningsstart',
                      TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'),
                      AlderTapGang = 'Alder ved tap av gangfunksjon',
                      AlderRespStotte = 'Alder for respirasjonsstøtte',
                      TrygdFraAlder = 'Alder for mottak av trygd')
+    } else {
+      tittel <- ''
+    }
     cexgr <- 0.8
     subtxt <- 'Antall år'
     if (valgtVar %in% c('AlderTapGang', 'AlderRespStotte', 'TrygdFraAlder')) {subtxt <- 'Alder'}

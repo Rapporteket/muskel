@@ -10,7 +10,7 @@
 #'
 #' @export
 #'
-MuskelPrepVar <- function(RegData, valgtVar)
+MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 {
   retn= 'V'; tittel <- ''; AntVar <- NA; NVar <- NA; stabel <- 1; flerevar <- 0
   cexgr <- 1.0; grtxt <- ''; grtxt2 <- ''; subtxt <- ''; incl_N=F; N_colwise=F;
@@ -66,6 +66,17 @@ MuskelPrepVar <- function(RegData, valgtVar)
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
+    subtxt <- 'Aldersgrupper'
+  }
+
+  if (valgtVar=='AlderDagensUnge') {
+    RegData$Variabel <- RegData$Alder
+    RegData <- RegData[RegData$ForlopsType1Num == 1, ]
+    RegData <- RegData[which(RegData$Alder <= 17), ]
+    tittel <- 'Aldersfordeling blant mindreårige pasienter'
+    gr <- c(0, seq(3, 15, 3), 17)	#c(0,16,31,46,61,76,200)
+    RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
+    grtxt <- levels(RegData$VariabelGr)
     subtxt <- 'Aldersgrupper'
   }
 
@@ -267,6 +278,7 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData$Variabel <- RegData[, valgtVar]
     RegData$Gangfunksjon_label <- as.character(RegData$Gangfunksjon_label)
     RegData$Gangfunksjon_label[is.na(RegData$Variabel)] <- 'Ikke registrert'
+    RegData$Gangfunksjon_label <- iconv(RegData$Gangfunksjon_label, from = 'UTF-8', to = '')
     RegData$Variabel[is.na(RegData$Variabel)] <- 99
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
@@ -522,6 +534,12 @@ MuskelPrepVar <- function(RegData, valgtVar)
     grtxt <- aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- 'Tilbud om genetisk veiledning'
+    RegData$Gr <- 3
+    RegData$Gr[which(RegData$Undergruppe==20)] <- 1
+    RegData$Gr[which(RegData$Undergruppe==1)] <- 2
+    # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Duchenne', 'Øvrige'))
+    stabel <- F
   }
 
   if (valgtVar == 'AnsvarsgruppeIP') {
@@ -867,6 +885,46 @@ MuskelPrepVar <- function(RegData, valgtVar)
     stabel <- 0
   }
 
+  if (valgtVar == 'HyppighetEKG_Holter') {
+    tittel <- c('Hyppighet EKG/Holter', 'blant de med hjerteoppfølging')
+    RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
+    RegData$HyppighetEKG[is.na(RegData$HyppighetEKG)] <- 4
+    RegData$HyppighetRytmereg[is.na(RegData$HyppighetRytmereg)] <- 4
+    RegData$Variabel <- pmin(RegData$HyppighetEKG, RegData$HyppighetRytmereg)
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    gr <- c(1,2,3, 4)
+    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+  }
+
+  if (valgtVar == 'HyppighetEKG') {
+    tittel <- c('Hyppighet EKG', 'blant de med hjerteoppfølging')
+    RegData$Variabel <- RegData[, "HyppighetEKG"]
+    RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
+    # RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData$Variabel[is.na(RegData$Variabel)] <- 4
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    gr <- c(1,2,3, 4)
+    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+  }
+
+  if (valgtVar == 'HyppighetUltralyd') {
+    tittel <- c('Hyppighet ultralyd', 'blant de med hjerteoppfølging')
+    RegData$Variabel <- RegData[, "HyppighetUltralyd"]
+    RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
+    # RegData <- RegData[!is.na(RegData$Variabel), ]
+    RegData$Variabel[is.na(RegData$Variabel)] <- 4
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    gr <- c(1,2,3,4)
+    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+  }
+
+
   if (valgtVar == 'HjerteAff_samlet_2') {
     tittel <- c('Hjerteaffeksjon')
     # RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
@@ -913,6 +971,27 @@ MuskelPrepVar <- function(RegData, valgtVar)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     stabel <- 0
+  }
+  if (valgtVar == 'Hjerteoppf_samlet') {
+    tittel <- c('Hjerteoppfølging')
+    # RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
+    RegData$Variabel <- RegData[, "Hjerteoppfoelging"]
+    RegData$Variabel[is.na(RegData$Variabel)] <- 9
+    gr <- c(0,1,8,9)
+    grtxt <- c('Nei', 'Ja', 'Ikke relevant', 'Ukjent')
+    RegData <- RegData[which(RegData$Variabel %in% gr), ]
+    RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
+    RegData$Gr <- NA
+    RegData$Gr[which(RegData$Undergruppe %in% c(20))] <- 1
+    RegData$Gr[which(RegData$Undergruppe %in% c(21))] <- 2
+    RegData$Gr[which(RegData$Undergruppe == 4 & RegData$Undergruppe2 == 13)] <- 3
+    RegData$Gr[which(RegData$Undergruppe == 1)] <- 4
+    RegData$Gr[which(RegData$Undergruppe == 2)] <- 5
+    RegData <- RegData[which(RegData$Gr %in% 1:5), ]
+    RegData$Gr <- factor(RegData$Gr, levels = 1:5, labels = c('DM1', 'DM2', 'LGMD2I', 'DMD', 'BMD'))
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+    stabel <- 1
   }
 
   if (valgtVar == 'SympFamilie') {
@@ -1195,6 +1274,8 @@ MuskelPrepVar <- function(RegData, valgtVar)
     tittel <- c('Mutasjonstype ved Duchenne/Becker')
     retn='H'
   }
+
+  if(!inkl_tittel) {tittel <- ''}
 
   PlotParams <- list(RegData=RegData, tittel=tittel, grtxt=grtxt, grtxt2=grtxt2, subtxt=subtxt, flerevar=flerevar,
                      retn=retn, cexgr=cexgr, AntVar=AntVar, NVar=NVar, stabel=stabel, incl_N=incl_N, N_colwise=N_colwise)

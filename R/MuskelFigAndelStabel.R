@@ -12,7 +12,7 @@
 #'
 MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
                                 minald=0, maxald=120, erMann=99, outfile='', forlop = 99, diagnose='', undergr='',
-                                undergr2='', enhetsUtvalg=0, egenavd=0, preprosess=F, hentData=F, incl_N=F, avdod='')
+                                undergr2='', enhetsUtvalg=0, egenavd=0, preprosess=F, hentData=F, incl_N=F, avdod='', inkl_tittel=T)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -32,7 +32,7 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
-  PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar)
+  PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar, inkl_tittel=inkl_tittel)
   RegData <- PlotParams$RegData
   PlotParams$RegData <- NA
 

@@ -136,17 +136,6 @@ tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
 <<'TabReg', results='asis', echo=FALSE>>=
 library(xtable)
 
-# dekn_grad$Dekningsgrad <- dekn_grad$Muskelregisteret/dekn_grad$NPR*100
-# dekn_grad <- dekn_grad[order(dekn_grad$Dekningsgrad, decreasing = T), ]
-# # dekn_grad$Dekningsgrad[dekn_grad$Bostedsfylke == 'Ukjent'] <- ''
-# dekn_grad <- dekn_grad[c(2:7, 9:21,1,8), ]
-# names(dekn_grad)[4] <- 'Dekningsgrad (%)'
-#
-# dekn_grad$`Dekningsgrad (%)` <- sprintf("%.1f", dekn_grad$`Dekningsgrad (%)`)
-# dekn_grad$`Dekningsgrad (%)`[dekn_grad$Bostedsfylke == 'Ukjent'] <- ''
-#
-# print(xtable(dekn_grad, align=c('l', 'l', rep('r', ncol(dekn_grad)-1)), caption = 'Antallet registrert i Muskelreisteret og i NPR per 31.12.2016 etter bostedsfylke'),include.rownames=F)
-
 BasisReg <- RegData[RegData$ForlopsType1Num == 1, ]
 BasisReg <- BasisReg[BasisReg$Aar<=Rapportaar, ]
 
@@ -155,10 +144,9 @@ RegAvd <- RegAvd[order(RegAvd[, colnames(RegAvd) == 'Sum'], decreasing = T), ]
 RegAvd <- RegAvd[,(dim(RegAvd)[2] - 5): dim(RegAvd)[2]]
 colnames(RegAvd)[dim(RegAvd)[2]] <- 'Alle år'
 RegAvd <- rbind(RegAvd, Totalt = colSums(RegAvd))
-# RegAvd <- RegAvd[c(1:5, 7:12, 14:17, 19:22, 6,13,18,23), ]
-
 
 xtable::xtable(RegAvd, digits=0, align=c('l', rep('r', ncol(RegAvd))), caption='Antall basisregistreringer etter registrerende institusjon')
+
 
 BasisReg <- RegData[RegData$ForlopsType1Num == 2, ]
 BasisReg <- BasisReg[BasisReg$Aar<=Rapportaar, ]
@@ -178,16 +166,16 @@ rownames(RegAvd) <- 'Oppfølginger'
 
 ## Oppfølginger
 BasisReg <- RegData[difftime(as.POSIXlt('2017-12-31'), RegData$HovedDato) > 5*365.25 & RegData$Avdod == 'Nei' &
-                     RegData$ForlopsType1Num==1, ]
+                     RegData$ForlopsType1Num==1, ] # Registreriner mer enn 5 år tilbake i tid
 Oppfolging <- RegData[RegData$ForlopsType1Num==2 & RegData$PasientID %in% BasisReg$PasientID, ]
 
+OppfolgPst1 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-8)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-3)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-8),])[1]*100
+OppfolgPst2 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-7)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-2)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-7),])[1]*100
+OppfolgPst3 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-6)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-1)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-6),])[1]*100
+OppfolgPst4 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-5)], Oppfolging$PasientID[Oppfolging$Aar<=Rapportaar]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-5),])[1]*100
 
-OppfolgPst2014 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-7)], Oppfolging$PasientID[Oppfolging$Aar==(Rapportaar-2)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-7),])[1]*100
-OppfolgPst2015 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-6)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-1)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-6),])[1]*100
-OppfolgPst2016 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-5)], Oppfolging$PasientID[Oppfolging$Aar<=Rapportaar]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-5),])[1]*100
-
-OppfolgPst <- data.frame('2014'=OppfolgPst2014, '2015'=OppfolgPst2015, '2016'=OppfolgPst2016)
-names(OppfolgPst) <- as.character(c(Rapportaar-2, Rapportaar-1, Rapportaar))
+OppfolgPst <- data.frame(OppfolgPst1, OppfolgPst2, OppfolgPst3, OppfolgPst4)
+names(OppfolgPst) <- as.character(c(Rapportaar-3, Rapportaar-2, Rapportaar-1, Rapportaar))
 row.names(OppfolgPst)[1] <- 'Oppfølgingsprosent'
 
 xtable::xtable(OppfolgPst, digits=1, caption='Andel 5-årsoppfølginger etter år. Andelen er kummulativ i betydning at tallet for et gitt år er beregnet som andelen med basisregistrering 5 år eller tidligere som har fått oppfølging i det gitte året eller tidligere')
