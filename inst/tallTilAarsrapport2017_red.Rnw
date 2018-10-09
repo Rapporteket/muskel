@@ -166,6 +166,8 @@ print(xtable::xtable(dekn_grad, digits=c(0,0,0,0,1), align=c('l', 'l', 'r', 'r',
 
 write.csv2(dekn_grad, 'dekn_grad.csv', row.names = F)
 
+
+
 @
 
 
@@ -190,7 +192,12 @@ xtable::xtable(OppfolgPst, digits=1, caption='Andel 5-årsoppfølginger etter å
 write.csv2(OppfolgPst, 'OppfolgPst.csv', row.names = F)
 
 AntReg <- addmargins(table(RegData[RegData$ForlopsType1Num==1, c("SykehusNavn", "Aar")]), 1)
-write.csv2(AntReg, 'AntReg.csv', row.names = F)
+AntReg <- AntReg[, 6:10]
+write.csv2(AntReg, 'AntReg.csv')
+
+
+
+xtable::xtable(AntReg, digits=0, align=c('l', 'r', 'r', 'r', 'r', 'r'), caption='Antall registreringer per år per enhet')
 
 @
 
