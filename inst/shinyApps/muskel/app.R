@@ -46,46 +46,99 @@ diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '')
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(
-  title = 'MUSKELREGISTERET',
-  # titlePanel('Muskelregisteret'),
-
-  tabPanel(
-    "Fordelingsfigurer",
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-      sidebarPanel(
-        selectInput(inputId = "valgtVar", label = "Velg variabel",
-                    choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
-        dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
-                  label = "F.o.m. dato", language="nb"),
-        dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
-                  label = "T.o.m. dato", language="nb"),
-        sliderInput(inputId="alder", label = "Alder", min = 0,
-                    max = 120, value = c(0, 120)),
-        selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
-                    choices = diagnosegrvalg, multiple = TRUE),
-        uiOutput(outputId = 'icd10_kntr')
-      ),
-
-      # Show a plot of the generated distribution
-      mainPanel(
-        plotOutput("distPlot")
-      )
-    )
-
-
-  )
-
+ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+                 tabPanel("Fordelingsfigurer",
+                          tabsetPanel(
+                            tabPanel("Figur",
+                                     sidebarLayout(
+                                       sidebarPanel(
+                                         selectInput(inputId = "valgtVar", label = "Velg variabel",
+                                                     choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
+                                         dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
+                                                   label = "F.o.m. dato", language="nb"),
+                                         dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
+                                                   label = "T.o.m. dato", language="nb"),
+                                         sliderInput(inputId="alder", label = "Alder", min = 0,
+                                                     max = 120, value = c(0, 120)),
+                                         selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
+                                                     choices = diagnosegrvalg, multiple = TRUE),
+                                         uiOutput(outputId = 'icd10_kntr')
+                                       ),
+                                       mainPanel(plotOutput("distPlot", height="auto"))
+                                     )
+                            ),
+                            tabPanel("Tabell",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            )
+                          )
+                 ),
+                 tabPanel("FigType 2",
+                          tabsetPanel(
+                            tabPanel("Report 2a",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            ),
+                            tabPanel("Report 2b",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            ),
+                            tabPanel("Report 2c",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            )
+                          )
+                 ),
+                 tabPanel("FigType 3",
+                          tabsetPanel(
+                            tabPanel("Report 3a",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            ),
+                            tabPanel("Report 3b",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            ),
+                            tabPanel("Report 3c",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            ),
+                            tabPanel("Report 3d",
+                                     sidebarLayout(
+                                       sidebarPanel(),
+                                       mainPanel()
+                                     )
+                            )
+                          )
+                 )
 )
 
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
+
+  output$sampleUcControl <- renderUI({
+    selectInput(inputId = "sampleUc", label = "Sample user ctrl",
+                choices = c("How", "it", "will", "look"))
+  })
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
-                                            choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
-                                            multiple = TRUE)})
+                                             choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
+                                             multiple = TRUE)})
 
   output$distPlot <- renderPlot({
 
@@ -93,13 +146,76 @@ server <- function(input, output) {
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
                      diagnosegr = input$diagnosegr)
 
-  })
-
-
+  }, height = function() {
+    session$clientData$output_distPlot_width
+  }
+  )
 }
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
+
+
+#
+# # Define UI for application that draws a histogram
+# ui <- navbarPage(
+#   title = 'MUSKELREGISTERET',
+#   # titlePanel('Muskelregisteret'),
+#
+#   tabPanel(
+#     "Fordelingsfigurer",
+#     # Sidebar with a slider input for number of bins
+#     sidebarLayout(
+#       sidebarPanel(
+# selectInput(inputId = "valgtVar", label = "Velg variabel",
+#             choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
+# dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
+#           label = "F.o.m. dato", language="nb"),
+# dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
+#           label = "T.o.m. dato", language="nb"),
+# sliderInput(inputId="alder", label = "Alder", min = 0,
+#             max = 120, value = c(0, 120)),
+# selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
+#             choices = diagnosegrvalg, multiple = TRUE),
+# uiOutput(outputId = 'icd10_kntr')
+#       ),
+#
+#       # Show a plot of the generated distribution
+#       mainPanel(
+#         plotOutput("distPlot", height="auto")
+#       )
+#     )
+#
+#
+#   )
+#
+# )
+#
+#
+# # Define server logic required to draw a histogram
+# server <- function(input, output, session) {
+#
+  # output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
+  #                                           choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
+  #                                           multiple = TRUE)})
+#
+  # output$distPlot <- renderPlot({
+  #
+  #   MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+  #                    maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+  #                    diagnosegr = input$diagnosegr)
+  #
+  # }, height = function() {
+  #   session$clientData$output_distPlot_width
+  # }
+  # )
+#
+#
+# }
+#
+# # Run the application
+# shinyApp(ui = ui, server = server)
 
 
 
