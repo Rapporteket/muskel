@@ -155,7 +155,7 @@ server <- function(input, output, session) {
                      diagnosegr = input$diagnosegr)
 
   }, height = function() {
-    session$clientData$output_distPlot_width
+    0.6*session$clientData$output_distPlot_width
   }
   )
 }
