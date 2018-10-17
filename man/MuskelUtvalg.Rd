@@ -7,7 +7,8 @@
 MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0,
   enhetsUtvalg, diagnosegr = "", forlop, diagnose = "", undergr = "",
   undergr2 = "", avdod = "", fargepalett = "BlaaRapp", reshID,
-  UtredningsaarFra = 1900, UtredningsaarTil = 2100)
+  UtredningsaarFra = 1900, UtredningsaarTil = 2100, debutAlderFra = 0,
+  debutAlderTil = 120)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}

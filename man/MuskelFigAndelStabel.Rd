@@ -6,10 +6,10 @@
 \usage{
 MuskelFigAndelStabel(RegData, valgtVar, datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
-  maxald = 120, erMann = 99, outfile = "", forlop = 99,
-  diagnose = diagnose, undergr = undergr, undergr2 = undergr2,
-  enhetsUtvalg = 1, egenavd = egenavd, preprosess = F, hentData = F,
-  incl_N = F, avdod = "")
+  maxald = 120, erMann = 99, outfile = "", forlop = 99, diagnose = "",
+  undergr = "", undergr2 = "", enhetsUtvalg = 0, egenavd = 0,
+  preprosess = F, hentData = F, incl_N = F, avdod = "",
+  inkl_tittel = T)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
