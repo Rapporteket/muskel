@@ -157,7 +157,10 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
       grtxtpst <- paste(rev(grtxt), ' (n=', rev(sprintf('%.0f', AntHoved)), ')', sep='')  #################  AD-HOC, farlig
       grtxt2 <- paste('n=', sprintf('%.0f',Andeler$Hoved*NHoved/100), sep='')             #################
       }
-    vmarg <- switch(retn, V=0, H=max(0, strwidth(grtxtpst, units='figure', cex=cexgr)*0.8))
+    # vmarg <- switch(retn, V=0, H=max(0, strwidth(grtxtpst, units='figure', cex=cexgr)*0.8)) # Gammel versjon beholdt for referanse
+    vmarg <- switch(retn, V=0, min(H=max(0, strwidth(grtxtpst, units='figure', cex=cexgr)*0.8),
+                    strwidth('passe lang eksempeltekst', units='figure', cex=cexgr)*0.8))
+    grtxtpst <- wrap.it(grtxtpst, len = 25)
     par('fig'=c(vmarg, 1, 0, 1-0.02*(NutvTxt-1)))  #Har alltid datoutvalg med
 
     fargeHoved <- farger[1]
