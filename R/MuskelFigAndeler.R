@@ -26,8 +26,8 @@
 #'                 2: Oppfølging
 #'                 3: Annet
 #' @param enhetsUtvalg Lag figur for
-#'                 0: Hele landet
-#'                 1: Egen enhet mot resten av landet (Default)
+#'                 0: Hele landet (Default)
+#'                 1: Egen enhet mot resten av landet
 #'                 2: Egen enhet
 #' @param preprosess Preprosesser data
 #'                 FALSE: Nei (Default)
@@ -44,7 +44,7 @@
 #'
 #' @export
 
-MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', datoTil='2050-01-01', reshID=0, diagnosegr='',
+MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', datoTil='2050-01-01', reshID=0, diagnosegr=-1,
                              minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0, diagnose='',
                              undergr='', undergr2='', enhetsUtvalg=0, preprosess=F, hentData=F, avdod='',
                              UtredningsaarFra=1900, UtredningsaarTil=2100, inkl_tittel=T)
