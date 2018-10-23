@@ -29,7 +29,7 @@ MuskelPreprosess <- function(RegData)
   RegData$Diagnosegr[substr(RegData$DiagICD10, 1, 3) == 'G60'] <- 3
 
   RegData$Diagnosegr_label <- factor(RegData$Diagnosegr, levels = c(1:3, 99),
-                               labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati', 'Ikke reg.'))
+                               labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati', 'Annet/Ikke reg.'))
 
   RegData$Debut <- RegData$Foedselsdato$year+1900 + RegData$DebutAlder
   RegData$DiagnoseAlder <- RegData$DiagnoseAar - (RegData$Foedselsdato$year+1900)
