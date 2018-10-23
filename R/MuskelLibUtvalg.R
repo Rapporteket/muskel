@@ -10,7 +10,7 @@
 #'
 #' @export
 
-MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr='', forlop,
+MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
                          diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
                          UtredningsaarTil=2100, debutAlderFra=0, debutAlderTil=120)
 {
@@ -69,10 +69,10 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indAvdod <- if (avdod %in% c('Ja', 'Nei')) {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
   indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
   # indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
-  indDiagnosegr <- if (diagnosegr[1] != '') {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
-  indDiagnose <- if (diagnose[1] != '') {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
-  indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
-  indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
+  indDiagnosegr <- if (diagnosegr[1] != -1) {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
+  indDiagnose <- if (diagnose[1] != -1) {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
+  indUndergr <- if (undergr[1] != -1) {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
+  indUndergr2 <- if (undergr2[1] != -1) {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
   indDebutAlder <- if (debutAlderFra != 0 | debutAlderTil != 120) {
     which(RegData$DebutAlder >= debutAlderFra & RegData$DebutAlder <= debutAlderTil)} else {indDebutAlder <- 1:Ninn}
