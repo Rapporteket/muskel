@@ -12,6 +12,6 @@ Encoding: UTF-8
 Depends: R (>= 3.0.2), rapbase
 Imports:
   xtable
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Suggests: knitr
 VignetteBuilder: knitr

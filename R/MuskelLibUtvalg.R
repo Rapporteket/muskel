@@ -11,7 +11,7 @@
 #' @export
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
-                         diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
+                         diagnose=-1, undergr=-1, undergr2=-1, avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
                          UtredningsaarTil=2100, debutAlderFra=0, debutAlderTil=120)
 {
   # Definerer intersect-operator
@@ -92,11 +92,11 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                  if (avdod %in% c('Ja', 'Nei')) {paste0('Inkluder avdøde: ', avdod)}, # Ikke korrekt for valg "Ja"
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  # if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
-                 if (diagnosegr[1] != '') {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
-                 if (diagnose[1] != ''){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
-                 if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
+                 if (diagnosegr[1] != -1) {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
+                 if (diagnose[1] != -1){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
+                 if (undergr[1] != -1){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
                                                                         collapse=', '))},
-                 if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
+                 if (undergr2[1] != -1){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
                                                                                 collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])},
                  if (debutAlderFra != 0 | debutAlderTil != 120) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' år')}

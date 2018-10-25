@@ -9,6 +9,8 @@
 
 ######## Last data ########################################
 library(muskel)
+library(tidyverse)
+library(kableExtra)
 
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
@@ -41,13 +43,14 @@ if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   rm(list=c('ForlopsData', 'RegDataLabel'))
+  reshID <- 101719
 }
 
 RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
-diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '')
+diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '-1')
 
 ######################################################################
 
@@ -56,31 +59,32 @@ library(shiny)
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                  tabPanel("Fordelingsfigurer",
-                          tabsetPanel(
-                            tabPanel("Figur",
-                                     sidebarLayout(
-                                       sidebarPanel(
-                                         selectInput(inputId = "valgtVar", label = "Velg variabel",
-                                                     choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
-                                         dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
-                                                   label = "F.o.m. dato", language="nb"),
-                                         dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
-                                                   label = "T.o.m. dato", language="nb"),
-                                         sliderInput(inputId="alder", label = "Alder", min = 0,
-                                                     max = 120, value = c(0, 120)),
-                                         selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
-                                                     choices = diagnosegrvalg, multiple = TRUE),
-                                         uiOutput(outputId = 'icd10_kntr')
-                                       ),
-                                       mainPanel(plotOutput("distPlot", height="auto"))
-                                     )
+                          sidebarLayout(
+                            sidebarPanel(
+                              selectInput(inputId = "valgtVar", label = "Velg variabel",
+                                          choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
+                              dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
+                                        label = "F.o.m. dato", language="nb"),
+                              dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
+                                        label = "T.o.m. dato", language="nb"),
+                              selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for",
+                                          choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
+                              sliderInput(inputId="alder", label = "Alder", min = 0,
+                                          max = 120, value = c(0, 120)),
+                              selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[5], label = "Velg diagnosegruppe(r)",
+                                          choices = diagnosegrvalg, multiple = TRUE),
+                              uiOutput(outputId = 'icd10_kntr'),
+                              sliderInput("mpg", "mpg Limit",
+                                          min = 11, max = 33, value = 20)
                             ),
-                            tabPanel("Tabell",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
+                            mainPanel(tabsetPanel(
+                              tabPanel("Figur",
+                                       plotOutput("Figur1", height="auto")),
+                              tabPanel("Tabell",
+                                       tableOutput("Tabell1"))
                             )
+                            )
+
                           )
                  ),
                  tabPanel("FigType 2",
@@ -148,16 +152,28 @@ server <- function(input, output, session) {
                                              choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
                                              multiple = TRUE)})
 
-  output$distPlot <- renderPlot({
+  output$Figur1 <- renderPlot({
 
     MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
-                     diagnosegr = input$diagnosegr)
+                     diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
 
   }, height = function() {
-    0.6*session$clientData$output_distPlot_width
+    1*session$clientData$output_Figur1_width
   }
   )
+
+  output$Tabell1 <- function() {
+    req(input$mpg)
+    mtcars %>%
+      mutate(car = rownames(.)) %>%
+      select(car, everything()) %>%
+      filter(mpg <= input$mpg) %>%
+      knitr::kable("html") %>%
+      kable_styling("striped", full_width = F) %>%
+      add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
+  }
+
 }
 
 # Run the application

@@ -9,7 +9,7 @@
 #'
 #' @export
 
-MuskelFigKumsum <- function(RegData, valgtVar='AntReg', datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
+MuskelFigKumsum <- function(RegData, valgtVar='AntReg', datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr=-1,
                              minald=0, maxald=120, erMann=99, outfile='', forlop = 99, avdod='',
                              enhetsUtvalg=0, preprosess=F, hentData=F, inkl_tittel=T)
 {

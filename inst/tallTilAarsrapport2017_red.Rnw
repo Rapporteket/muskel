@@ -94,8 +94,12 @@ erMann=99
 diagnoseSatt=99
 enhetsUtvalg=0
 preprosess=F
-diagnosegr <- ''
+diagnosegr <- -1
+diagnose <- -1
+undergr <- -1
+undergr2 <- -1
 forlop <- 99
+avdod=''
 
 if (valgtShus[1] == '') {
   shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])

@@ -6,8 +6,9 @@
 \usage{
 MuskelFigKumsum(RegData, valgtVar = "AntReg", datoFra = "2000-01-01",
   datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
-  maxald = 120, erMann = 99, outfile = "", forlop = 99, avdod = "",
-  enhetsUtvalg = 0, preprosess = F, hentData = F, inkl_tittel = T)
+  maxald = 120, erMann = 99, outfile = "", forlop = 99,
+  avdod = "", enhetsUtvalg = 0, preprosess = F, hentData = F,
+  inkl_tittel = T)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -44,8 +45,8 @@ til systemets default output device (som regel skjerm))}
 3: Annet}
 
 \item{enhetsUtvalg}{Lag figur for
-0: Hele landet
-1: Egen enhet mot resten av landet (Default)
+0: Hele landet (Default)
+1: Egen enhet mot resten av landet
 2: Egen enhet}
 
 \item{preprosess}{Preprosesser data

@@ -4,11 +4,11 @@
 \alias{MuskelUtvalg}
 \title{Gjør utvalg av dataene}
 \usage{
-MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0,
-  enhetsUtvalg, diagnosegr = "", forlop, diagnose = "", undergr = "",
-  undergr2 = "", avdod = "", fargepalett = "BlaaRapp", reshID,
-  UtredningsaarFra = 1900, UtredningsaarTil = 2100, debutAlderFra = 0,
-  debutAlderTil = 120)
+MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
+  egenavd = 0, enhetsUtvalg, diagnosegr = -1, forlop, diagnose = "",
+  undergr = "", undergr2 = "", avdod = "",
+  fargepalett = "BlaaRapp", reshID, UtredningsaarFra = 1900,
+  UtredningsaarTil = 2100, debutAlderFra = 0, debutAlderTil = 120)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -32,8 +32,8 @@ MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0,
 3: Bostatt i fylke}
 
 \item{enhetsUtvalg}{Lag figur for
-0: Hele landet
-1: Egen enhet mot resten av landet (Default)
+0: Hele landet (Default)
+1: Egen enhet mot resten av landet
 2: Egen enhet}
 
 \item{diagnosegr}{Diagnosegruppe
