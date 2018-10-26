@@ -87,8 +87,8 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
     ## Forbered variabler for fremstilling i figur
     PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar, inkl_tittel=inkl_tittel)
     RegData <- PlotParams$RegData
-
     PlotParams$RegData <- NA
+
     if (enhetsUtvalg==1) {
       if (egenavd ==3) {
         ind <- list(Hoved=which(RegData$Fylke == MuskelUtvalg$fylke), Rest=which(RegData$Fylke != MuskelUtvalg$fylke))
@@ -101,10 +101,17 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
       AntRest <- table(RegData$VariabelGr[ind$Rest])
       Nrest <- sum(AntRest)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*AntRest/Nrest
+      # Antall <- merge(as.data.frame(AntHoved), as.data.frame(AntRest), by = 'Var1', all = T)
+      Antall <- cbind(AntHoved, AntRest)
+      N_ut <- cbind(NHoved=rep(NHoved, dim(Antall)[1]), Nrest=rep(Nrest, dim(Antall)[1]))
+      Antall <- as.data.frame(cbind(Antall, N_ut))
     } else {
       AntHoved <- table(RegData$VariabelGr)
       NHoved <- sum(AntHoved)
       Andeler$Hoved <- 100*AntHoved/NHoved
+      # Antall <- as.data.frame(AntHoved)
+      N_ut <- rep(NHoved, dim(AntHoved)[1])
+      Antall <- as.data.frame(cbind(AntHoved, NHoved=N_ut))
     }
   }
 
@@ -119,6 +126,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
       AntRest <- PlotParams2$AntVar
       Nrest <- max(PlotParams2$NVar, na.rm=T)	#length(indRest)- Kan inneholde NA
       Andeler$Rest <- 100*PlotParams2$AntVar/PlotParams2$NVar
+      Antall <- data.frame(AntHoved, AntRest, NHoved=PlotParams$NVar, Nrest = PlotParams2$NVar)
       rm(PlotParams2)
     } else {
       PlotParams <- MuskelPrepVar(RegData, valgtVar, inkl_tittel=inkl_tittel)
@@ -128,6 +136,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
         NHoved <- sum(PlotParams$NVar, na.rm=T)
       }
       Andeler$Hoved <- 100*PlotParams$AntVar/PlotParams$NVar
+      Antall <- data.frame(AntHoved, NHoved=PlotParams$NVar)
     }
   }   #end sjekk om figuren inneholder flere variable
 
@@ -226,6 +235,9 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
     par('fig'=c(0, 1, 0, 1))
 
     if ( outfile != '') {dev.off()}
+
+    utData <- list(tittel = tittel, utvalgTxt = utvalgTxt, Andeler = Andeler, Antall = Antall)
+    return(invisible(utData))
 
   }
 

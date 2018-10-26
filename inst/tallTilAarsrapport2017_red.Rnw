@@ -71,7 +71,7 @@ rm(list=c('ForlopsData', 'RegDataLabel'))
 
 # RegData <- MuskelPreprosess(RegData=RegData)
 #
-reshID <- 601159
+reshID <- 101719
 datoFra='2008-01-01'
 datoTil='2017-12-31'
 Rapportaar <- 2017
