@@ -81,7 +81,9 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                               tabPanel("Figur",
                                        plotOutput("Figur1", height="auto")),
                               tabPanel("Tabell",
-                                       tableOutput("Tabell1"))
+                                       tableOutput("Tabell1")),
+                              tabPanel("Tabell 2",
+                                       tableOutput("Tabell2"))
                             )
                             )
 
@@ -164,11 +166,41 @@ server <- function(input, output, session) {
   )
 
   output$Tabell1 <- function() {
+    TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+                                   maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+                                   diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+
+    if (input$enhetsUtvalg == 1) {
+      Tabell1 <- TabellData$Antall %>%
+        mutate(Kategori = rownames(.)) %>%
+        select(Kategori, everything()) %>%
+        mutate(AndelHoved = 100*AntHoved/NHoved) %>%
+        mutate(AndelRest= 100*AntRest/Nrest)
+      Tabell1 <- Tabell1[, c(1,2,4,6,3,5,7)]
+      names(Tabell1) <- c('Kategori', 'Antall', 'N', 'Andel', 'Antall', 'N', 'Andel')
+      Tabell1 %>% knitr::kable("html", digits = c(0,0,0,1,0,0,1)) %>%
+        kable_styling("hover", full_width = F) %>%
+        add_header_above(c(" ", "Din avdeling" = 3, "Landet forøvrig" = 3))
+    } else {
+      Tabell1 <- TabellData$Antall %>%
+        mutate(Kategori = rownames(.)) %>%
+        select(Kategori, everything()) %>%
+        mutate(AndelHoved = 100*AntHoved/NHoved)
+      names(Tabell1) <- c('Kategori', 'Antall', 'N', 'Andel')
+      Tabell1 %>%
+        knitr::kable("html", digits = c(0,0,0,1)) %>%
+        kable_styling("hover", full_width = F)
+    }
+
+  }
+
+
+  output$Tabell2 <- function() {
     req(input$mpg)
     mtcars %>%
       mutate(car = rownames(.)) %>%
       select(car, everything()) %>%
-      filter(mpg <= input$mpg) %>%
+      filter(mpg <= 20) %>%
       knitr::kable("html") %>%
       kable_styling("striped", full_width = F) %>%
       add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
