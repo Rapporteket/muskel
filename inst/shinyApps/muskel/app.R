@@ -43,8 +43,9 @@ if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   rm(list=c('ForlopsData', 'RegDataLabel'))
-  reshID <- 101719
+
 }
+reshID <- 101719
 
 RegData <- MuskelPreprosess(RegData=RegData)
 
