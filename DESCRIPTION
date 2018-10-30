@@ -11,7 +11,7 @@ LazyData: TRUE
 Encoding: UTF-8
 Depends: R (>= 3.0.2), rapbase
 Imports:
-  xtable
+  xtable, kableExtra
 RoxygenNote: 6.1.0
 Suggests: knitr
 VignetteBuilder: knitr
