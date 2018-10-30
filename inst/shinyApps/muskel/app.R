@@ -81,7 +81,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                               tabPanel("Figur",
                                        plotOutput("Figur1", height="auto")),
                               tabPanel("Tabell",
-                                       tableOutput("Tabell1")),
+                                       tableOutput("Tabell1"), downloadButton("lastNed", "Last ned")),
                               tabPanel("Tabell 2",
                                        tableOutput("Tabell2"))
                             )
@@ -104,34 +104,6 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                                      )
                             ),
                             tabPanel("Report 2c",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            )
-                          )
-                 ),
-                 tabPanel("FigType 3",
-                          tabsetPanel(
-                            tabPanel("Report 3a",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            ),
-                            tabPanel("Report 3b",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            ),
-                            tabPanel("Report 3c",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            ),
-                            tabPanel("Report 3d",
                                      sidebarLayout(
                                        sidebarPanel(),
                                        mainPanel()
@@ -165,11 +137,15 @@ server <- function(input, output, session) {
   }
   )
 
-  output$Tabell1 <- function() {
+  tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                                    maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
                                    diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+  })
 
+  output$Tabell1 <- function() {
+
+    TabellData <- tabellReager()
     if (input$enhetsUtvalg == 1) {
       Tabell1 <- TabellData$Antall %>%
         mutate(Kategori = rownames(.)) %>%
@@ -194,6 +170,30 @@ server <- function(input, output, session) {
 
   }
 
+  output$lastNed <- downloadHandler(
+    filename = function(){
+      paste0(input$valgtVar, Sys.time(), '.csv')
+    },
+
+    content = function(file){
+      TabellData <- tabellReager()
+      if (input$enhetsUtvalg == 1) {
+        Tabell1 <- TabellData$Antall %>%
+          mutate(Kategori = rownames(.)) %>%
+          select(Kategori, everything()) %>%
+          mutate(AndelHoved = 100*AntHoved/NHoved) %>%
+          mutate(AndelRest= 100*AntRest/Nrest)
+        Tabell1 <- Tabell1[, c(1,2,4,6,3,5,7)]
+      } else {
+        Tabell1 <- TabellData$Antall %>%
+          mutate(Kategori = rownames(.)) %>%
+          select(Kategori, everything()) %>%
+          mutate(AndelHoved = 100*AntHoved/NHoved)
+      }
+      write.csv2(Tabell1, file, row.names = F)
+    }
+  )
+
 
   output$Tabell2 <- function() {
     req(input$mpg)
@@ -211,94 +211,3 @@ server <- function(input, output, session) {
 # Run the application
 shinyApp(ui = ui, server = server)
 
-
-
-#
-# # Define UI for application that draws a histogram
-# ui <- navbarPage(
-#   title = 'MUSKELREGISTERET',
-#   # titlePanel('Muskelregisteret'),
-#
-#   tabPanel(
-#     "Fordelingsfigurer",
-#     # Sidebar with a slider input for number of bins
-#     sidebarLayout(
-#       sidebarPanel(
-# selectInput(inputId = "valgtVar", label = "Velg variabel",
-#             choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
-# dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
-#           label = "F.o.m. dato", language="nb"),
-# dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
-#           label = "T.o.m. dato", language="nb"),
-# sliderInput(inputId="alder", label = "Alder", min = 0,
-#             max = 120, value = c(0, 120)),
-# selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
-#             choices = diagnosegrvalg, multiple = TRUE),
-# uiOutput(outputId = 'icd10_kntr')
-#       ),
-#
-#       # Show a plot of the generated distribution
-#       mainPanel(
-#         plotOutput("distPlot", height="auto")
-#       )
-#     )
-#
-#
-#   )
-#
-# )
-#
-#
-# # Define server logic required to draw a histogram
-# server <- function(input, output, session) {
-#
-# output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
-#                                           choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
-#                                           multiple = TRUE)})
-#
-# output$distPlot <- renderPlot({
-#
-#   MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
-#                    maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
-#                    diagnosegr = input$diagnosegr)
-#
-# }, height = function() {
-#   session$clientData$output_distPlot_width
-# }
-# )
-#
-#
-# }
-#
-# # Run the application
-# shinyApp(ui = ui, server = server)
-
-
-
-
-#
-#       tabPanel('Noe annet',
-#
-#                # Sidebar with a slider input for number of bins
-#                sidebarLayout(
-#                  sidebarPanel(
-#                    selectInput(inputId = "valgtVar1", label = "Velg variabel",
-#                                choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning'))
-#                    # dateInput(inputId = 'datoFra1', value = '2008-01-01', min = '2008-01-01',
-#                    #           label = "F.o.m. dato", language="nb"),
-#                    # dateInput(inputId = 'datoTil1', value = Sys.Date(), min = '2012-01-01',
-#                    #           label = "T.o.m. dato", language="nb"),
-#                    # sliderInput(inputId="alder1", label = "Alder", min = 0,
-#                    #             max = 120, value = c(0, 120)),
-#                    # selectInput(inputId = "diagnosegr1", selected = diagnosegrvalg[1], label = "Velg diagnosegruppe(r)",
-#                    #             choices = diagnosegrvalg, multiple = TRUE)
-#                  ),
-#
-#                  # Show a plot of the generated distribution
-#                  mainPanel(
-#                    plotOutput("distPlot")
-#                  )
-#                )
-#       )
-#
-#     )
