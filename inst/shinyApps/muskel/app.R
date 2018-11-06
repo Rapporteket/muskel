@@ -75,14 +75,15 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                               selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[5], label = "Velg diagnosegruppe(r)",
                                           choices = diagnosegrvalg, multiple = TRUE),
                               uiOutput(outputId = 'icd10_kntr'),
-                              sliderInput("mpg", "mpg Limit",
-                                          min = 11, max = 33, value = 20)
+                              sliderInput("mpg", "mpg Limit", min = 11, max = 33, value = 20),
+                              selectInput(inputId = "bildeformat", label = "Velg bildeformat",
+                                          choices = c('pdf', 'png', 'jpg', 'wmf', 'bmp', 'tif'))
                             ),
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
-                                       plotOutput("Figur1", height="auto")),
+                                       plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                               tabPanel("Tabell",
-                                       tableOutput("Tabell1"), downloadButton("lastNed", "Last ned")),
+                                       tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
                               tabPanel("Tabell 2",
                                        tableOutput("Tabell2"))
                             )
@@ -192,6 +193,18 @@ server <- function(input, output, session) {
           mutate(AndelHoved = 100*AntHoved/NHoved)
       }
       write.csv2(Tabell1, file, row.names = F)
+    }
+  )
+
+  output$lastNedBilde <- downloadHandler(
+    filename = function(){
+      paste0(input$valgtVar, Sys.time(), '.', input$bildeformat)
+    },
+
+    content = function(file){
+      MuskelFigAndeler(RegData = RegData, outfile = file, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+                       maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+                       diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
     }
   )
 
