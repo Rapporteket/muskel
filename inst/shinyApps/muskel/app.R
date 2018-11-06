@@ -77,7 +77,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                               uiOutput(outputId = 'icd10_kntr'),
                               sliderInput("mpg", "mpg Limit", min = 11, max = 33, value = 20),
                               selectInput(inputId = "bildeformat", label = "Velg bildeformat",
-                                          choices = c('pdf', 'png', 'jpg', 'wmf', 'bmp', 'tif'))
+                                          choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
                             ),
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
@@ -134,10 +134,11 @@ server <- function(input, output, session) {
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
                      diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
 
-  }, height = function() {
-    1*session$clientData$output_Figur1_width
-  }
-  )
+  }, width = 700, height = 700)
+  # , height = function() {
+  #   1*session$clientData$output_Figur1_width
+  # }
+  # )
 
   tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
