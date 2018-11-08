@@ -82,6 +82,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             ),
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
+                                       textOutput("brukerrolle"),
                                        plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                               tabPanel("Tabell",
                                        tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
@@ -121,17 +122,19 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      # bruker <- function() {rapbase::getShinyUserRole(session, testCase = TRUE)}
-      bruker <- function() {'LC'}
+      bruker <- function() {rapbase::getShinyUserRole(session, TRUE)}
+      # bruker <- function() {'LC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
   } else {
-    bruker <- function() {'LC'}
+    bruker <- function() {'SC'}
     reshID <- 101719
   }
   if (bruker() != 'SC') {
     shinyjs::hide(id = 'diagnoser')
   }
+
+  output$brukerrolle <- renderText(bruker())
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
