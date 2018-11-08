@@ -45,7 +45,7 @@ if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   reshID <- 101719
 }
 
-
+reshID <- 101719
 RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
@@ -123,12 +123,12 @@ server <- function(input, output, session) {
 
 
   # Vis eller skjul brukerkontroller avhengig av brukerrolle
-  if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-    bruker <- rapbase::getShinyUserRole(session, testCase = TRUE)
-    reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
-  } else {
-    bruker <- 'LC'
-  }
+  # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
+  #   bruker <- rapbase::getShinyUserRole(session, testCase = TRUE)
+  #   reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
+  # } else {
+  #   bruker <- 'LC'
+  # }
   # if (bruker != 'SC') {
   #   shinyjs::hide(id = 'diagnoser')
   # }
