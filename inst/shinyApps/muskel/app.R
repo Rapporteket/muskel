@@ -83,6 +83,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
                                        textOutput("brukerrolle"),
+                                       textOutput("kontekst"),
                                        plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                               tabPanel("Tabell",
                                        tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
@@ -135,6 +136,7 @@ server <- function(input, output, session) {
   }
 
   output$brukerrolle <- renderText(bruker())
+  output$kontekst <- renderText(context)
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
