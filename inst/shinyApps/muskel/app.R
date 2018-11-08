@@ -123,19 +123,19 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      bruker <- function() {rapbase::getShinyUserRole(session, TRUE)}
-      # bruker <- function() {'LC'}
+      # bruker <- function() {rapbase::getShinyUserRole(session, TRUE)}
+      # bruker <- function() {'SC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
   # } else {
   #   bruker <- function() {'SC'}
   #   reshID <- 101719
   # }
-  if (bruker() != 'SC') {
-    shinyjs::hide(id = 'diagnoser')
-  }
+  # if (bruker() != 'SC') {
+  #   shinyjs::hide(id = 'diagnoser')
+  # }
 
-  output$brukerrolle <- renderText(bruker())
+  # output$brukerrolle <- renderText(bruker())
   # output$kontekst <- renderText(context)
 
 
