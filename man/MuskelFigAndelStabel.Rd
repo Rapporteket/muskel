@@ -5,9 +5,9 @@
 \title{Lag grupperte stabelplot for valgte variabler}
 \usage{
 MuskelFigAndelStabel(RegData, valgtVar, datoFra = "2000-01-01",
-  datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
+  datoTil = "2050-01-01", reshID, diagnosegr = -1, minald = 0,
   maxald = 120, erMann = 99, outfile = "", forlop = 99,
-  diagnose = "", undergr = "", undergr2 = "", enhetsUtvalg = 0,
+  diagnose = -1, undergr = -1, undergr2 = -1, enhetsUtvalg = 0,
   egenavd = 0, preprosess = F, hentData = F, incl_N = F,
   avdod = "", inkl_tittel = T)
 }

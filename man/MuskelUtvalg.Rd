@@ -5,8 +5,8 @@
 \title{Gjør utvalg av dataene}
 \usage{
 MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
-  egenavd = 0, enhetsUtvalg, diagnosegr = -1, forlop, diagnose = "",
-  undergr = "", undergr2 = "", avdod = "",
+  egenavd = 0, enhetsUtvalg, diagnosegr = -1, forlop, diagnose = -1,
+  undergr = -1, undergr2 = -1, avdod = "",
   fargepalett = "BlaaRapp", reshID, UtredningsaarFra = 1900,
   UtredningsaarTil = 2100, debutAlderFra = 0, debutAlderTil = 120)
 }
