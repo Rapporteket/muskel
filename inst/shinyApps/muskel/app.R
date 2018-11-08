@@ -15,9 +15,10 @@ library(kableExtra)
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData <- MuskelHentRegData()
+  reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
 
 } else {
-  rm(list = ls())
+  # rm(list = ls())
   ForlopsData <- read.table('I:/muskel/ForlopsOversikt2018-09-25 08-59-11.txt', header=TRUE, sep=';')
   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                  "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
@@ -43,15 +44,16 @@ if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   rm(list=c('ForlopsData', 'RegDataLabel'))
-
+  reshID <- 101719
 }
-reshID <- 101719
+
 
 RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
 diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '-1')
+varvalg <- c('PeriodiskeParalyser', 'Alder', 'Utdanning')
 
 ######################################################################
 
@@ -60,8 +62,9 @@ library(shiny)
 # Define UI for application that draws a histogram
 ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                  tabPanel("Fordelingsfigurer",
-                          sidebarLayout(
+                          # sidebarLayout(
                             sidebarPanel(
+                              shinyjs::useShinyjs(),
                               selectInput(inputId = "valgtVar", label = "Velg variabel",
                                           choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
                               dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
@@ -71,11 +74,12 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                               selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for",
                                           choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
                               sliderInput(inputId="alder", label = "Alder", min = 0,
-                                          max = 120, value = c(0, 120)),
-                              selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[5], label = "Velg diagnosegruppe(r)",
-                                          choices = diagnosegrvalg, multiple = TRUE),
-                              uiOutput(outputId = 'icd10_kntr'),
-                              sliderInput("mpg", "mpg Limit", min = 11, max = 33, value = 20),
+                                            max = 120, value = c(0, 120)),
+                              div(id = 'diagnoser',
+                                  selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[5], label = "Velg diagnosegruppe(r)",
+                                              choices = diagnosegrvalg, multiple = TRUE),
+                                  uiOutput(outputId = 'icd10_kntr')
+                              ),
                               selectInput(inputId = "bildeformat", label = "Velg bildeformat",
                                           choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
                             ),
@@ -89,7 +93,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             )
                             )
 
-                          )
+                          # )
                  ),
                  tabPanel("FigType 2",
                           tabsetPanel(
@@ -119,6 +123,17 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
+
+  # Vis eller skjul brukerkontroller avhengig av brukerrolle
+  if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
+    bruker <- rapbase::getShinyUserRole(session, testCase = TRUE)
+  } else {
+    bruker <- 'SC'
+  }
+  if (bruker == 'LC') {
+    shinyjs::hide(id = 'diagnoser')
+  }
+
   output$sampleUcControl <- renderUI({
     selectInput(inputId = "sampleUc", label = "Sample user ctrl",
                 choices = c("How", "it", "will", "look"))
@@ -135,7 +150,7 @@ server <- function(input, output, session) {
                      diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
 
   }, width = 700, height = 700)
-  # , height = function() {
+  # , height = function() {                       # Hvis du ønsker automatisk resizing
   #   1*session$clientData$output_Figur1_width
   # }
   # )
@@ -210,16 +225,16 @@ server <- function(input, output, session) {
   )
 
 
-  output$Tabell2 <- function() {
-    req(input$mpg)
-    mtcars %>%
-      mutate(car = rownames(.)) %>%
-      select(car, everything()) %>%
-      filter(mpg <= 20) %>%
-      knitr::kable("html") %>%
-      kable_styling("striped", full_width = F) %>%
-      add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
-  }
+  # output$Tabell2 <- function() {
+  #   req(input$mpg)
+  #   mtcars %>%
+  #     mutate(car = rownames(.)) %>%
+  #     select(car, everything()) %>%
+  #     filter(mpg <= 20) %>%
+  #     knitr::kable("html") %>%
+  #     kable_styling("striped", full_width = F) %>%
+  #     add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
+  # }
 
 }
 
