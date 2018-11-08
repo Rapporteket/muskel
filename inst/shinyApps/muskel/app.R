@@ -123,7 +123,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      # bruker <- function() {rapbase::getShinyUserRole(session, TRUE)}
+      rapbase::getShinyUserRole(session, TRUE)
       # bruker <- function() {'SC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
