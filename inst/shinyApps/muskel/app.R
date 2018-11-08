@@ -15,8 +15,6 @@ library(kableExtra)
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData <- MuskelHentRegData()
-  reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
-
 } else {
   # rm(list = ls())
   ForlopsData <- read.table('I:/muskel/ForlopsOversikt2018-09-25 08-59-11.txt', header=TRUE, sep=';')
@@ -127,10 +125,11 @@ server <- function(input, output, session) {
   # Vis eller skjul brukerkontroller avhengig av brukerrolle
   if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
     bruker <- rapbase::getShinyUserRole(session, testCase = TRUE)
+    reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
   } else {
-    bruker <- 'SC'
+    bruker <- 'LC'
   }
-  if (bruker == 'LC') {
+  if (bruker != 'SC') {
     shinyjs::hide(id = 'diagnoser')
   }
 
