@@ -122,21 +122,21 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-  if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
+  # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
       bruker <- function() {rapbase::getShinyUserRole(session, TRUE)}
       # bruker <- function() {'LC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
-  } else {
-    bruker <- function() {'SC'}
-    reshID <- 101719
-  }
+  # } else {
+  #   bruker <- function() {'SC'}
+  #   reshID <- 101719
+  # }
   if (bruker() != 'SC') {
     shinyjs::hide(id = 'diagnoser')
   }
 
   output$brukerrolle <- renderText(bruker())
-  output$kontekst <- renderText(context)
+  # output$kontekst <- renderText(context)
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
