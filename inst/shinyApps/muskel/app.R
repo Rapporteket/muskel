@@ -129,9 +129,9 @@ server <- function(input, output, session) {
   } else {
     bruker <- 'LC'
   }
-  if (bruker != 'SC') {
-    shinyjs::hide(id = 'diagnoser')
-  }
+  # if (bruker != 'SC') {
+  #   shinyjs::hide(id = 'diagnoser')
+  # }
 
   output$sampleUcControl <- renderUI({
     selectInput(inputId = "sampleUc", label = "Sample user ctrl",
