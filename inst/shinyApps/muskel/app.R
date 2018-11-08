@@ -42,10 +42,9 @@ if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   rm(list=c('ForlopsData', 'RegDataLabel'))
-  reshID <- 101719
+  # reshID <- 101719
 }
 
-reshID <- 101719
 RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
@@ -121,22 +120,18 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
+  if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
+      bruker <- reactive({rapbase::getShinyUserRole(session, testCase = TRUE)})
+      reshID <- as.numeric(reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)}))
+      # reshID <- 101719
+  } else {
+    bruker <- 'LC'
+    reshID <- 101719
+  }
+  if (bruker != 'SC') {
+    shinyjs::hide(id = 'diagnoser')
+  }
 
-  # Vis eller skjul brukerkontroller avhengig av brukerrolle
-  # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-  #   bruker <- rapbase::getShinyUserRole(session, testCase = TRUE)
-  #   reshID <- as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
-  # } else {
-  #   bruker <- 'LC'
-  # }
-  # if (bruker != 'SC') {
-  #   shinyjs::hide(id = 'diagnoser')
-  # }
-
-  output$sampleUcControl <- renderUI({
-    selectInput(inputId = "sampleUc", label = "Sample user ctrl",
-                choices = c("How", "it", "will", "look"))
-  })
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
                                              choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
