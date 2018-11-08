@@ -122,13 +122,13 @@ server <- function(input, output, session) {
 
   if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
       bruker <- reactive({rapbase::getShinyUserRole(session, testCase = TRUE)})
-      reshID <- as.numeric(reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)}))
-      # reshID <- 101719
+      # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
+      reshID <- 101719
   } else {
-    bruker <- 'LC'
+    bruker <- function() {'LC'}
     reshID <- 101719
   }
-  if (bruker != 'SC') {
+  if (bruker() != 'SC') {
     shinyjs::hide(id = 'diagnoser')
   }
 
