@@ -82,7 +82,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             ),
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
-                                       textOutput("test_resh"),
+                                       textOutput("testSessionObj"),
                                        plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                               tabPanel("Tabell",
                                        tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
@@ -121,12 +121,12 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-  # output$testSessionObj <- renderText({
-  #   paste("username:", rapbase::getShinyUserName(session, testCase = TRUE),
-  #         "groups:", rapbase::getShinyUserGroups(session, testCase = TRUE),
-  #         "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
-  #         "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
-  # })
+  output$testSessionObj <- renderText({
+    paste("username:", rapbase::getShinyUserName(session, testCase = TRUE),
+          "groups:", rapbase::getShinyUserGroups(session, testCase = TRUE),
+          "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
+          "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
+  })
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
       # output$test_resh <- renderText({
       #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
