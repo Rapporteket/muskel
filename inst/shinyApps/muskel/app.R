@@ -111,8 +111,13 @@ server <- function(input, output, session) {
   #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
   #   })
   # bruker <- function() {'SC'}
-  # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
-  reshID <- 101719
+  reshID <- reactive({
+    as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
+    if (!(context == "TEST" | context == "QA" | context == "PRODUCTION")) {
+      101719
+    }
+  })
+
   # } else {
   #   bruker <- function() {'SC'}
   #   reshID <- 101719
@@ -187,7 +192,7 @@ server <- function(input, output, session) {
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                     reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+                     reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
   # , height = function() {                       # Hvis du ønsker automatisk resizing
   #   1*session$clientData$output_Figur1_width
@@ -202,7 +207,7 @@ server <- function(input, output, session) {
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                                    undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                                   reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+                                   reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
@@ -264,7 +269,7 @@ server <- function(input, output, session) {
     content = function(file){
       MuskelFigAndeler(RegData = RegData, outfile = file, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                        maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
-                       diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+                       diagnosegr = as.numeric(input$diagnosegr), reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
     }
   )
 
