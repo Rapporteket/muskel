@@ -49,7 +49,7 @@ RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
-diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '-1')
+# diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '-1')
 varvalg <- c('PeriodiskeParalyser', 'Alder', 'Utdanning')
 
 ######################################################################
@@ -60,59 +60,35 @@ library(shiny)
 ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                  tabPanel("Fordelingsfigurer",
                           # sidebarLayout(
-                            sidebarPanel(
-                              shinyjs::useShinyjs(),
-                              selectInput(inputId = "valgtVar", label = "Velg variabel",
-                                          choices = c('PeriodiskeParalyser', 'Alder', 'Utdanning')),
-                              dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
-                                        label = "F.o.m. dato", language="nb"),
-                              dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
-                                        label = "T.o.m. dato", language="nb"),
-                              selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for",
-                                          choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
-                              sliderInput(inputId="alder", label = "Alder", min = 0,
-                                            max = 120, value = c(0, 120)),
-                              div(id = 'diagnoser',
-                                  selectInput(inputId = "diagnosegr", selected = diagnosegrvalg[5], label = "Velg diagnosegruppe(r)",
-                                              choices = diagnosegrvalg, multiple = TRUE),
-                                  uiOutput(outputId = 'icd10_kntr')
-                              ),
-                              selectInput(inputId = "bildeformat", label = "Velg bildeformat",
-                                          choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
-                            ),
-                            mainPanel(tabsetPanel(
-                              tabPanel("Figur",
-                                       textOutput("testSessionObj"),
-                                       plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
-                              tabPanel("Tabell",
-                                       tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
-                              tabPanel("Tabell 2",
-                                       tableOutput("Tabell2"))
-                            )
-                            )
-
-                          # )
-                 ),
-                 tabPanel("FigType 2",
-                          tabsetPanel(
-                            tabPanel("Report 2a",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            ),
-                            tabPanel("Report 2b",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            ),
-                            tabPanel("Report 2c",
-                                     sidebarLayout(
-                                       sidebarPanel(),
-                                       mainPanel()
-                                     )
-                            )
+                          sidebarPanel(
+                            shinyjs::useShinyjs(),
+                            selectInput(inputId = "valgtVar", label = "Velg variabel",
+                                        choices = c('Alder', 'PeriodiskeParalyser', 'Utdanning')),
+                            dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
+                                      label = "F.o.m. dato", language="nb"),
+                            dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
+                                      label = "T.o.m. dato", language="nb"),
+                            selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for",
+                                        choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
+                            sliderInput(inputId="alder", label = "Alder", min = 0,
+                                        max = 120, value = c(0, 120)),
+                            selectInput(inputId = "diagnosegr", label = "Velg diagnosegruppe(r)",
+                                        choices = diagnosegrvalg, multiple = TRUE),
+                            uiOutput(outputId = 'icd10_kntr'),
+                            uiOutput(outputId = 'undergruppe1'),
+                            uiOutput(outputId = 'undergruppe2'),
+                            selectInput(inputId = "bildeformat", label = "Velg bildeformat",
+                                        choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+                          ),
+                          mainPanel(tabsetPanel(
+                            tabPanel("Figur",
+                                     textOutput("testSessionObj"),
+                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
+                            tabPanel("Tabell",
+                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
+                            tabPanel("Tabell 2",
+                                     tableOutput("Tabell2"))
+                          )
                           )
                  )
 )
@@ -127,45 +103,106 @@ server <- function(input, output, session) {
           "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
           "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
   })
+
+
+
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      # output$test_resh <- renderText({
-      #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
-      #   })
-      # bruker <- function() {'SC'}
-      # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
-      reshID <- 101719
+  # output$test_resh <- renderText({
+  #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
+  #   })
+  # bruker <- function() {'SC'}
+  # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
+  reshID <- 101719
   # } else {
   #   bruker <- function() {'SC'}
   #   reshID <- 101719
   # }
   # if (bruker() != 'SC') {
-  #   shinyjs: :hide(id = 'diagnoser')
+  #   shinyjs::hide(id = 'diagnoser')
   # }
 
-  # output$brukerrolle <- renderText(bruker())
-  # output$kontekst <- renderText(context)
+
+
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
-                                             choices = sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)])),
+                                             choices = if (is.null(input$diagnosegr)){
+                                               "-1"
+                                             } else {
+                                               sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)]))
+                                             },
                                              multiple = TRUE)})
+
+  output$undergruppe1 <- renderUI({selectInput(inputId = "undergruppe1_verdi", label = "Velg undergruppe(r)",
+                                               choices = if (is.null(input$icd10_kntr_verdi)){
+                                                 setNames(-1, 'Ingen')
+                                               } else {
+                                                 setNames(sort(unique(RegData$Undergruppe[RegData$DiagICD10 %in% input$icd10_kntr_verdi])),
+                                                          RegData$Undergruppe_label[match(sort(
+                                                            unique(RegData$Undergruppe[RegData$DiagICD10 %in% input$icd10_kntr_verdi])),
+                                                            RegData$Undergruppe)])
+                                               },
+                                               multiple = TRUE)})
+
+  output$undergruppe2 <- renderUI({selectInput(inputId = "undergruppe2_verdi", label = "Velg undergruppe(r) nivå 2",
+                                               choices = if (is.null(input$undergruppe1_verdi)){
+                                                 setNames(-1, 'Ingen')
+                                               } else {
+                                                 setNames(sort(unique(RegData$Undergruppe2[RegData$Undergruppe %in% input$undergruppe1_verdi])),
+                                                          RegData$Undergruppe2_label[match(sort(
+                                                            unique(RegData$Undergruppe2[RegData$Undergruppe %in% input$undergruppe1_verdi])),
+                                                            RegData$Undergruppe2)])
+                                               },
+                                               multiple = TRUE)})
+
+  observe(
+    if (is.null(input$diagnosegr)) {
+      shinyjs::hide(id = 'icd10_kntr')
+    } else {
+      shinyjs::show(id = 'icd10_kntr')
+    }
+  )
+  observe(
+    if (is.null(input$icd10_kntr_verdi)){
+      shinyjs::hide(id = 'undergruppe1')
+    } else {
+      shinyjs::show(id = 'undergruppe1')
+    }
+  )
+  observe(
+    if (is.null(input$undergruppe1_verdi)){
+      shinyjs::hide(id = 'undergruppe2')
+    } else {
+      shinyjs::show(id = 'undergruppe2')
+    }
+  )
+
+
 
   output$Figur1 <- renderPlot({
 
     MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
-                     diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
-
+                     diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
+                     diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
+                     undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
+                     undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
+                     reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
   # , height = function() {                       # Hvis du ønsker automatisk resizing
   #   1*session$clientData$output_Figur1_width
   # }
   # )
+  # , diagnose = input$icd10_kntr_verdi
 
   tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                                    maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
-                                   diagnosegr = as.numeric(input$diagnosegr), reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
+                                   diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
+                                   diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
+                                   undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
+                                   undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
+                                   reshID = reshID, enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
