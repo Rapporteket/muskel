@@ -121,12 +121,12 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-  output$testSessionObj <- renderText({
-    paste("username:", rapbase::getShinyUserName(session, testCase = TRUE),
-          "groups:", rapbase::getShinyUserGroups(session, testCase = TRUE),
-          "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
-          "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
-  })
+  # output$testSessionObj <- renderText({
+  #   paste("username:", rapbase::getShinyUserName(session, testCase = TRUE),
+  #         "groups:", rapbase::getShinyUserGroups(session, testCase = TRUE),
+  #         "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
+  #         "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
+  # })
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
       # output$test_resh <- renderText({
       #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
