@@ -123,7 +123,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      # rapbase::getShinyUserReshId(session, TRUE)
+      output$test_resh <- renderText({rapbase::getShinyUserReshId(session, TRUE)})
       # bruker <- function() {'SC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
@@ -132,7 +132,7 @@ server <- function(input, output, session) {
   #   reshID <- 101719
   # }
   # if (bruker() != 'SC') {
-  #   shinyjs::hide(id = 'diagnoser')
+  #   shinyjs: :hide(id = 'diagnoser')
   # }
 
   # output$brukerrolle <- renderText(bruker())
