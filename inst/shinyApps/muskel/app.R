@@ -82,8 +82,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             ),
                             mainPanel(tabsetPanel(
                               tabPanel("Figur",
-                                       textOutput("brukerrolle"),
-                                       textOutput("kontekst"),
+                                       textOutput("test_resh"),
                                        plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                               tabPanel("Tabell",
                                        tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
@@ -123,7 +122,9 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-      output$test_resh <- renderText({rapbase::getShinyUserReshId(session, TRUE)})
+      output$test_resh <- renderText({
+        paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
+        })
       # bruker <- function() {'SC'}
       # reshID <- reactive({rapbase::getShinyUserReshId(session, testCase = TRUE)})
       reshID <- 101719
