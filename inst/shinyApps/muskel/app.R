@@ -83,6 +83,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      textOutput("testSessionObj"),
+                                     textOutput("testSessionObj_2"),
                                      plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
@@ -117,6 +118,10 @@ server <- function(input, output, session) {
       101719
     }
   }
+
+  output$testSessionObj_2 <- renderText({
+    paste0("reshId: ", reshID())
+  })
 
   # } else {
   #   bruker <- function() {'SC'}
