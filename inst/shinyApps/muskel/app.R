@@ -13,7 +13,8 @@ library(tidyverse)
 library(kableExtra)
 
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
-if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
+onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
+if (onServer) {
   RegData <- MuskelHentRegData()
 } else {
   # rm(list = ls())
@@ -105,25 +106,22 @@ server <- function(input, output, session) {
           "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
   })
 
-
-
-  # if (context == "TEST" | context == "QA" | context == "PRODUCTION") {
-  # output$test_resh <- renderText({
-  #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
-  #   })
-  # bruker <- function() {'SC'}
   reshID <- reactive({
-    ifelse(context == "TEST" | context == "QA" | context == "PRODUCTION",
-           as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)), 101719)
-    # as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
-    # if (!(context == "TEST" | context == "QA" | context == "PRODUCTION")) {
-    #   101719
+    ifelse(onServer, as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)), 101719)
   })
-  # }
+  userRole <- reactive({
+    ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
+  })
 
   output$testSessionObj_2 <- renderText({
-    paste0("reshId: ", reshID(), ', context: ', context == "TEST" | context == "QA" | context == "PRODUCTION")
+    paste0("reshId: ", reshID(), ', context: ', context, ', brukerrolle: ', userRole())
   })
+
+  observe(
+    if (userRole() != 'SC') {
+      shinyjs::hide(id = 'alder')
+    }
+  )
 
   # } else {
   #   bruker <- function() {'SC'}
