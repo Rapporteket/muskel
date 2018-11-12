@@ -120,7 +120,7 @@ server <- function(input, output, session) {
   }
 
   output$testSessionObj_2 <- renderText({
-    paste0("reshId: ", reshID())
+    paste0("reshId: ", as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)))
   })
 
   # } else {
