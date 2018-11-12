@@ -112,11 +112,11 @@ server <- function(input, output, session) {
   #   paste0("reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
   #   })
   # bruker <- function() {'SC'}
-  reshID <- function() {
+  reshID <- reactive({
     as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
     # if (!(context == "TEST" | context == "QA" | context == "PRODUCTION")) {
     #   101719
-    }
+    })
   }
 
   output$testSessionObj_2 <- renderText({
