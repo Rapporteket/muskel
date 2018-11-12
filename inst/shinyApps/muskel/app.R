@@ -116,8 +116,8 @@ server <- function(input, output, session) {
     as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE))
     # if (!(context == "TEST" | context == "QA" | context == "PRODUCTION")) {
     #   101719
-    })
-  }
+  })
+  # }
 
   output$testSessionObj_2 <- renderText({
     paste0("reshId: ", reshID())
