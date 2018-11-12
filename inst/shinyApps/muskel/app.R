@@ -96,7 +96,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 )
 
 
-# Define server logic required to draw a histogram
+#
 server <- function(input, output, session) {
 
   output$testSessionObj <- renderText({
@@ -113,27 +113,11 @@ server <- function(input, output, session) {
     ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
   })
 
-  output$testSessionObj_2 <- renderText({
-    paste0("reshId: ", reshID(), ', context: ', context, ', brukerrolle: ', userRole())
-  })
-
-  observe(
-    if (userRole() != 'SC') {
-      shinyjs::hide(id = 'alder')
-    }
-  )
-
-  # } else {
-  #   bruker <- function() {'SC'}
-  #   reshID <- 101719
-  # }
-  # if (bruker() != 'SC') {
-  #   shinyjs::hide(id = 'diagnoser')
-  # }
-
-
-
-
+  # observe(
+  #   if (userRole() != 'SC') {
+  #     shinyjs::hide(id = 'alder')
+  #   }
+  # )
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
                                              choices = if (is.null(input$diagnosegr)){
