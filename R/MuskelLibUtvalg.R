@@ -39,7 +39,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   }
   if (egenavd==3) { # Bosatt i samme fylke som aktuelt HF
     fylke <- map_shus_fylke$x[match(reshID, map_shus_fylke$avdresh)]
-    # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
+    # Hvis man ikke skal sammenligne, får man ut resultat for eget fylke
     if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$Fylke == fylke), ]}
     # Sykehustekst avhengig av bruker og brukervalg
     if (enhetsUtvalg==0) {
@@ -67,7 +67,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
     which(RegData$Utredningsstart >= UtredningsaarFra & RegData$Utredningsstart <= UtredningsaarTil)} else {indUtredningAar <- 1:Ninn}
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indAvdod <- if (avdod %in% c('Ja', 'Nei')) {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
-  indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
+  indKj <- if (erMann %in% 0:1) {which(RegData$erMann == erMann)} else {indKj <- 1:Ninn}
   # indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
   indDiagnosegr <- if (diagnosegr[1] != -1) {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
   indDiagnose <- if (diagnose[1] != '-1') {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
