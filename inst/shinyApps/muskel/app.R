@@ -50,8 +50,28 @@ RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
-# diagnosegrvalg <- c(diagnosegrvalg, 'Ikke valgt'= '-1')
-varvalg <- c('PeriodiskeParalyser', 'Alder', 'Utdanning')
+aux <- c('Alder i dag', 'AlderDagens', 'Remove', 'Alder ved førstegangsregistrering', 'Alder', 'Remove',
+         'Debutalder', 'DebutAlder', 'Remove', 'Alder ved diagnose', 'DiagnoseAlder', 'Remove', 'Andel med fysioterapi',
+         'Fysioterapi', 'Remove', 'Høyeste utdanning', 'Utdanning', 'Remove', 'Diagnosegrupper', 'Diagnosegr', 'Remove',
+         'Hoveddiagnoser (ICD-10)', 'DiagICD10', 'Remove', 'Undergrupper av muskeldystrofier', 'Muskeldystrofier', 'Remove',
+         'Undergrupper av spinal muskelatrofi', 'SMA', 'Remove', 'Undergrupper av myotonier/periodiske paralyser',
+         'PeriodiskeParalyser', 'Remove', 'Andel med steroidbehandling', 'AndelSteroider', 'Remove', 'Hjerteaffeksjon',
+         'HjerteAff', 'Remove', 'Hjerteoppfølging', 'Hjerteoppf', 'Remove', 'Diagnose basert på', 'DiagByggerPaa', 'Remove',
+         'DMD/BMD-diagnose basert på', 'DiagByggerPaa_v2', 'Remove', 'Gangfunksjon', 'Gangfunksjon', 'Remove', 'Arvegang',
+         'Arvegang', 'Remove', 'Andel genetisk verifisert', 'AndelGenVerifisert', 'Remove', 'Type hjerteaffeksjon',
+         'TypeHjerteaffeksjon', 'Remove', 'Tilsvarende sykdom/symptomer i familien', 'SympFamilie', 'Remove',
+         'Respirasjonsstøtte', 'RespStotte', 'Remove', 'Kognitiv svikt', 'KognitivSvikt', 'Remove',
+         'Type medikamentell behandling', 'TypeMedikBehandling', 'Remove', 'Fysioterapi', 'Fysioterapi', 'Remove',
+         'Årsak til manglende fysioterapi', 'FysioManglerAarsak', 'Remove', 'Ergoterapi', 'Ergoterapi', 'Remove',
+         'Oppfølging hos nevrolog/barnelege', 'OppfolgBarnelegeNevrolog', 'Remove', 'Oppfølging av psykisk helsetjeneste',
+         'PsykiskHelsetjeneste', 'Remove', 'Rehabiliteringsopphold', 'OppholdRehab', 'Remove', 'Tilbud om kostveiledning',
+         'TilbudKostveiledning', 'Remove', 'Tilbud om genetisk veiledning', 'TilbudGenetiskVeiledning', 'Remove',
+         'Ansvarsgruppe/Individuell plan', 'AnsvarsgruppeIP', 'Remove', 'Brukerstyrt personlig assistent', 'BPA', 'Remove',
+         'Arbeidsstatus', 'Arbeid', 'Remove', 'Uføretrygdet', 'Uforetrygd', 'Remove', 'Sivilstatus', 'Sivilstatus', 'Remove')
+
+aux <- aux[-seq(3,length(aux), by = 3)]
+varvalg <- aux[seq(2,length(aux), by = 2)]
+names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 
 ######################################################################
 
@@ -64,15 +84,20 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           sidebarPanel(
                             shinyjs::useShinyjs(),
                             selectInput(inputId = "valgtVar", label = "Velg variabel",
-                                        choices = c('Alder', 'PeriodiskeParalyser', 'Utdanning')),
+                                        choices = varvalg),
                             dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
                                       label = "F.o.m. dato", language="nb"),
                             dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
                                       label = "T.o.m. dato", language="nb"),
-                            selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for",
+                            selectInput(inputId = "egenavd", label = "Pasientgruppe", selected = 0,
+                                        choices = c('Registrert ved HF'=0, 'Følges opp ved HF'=1, 'Diagnostisert ved HF'=2,
+                                        'Bosatt i fylke'=3)),
+                            selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for", selected = 1,
                                         choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
                             sliderInput(inputId="alder", label = "Alder", min = 0,
                                         max = 120, value = c(0, 120)),
+                            selectInput(inputId = "erMann", label = "Kjønn",
+                                        choices = c('Begge'=99, 'Kvinne'=0, 'Mann'=1)),
                             selectInput(inputId = "diagnosegr", label = "Velg diagnosegruppe(r)",
                                         choices = diagnosegrvalg, multiple = TRUE),
                             uiOutput(outputId = 'icd10_kntr'),
@@ -83,13 +108,9 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           ),
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
-                                     textOutput("testSessionObj"),
-                                     textOutput("testSessionObj_2"),
                                      plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
-                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell")),
-                            tabPanel("Tabell 2",
-                                     tableOutput("Tabell2"))
+                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
                           )
                  )
@@ -98,13 +119,6 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 
 #
 server <- function(input, output, session) {
-
-  output$testSessionObj <- renderText({
-    paste("username:", rapbase::getShinyUserName(session, testCase = TRUE),
-          "groups:", rapbase::getShinyUserGroups(session, testCase = TRUE),
-          "role:", rapbase::getShinyUserRole(session, testCase = TRUE),
-          "reshId:", rapbase::getShinyUserReshId(session, testCase = TRUE))
-  })
 
   reshID <- reactive({
     ifelse(onServer, as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)), 101719)
@@ -176,6 +190,7 @@ server <- function(input, output, session) {
   output$Figur1 <- renderPlot({
 
     MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+                     erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd),
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
                      diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
@@ -262,21 +277,10 @@ server <- function(input, output, session) {
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                        undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                       reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
+                       reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
 
-
-  # output$Tabell2 <- function() {
-  #   req(input$mpg)
-  #   mtcars %>%
-  #     mutate(car = rownames(.)) %>%
-  #     select(car, everything()) %>%
-  #     filter(mpg <= 20) %>%
-  #     knitr::kable("html") %>%
-  #     kable_styling("striped", full_width = F) %>%
-  #     add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
-  # }
 
 }
 
