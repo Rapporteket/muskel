@@ -42,6 +42,7 @@ if (onServer) {
   RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
+  RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
   rm(list=c('ForlopsData', 'RegDataLabel'))
   # reshID <- 101719
 }
@@ -50,26 +51,25 @@ RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
-aux <- c('Alder i dag', 'AlderDagens', 'Remove', 'Alder ved førstegangsregistrering', 'Alder', 'Remove',
-         'Debutalder', 'DebutAlder', 'Remove', 'Alder ved diagnose', 'DiagnoseAlder', 'Remove', 'Andel med fysioterapi',
-         'Fysioterapi', 'Remove', 'Høyeste utdanning', 'Utdanning', 'Remove', 'Diagnosegrupper', 'Diagnosegr', 'Remove',
-         'Hoveddiagnoser (ICD-10)', 'DiagICD10', 'Remove', 'Undergrupper av muskeldystrofier', 'Muskeldystrofier', 'Remove',
-         'Undergrupper av spinal muskelatrofi', 'SMA', 'Remove', 'Undergrupper av myotonier/periodiske paralyser',
-         'PeriodiskeParalyser', 'Remove', 'Andel med steroidbehandling', 'AndelSteroider', 'Remove', 'Hjerteaffeksjon',
-         'HjerteAff', 'Remove', 'Hjerteoppfølging', 'Hjerteoppf', 'Remove', 'Diagnose basert på', 'DiagByggerPaa', 'Remove',
-         'DMD/BMD-diagnose basert på', 'DiagByggerPaa_v2', 'Remove', 'Gangfunksjon', 'Gangfunksjon', 'Remove', 'Arvegang',
-         'Arvegang', 'Remove', 'Andel genetisk verifisert', 'AndelGenVerifisert', 'Remove', 'Type hjerteaffeksjon',
-         'TypeHjerteaffeksjon', 'Remove', 'Tilsvarende sykdom/symptomer i familien', 'SympFamilie', 'Remove',
-         'Respirasjonsstøtte', 'RespStotte', 'Remove', 'Kognitiv svikt', 'KognitivSvikt', 'Remove',
-         'Type medikamentell behandling', 'TypeMedikBehandling', 'Remove', 'Fysioterapi', 'Fysioterapi', 'Remove',
-         'Årsak til manglende fysioterapi', 'FysioManglerAarsak', 'Remove', 'Ergoterapi', 'Ergoterapi', 'Remove',
-         'Oppfølging hos nevrolog/barnelege', 'OppfolgBarnelegeNevrolog', 'Remove', 'Oppfølging av psykisk helsetjeneste',
-         'PsykiskHelsetjeneste', 'Remove', 'Rehabiliteringsopphold', 'OppholdRehab', 'Remove', 'Tilbud om kostveiledning',
-         'TilbudKostveiledning', 'Remove', 'Tilbud om genetisk veiledning', 'TilbudGenetiskVeiledning', 'Remove',
-         'Ansvarsgruppe/Individuell plan', 'AnsvarsgruppeIP', 'Remove', 'Brukerstyrt personlig assistent', 'BPA', 'Remove',
-         'Arbeidsstatus', 'Arbeid', 'Remove', 'Uføretrygdet', 'Uforetrygd', 'Remove', 'Sivilstatus', 'Sivilstatus', 'Remove')
+aux <- c('Alder ved førstegangsregistrering', 'Alder', 'Alder i dag', 'AlderDagens',
+         'Debutalder', 'DebutAlder', 'Alder ved diagnose', 'DiagnoseAlder', 'Andel med fysioterapi',
+         'Fysioterapi', 'Høyeste utdanning', 'Utdanning', 'Diagnosegrupper', 'Diagnosegr',
+         'Hoveddiagnoser (ICD-10)', 'DiagICD10', 'Undergrupper av muskeldystrofier', 'Muskeldystrofier',
+         'Undergrupper av spinal muskelatrofi', 'SMA', 'Undergrupper av myotonier/periodiske paralyser',
+         'PeriodiskeParalyser', 'Andel med steroidbehandling', 'AndelSteroider', 'Hjerteaffeksjon',
+         'HjerteAff', 'Hjerteoppfølging', 'Hjerteoppf', 'Diagnose basert på', 'DiagByggerPaa',
+         'DMD/BMD-diagnose basert på', 'DiagByggerPaa_v2', 'Gangfunksjon', 'Gangfunksjon', 'Arvegang',
+         'Arvegang', 'Andel genetisk verifisert', 'AndelGenVerifisert', 'Type hjerteaffeksjon',
+         'TypeHjerteaffeksjon', 'Tilsvarende sykdom/symptomer i familien', 'SympFamilie',
+         'Respirasjonsstøtte', 'RespStotte', 'Kognitiv svikt', 'KognitivSvikt',
+         'Type medikamentell behandling', 'TypeMedikBehandling', 'Fysioterapi', 'Fysioterapi',
+         'Årsak til manglende fysioterapi', 'FysioManglerAarsak', 'Ergoterapi', 'Ergoterapi',
+         'Oppfølging hos nevrolog/barnelege', 'OppfolgBarnelegeNevrolog', 'Oppfølging av psykisk helsetjeneste',
+         'PsykiskHelsetjeneste', 'Rehabiliteringsopphold', 'OppholdRehab', 'Tilbud om kostveiledning',
+         'TilbudKostveiledning', 'Tilbud om genetisk veiledning', 'TilbudGenetiskVeiledning',
+         'Ansvarsgruppe/Individuell plan', 'AnsvarsgruppeIP', 'Brukerstyrt personlig assistent', 'BPA',
+         'Arbeidsstatus', 'Arbeid', 'Uføretrygdet', 'Uforetrygd', 'Sivilstatus', 'Sivilstatus')
 
-aux <- aux[-seq(3,length(aux), by = 3)]
 varvalg <- aux[seq(2,length(aux), by = 2)]
 names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 
@@ -89,13 +89,15 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                                       label = "F.o.m. dato", language="nb"),
                             dateInput(inputId = 'datoTil', value = Sys.Date(), min = '2012-01-01',
                                       label = "T.o.m. dato", language="nb"),
+                            sliderInput(inputId="alder", label = "Alder", min = 0,
+                                        max = 120, value = c(0, 120)),
                             selectInput(inputId = "egenavd", label = "Pasientgruppe", selected = 0,
                                         choices = c('Registrert ved HF'=0, 'Følges opp ved HF'=1, 'Diagnostisert ved HF'=2,
                                         'Bosatt i fylke'=3)),
                             selectInput(inputId = "enhetsUtvalg", label = "Kjør rapport for", selected = 1,
                                         choices = c('Hele landet'=0, 'Egen avd. mot landet forøvrig'=1, 'Egen avd.'=2)),
-                            sliderInput(inputId="alder", label = "Alder", min = 0,
-                                        max = 120, value = c(0, 120)),
+                            selectInput(inputId = "forlop", label = "Velg forløpstype",
+                                        choices = c('Alle'=99, 'Basisregistrering'=1, '5-årsoppfølging'=2, 'Ad-hoc'=3)),
                             selectInput(inputId = "erMann", label = "Kjønn",
                                         choices = c('Begge'=99, 'Kvinne'=0, 'Mann'=1)),
                             selectInput(inputId = "diagnosegr", label = "Velg diagnosegruppe(r)",
@@ -103,6 +105,12 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             uiOutput(outputId = 'icd10_kntr'),
                             uiOutput(outputId = 'undergruppe1'),
                             uiOutput(outputId = 'undergruppe2'),
+                            selectInput(inputId = "avdod", label = "Inkluder avdøde",
+                                        choices = c('Ja'='Ja', 'Nei'='Nei')),
+                            sliderInput(inputId="Utredningsaar", label = "Utredningsår", sep='', min = 1950,
+                                        max = as.numeric(format(Sys.Date(), '%Y')), value = c(1950, as.numeric(format(Sys.Date(), '%Y')))),
+                            sliderInput(inputId="debutalder", label = "Debutalder", min = 0,
+                                        max = 90, value = c(0, 90)),
                             selectInput(inputId = "bildeformat", label = "Velg bildeformat",
                                         choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
                           ),
@@ -190,8 +198,10 @@ server <- function(input, output, session) {
   output$Figur1 <- renderPlot({
 
     MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
-                     erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd),
-                     maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+                     erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd), forlop = as.numeric(input$forlop),
+                     maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil, avdod = input$avdod,
+                     UtredningsaarFra =as.numeric(input$Utredningsaar[1]), UtredningsaarTil =as.numeric(input$Utredningsaar[2]),
+                     debutAlderFra = as.numeric(input$debutalder[1]), debutAlderTil =as.numeric(input$debutalder[2]),
                      diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
@@ -206,7 +216,10 @@ server <- function(input, output, session) {
 
   tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
-                                   maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+                                   erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd), forlop = as.numeric(input$forlop),
+                                   maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil, avdod = input$avdod,
+                                   UtredningsaarFra =as.numeric(input$Utredningsaar[1]), UtredningsaarTil =as.numeric(input$Utredningsaar[2]),
+                                   debutAlderFra = as.numeric(input$debutalder[1]), debutAlderTil =as.numeric(input$debutalder[2]),
                                    diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
@@ -272,7 +285,10 @@ server <- function(input, output, session) {
 
     content = function(file){
       MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
-                       maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil,
+                       erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd), forlop = as.numeric(input$forlop),
+                       maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil, avdod = input$avdod,
+                       UtredningsaarFra =as.numeric(input$Utredningsaar[1]), UtredningsaarTil =as.numeric(input$Utredningsaar[2]),
+                       debutAlderFra = as.numeric(input$debutalder[1]), debutAlderTil =as.numeric(input$debutalder[2]),
                        diagnosegr = if (!is.null(input$diagnosegr)) {as.numeric(input$diagnosegr)} else {-1},
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
