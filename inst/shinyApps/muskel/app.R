@@ -11,6 +11,7 @@
 library(muskel)
 library(tidyverse)
 library(kableExtra)
+library(DT)
 
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
@@ -43,8 +44,13 @@ if (onServer) {
   RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
+
+  skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2018-11-14 14-28-51.txt', header=TRUE, sep=';', stringsAsFactors = F)
+  skjemaoversikt$Sykehusnavn <- iconv(skjemaoversikt$Sykehusnavn, from = 'UTF-8', to = '')
+  skjemaoversikt$Skjemanavn <- iconv(skjemaoversikt$Skjemanavn, from = 'UTF-8', to = '')
+  skjemaoversikt$HovedDato <- as.Date(skjemaoversikt$HovedDato)
+
   rm(list=c('ForlopsData', 'RegDataLabel'))
-  # reshID <- 101719
 }
 
 RegData <- MuskelPreprosess(RegData=RegData)
@@ -121,6 +127,23 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                                      tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
                           )
+                 ),
+                 tabPanel("Administrative tabeller",
+                          sidebarPanel(
+                            dateInput(inputId = 'datoFra2', value = '2008-01-01', min = '2008-01-01',
+                                      label = "F.o.m. dato", language="nb"),
+                            dateInput(inputId = 'datoTil2', value = Sys.Date(), min = '2012-01-01',
+                                      label = "T.o.m. dato", language="nb"),
+                            selectInput(inputId = "regstatus", label = "Skjemastatus",
+                                        choices = c('Ferdigstilt'=1, 'Kladd'=0))
+                          ),
+                          mainPanel(tabsetPanel(
+                            tabPanel("Antall skjema",
+                                     DTOutput("Tabell_adm1"), downloadButton("lastNed1", "Last ned tabell")),
+                            tabPanel("Annen admin rapport",
+                                     tableOutput("Tabell_adm2"), downloadButton("lastNed2", "Last ned tabell"))
+                          )
+                          )
                  )
 )
 
@@ -140,6 +163,43 @@ server <- function(input, output, session) {
   #     shinyjs::hide(id = 'alder')
   #   }
   # )
+
+  antskjema <- function() {
+    aux <- as.data.frame.matrix(addmargins(table(skjemaoversikt[skjemaoversikt$SkjemaStatus == as.numeric(input$regstatus) &
+                                                                  skjemaoversikt$HovedDato >= input$datoFra2 &
+                                                                  skjemaoversikt$HovedDato <= input$datoTil2,
+                                                                c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
+    aux$Avdeling <- row.names(aux)
+    ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
+    sketch <- htmltools::withTags(table(
+      tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
+      tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1], 2:dim(ant_skjema)[2]])))))
+    list(ant_skjema=ant_skjema, sketch=sketch)
+  }
+
+  output$Tabell_adm1 = renderDT(
+    datatable(antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
+              container = antskjema()$sketch,
+              rownames = F,
+              options = list(pageLength = 25)
+    )
+  )
+
+  # output$Tabell_adm1 = renderDT(
+  #   datatable(dt_test()[-dim(dt_test())[1], ],
+  #             container = htmltools::withTags(table(
+  #               tableHeader(dt_test()[-dim(dt_test())[1], ]),
+  #               tableFooter(c('Sum' , as.numeric(dt_test()[dim(dt_test())[1], 2:dim(dt_test())[2]]))))),
+  #               # tableFooter(as.numeric(dt_test()[dim(dt_test())[1], 2:5])))),
+  #               # tableFooter(sapply(dt_test()[-dim(dt_test())[1], ], function(x) if(is.numeric(x)) sum(x))))),
+  #             rownames = F,
+  #             options = list(pageLength = 25)
+  #             )
+  #
+  #   # options = list(pageLength = 25))
+  # )
+
+
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
                                              choices = if (is.null(input$diagnosegr)){
