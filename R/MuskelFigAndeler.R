@@ -145,7 +145,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
   ##-----------Figur---------------------------------------
   tittel <- PlotParams$tittel; grtxt <- PlotParams$grtxt; #grtxt2 <- PlotParams$grtxt2;
   subtxt <- PlotParams$subtxt; retn <- PlotParams$retn; cexgr <- PlotParams$cexgr;
-  FigTypUt <- figtype(outfile=outfile, fargepalett=MuskelUtvalg$fargepalett, pointsizePDF=12)
+  FigTypUt <- rapFigurer::figtype(outfile=outfile, fargepalett=MuskelUtvalg$fargepalett, pointsizePDF=12)
 
   #Hvis for få observasjoner..
   if (NHoved < 5 | (Nrest<5 & enhetsUtvalg==1)) {
