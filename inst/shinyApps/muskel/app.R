@@ -161,7 +161,9 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   reshID <- reactive({
-    ifelse(onServer, as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)), 101719)
+    ifelse(onServer,"TESTNO",
+           #as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)),
+           101719)
   })
   userRole <- reactive({
     ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
