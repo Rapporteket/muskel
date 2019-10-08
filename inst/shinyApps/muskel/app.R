@@ -131,7 +131,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde"),
-                                     textOutput("text")),
+                                     tableOutput("text")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
@@ -365,8 +365,11 @@ server <- function(input, output, session) {
                        reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
-  output$text <- renderText({ names(RegData)})
-
+  output$text <- function(){
+    text <- RegData[1:50,]
+    text%>% knitr::kable("html", digits = c(0,0,0,1,0,0,1)) %>%
+      kable_styling("hover", full_width = F)
+  }
 }
 
 # Run the application
