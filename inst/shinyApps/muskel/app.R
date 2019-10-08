@@ -365,7 +365,7 @@ server <- function(input, output, session) {
                        reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
-  output$text <- renderText({ dim(RegData)})
+  output$text <- renderText({ names(RegData)})
 
 }
 
