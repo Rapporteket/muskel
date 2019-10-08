@@ -19,10 +19,10 @@ if (onServer) {
   RegData <- MuskelHentRegData()
 } else {
   # rm(list = ls())
-  ForlopsData <- read.table('I:/muskel/ForlopsOversikt2018-09-25 08-59-11.txt', header=TRUE, sep=';')
+  ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                  "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-  RegData <- read.table('I:/muskel/AlleVarNum2018-09-25 08-59-09.txt', header=TRUE, sep=';')
+  RegData <- read.table('I:/muskel/AlleVarNum2019-03-26 14-57-28.txt', header=TRUE, sep=';')
   RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
                           "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
                           "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
@@ -36,7 +36,7 @@ if (onServer) {
                           "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
                           "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
   RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-  RegDataLabel <- read.table('I:/muskel/AlleVar2018-09-25 08-59-07.txt', header=TRUE, sep=';')
+  RegDataLabel <- read.table('I:/muskel/AlleVar2019-03-26 14-57-25.txt', header=TRUE, sep=';')
   RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
                                    "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
                                    'Arvegang', 'Gangfunksjon')]
@@ -45,7 +45,7 @@ if (onServer) {
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
 
-  skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2018-11-14 14-28-51.txt', header=TRUE, sep=';', stringsAsFactors = F)
+  skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';', stringsAsFactors = F)
   skjemaoversikt$Sykehusnavn <- iconv(skjemaoversikt$Sykehusnavn, from = 'UTF-8', to = '')
   skjemaoversikt$Skjemanavn <- iconv(skjemaoversikt$Skjemanavn, from = 'UTF-8', to = '')
   skjemaoversikt$HovedDato <- as.Date(skjemaoversikt$HovedDato)

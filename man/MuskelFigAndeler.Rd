@@ -9,7 +9,8 @@ MuskelFigAndeler(RegData, valgtVar = "Alder", datoFra = "2000-01-01",
   maxald = 120, erMann = 99, outfile = "", forlop = 99,
   egenavd = 0, diagnose = -1, undergr = -1, undergr2 = -1,
   enhetsUtvalg = 0, preprosess = F, hentData = F, avdod = "",
-  UtredningsaarFra = 1900, UtredningsaarTil = 2100, inkl_tittel = T)
+  UtredningsaarFra = 1950, UtredningsaarTil = 2050, inkl_tittel = T,
+  debutAlderFra = 0, debutAlderTil = 90)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}

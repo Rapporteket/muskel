@@ -15,8 +15,6 @@ wrap.it(x, len)
 En tekststreng med tekstbrudd på angitt lengde
 }
 \description{
-Automatisk linjebryting av lange tekstetiketter
-}
-\details{
-Her kan detaljer skrives
+Denne funksjonen tar som input en vektor med streng-elementer og returnerer
+en
 }
