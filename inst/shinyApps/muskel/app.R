@@ -19,10 +19,18 @@ if (onServer) {
   RegData <- MuskelHentRegData()
 } else {
   # rm(list = ls())
-  ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
+  ForlopsData <- read.table('V:/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';')
+
+  RegData <- read.table('V:/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';')
+
+  skjemaoversikt <- read.table('V:/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F)
+
+  RegDataLabel <- read.table('V:/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';')
+
+  #ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                  "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-  RegData <- read.table('I:/muskel/AlleVarNum2019-03-26 14-57-28.txt', header=TRUE, sep=';')
+  #RegData <- read.table('I:/muskel/AlleVarNum2019-03-26 14-57-28.txt', header=TRUE, sep=';')
   RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
                           "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
                           "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
@@ -36,7 +44,7 @@ if (onServer) {
                           "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
                           "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
   RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-  RegDataLabel <- read.table('I:/muskel/AlleVar2019-03-26 14-57-25.txt', header=TRUE, sep=';')
+  #RegDataLabel <- read.table('I:/muskel/AlleVar2019-03-26 14-57-25.txt', header=TRUE, sep=';')
   RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
                                    "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
                                    'Arvegang', 'Gangfunksjon')]
@@ -45,7 +53,7 @@ if (onServer) {
   RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
   RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
 
-  skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';', stringsAsFactors = F)
+  #skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';', stringsAsFactors = F)
   skjemaoversikt$Sykehusnavn <- iconv(skjemaoversikt$Sykehusnavn, from = 'UTF-8', to = '')
   skjemaoversikt$Skjemanavn <- iconv(skjemaoversikt$Skjemanavn, from = 'UTF-8', to = '')
   skjemaoversikt$HovedDato <- as.Date(skjemaoversikt$HovedDato)
@@ -122,7 +130,8 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           ),
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
-                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
+                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde"),
+                                     textOutput("text")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
@@ -356,7 +365,7 @@ server <- function(input, output, session) {
                        reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
-
+  output$text <- renderText({ dim(RegData)})
 
 }
 
