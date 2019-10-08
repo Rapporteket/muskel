@@ -163,7 +163,7 @@ server <- function(input, output, session) {
   reshID <- reactive({
     ifelse(onServer,"TESTNO",
            #as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)),
-           101719)
+           "TESTNO")
   })
   userRole <- reactive({
     ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
