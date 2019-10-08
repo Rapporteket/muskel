@@ -12,7 +12,7 @@
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
                          diagnose='-1', undergr=-1, undergr2=-1, avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1950,
-                         UtredningsaarTil=2018, debutAlderFra=0, debutAlderTil=90)
+                         UtredningsaarTil=2050, debutAlderFra=0, debutAlderTil=90)
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -63,7 +63,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indVarMed <- 1:Ninn
   # indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
   indAld <- which(RegData$Alder >= minald & RegData$Alder <= maxald)
-  indUtredningAar <- if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(), '%Y'))) {
+  indUtredningAar <- if (UtredningsaarFra != 1950 | UtredningsaarTil != 2050) {
     which(RegData$Utredningsstart >= UtredningsaarFra & RegData$Utredningsstart <= UtredningsaarTil)} else {indUtredningAar <- 1:Ninn}
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indAvdod <- if (avdod == 'Nei') {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
@@ -87,7 +87,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                  #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if ((minald>0) | (maxald<120)) {
                    paste0('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år')},
-                 if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(), '%Y'))){
+                 if (UtredningsaarFra != 1950 | UtredningsaarTil != 2050){
                    paste0('Utredningstart fra år ', min(RegData$Utredningsstart, na.rm=T), ' til ', max(RegData$Utredningsstart, na.rm=T))},
                  if (avdod %in% c('Ja', 'Nei')) {paste0('Avdøde inkludert: ', avdod)}, # Ikke korrekt for valg "Ja"
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},

@@ -1,8 +1,7 @@
 #' Automatisk linjebryting av lange tekstetiketter
 #'
-#' Automatisk linjebryting av lange tekstetiketter
-#'
-#' Her kan detaljer skrives
+#' Denne funksjonen tar som input en vektor med streng-elementer og returnerer
+#' en
 #'
 #' @param x En tekststreng eller vektor av tekststrenger
 #' @param len Lengden strengen skal brytes ved
