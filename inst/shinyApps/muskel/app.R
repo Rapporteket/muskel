@@ -14,6 +14,19 @@ library(shinyalert)
 library(kableExtra)
 library(DT)
 
+addResourcePath('rap', system.file('www', package='rapbase'))
+regTitle <-  "RAPPORTEKET MUSKELREGISTERET"
+logo <- includeHTML(system.file('www/logo.svg', package='rapbase'))
+logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
+                   "header.append('<div class=\"navbar-brand\" style=\"float:left;font-size:75%\">",
+                   logo,
+                   "</div>');\n",
+                   "console.log(header)")
+logoWidget <- tags$script(shiny::HTML(logoCode))
+
+
+
+
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
 if (onServer) {
@@ -93,8 +106,17 @@ names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+                title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
+                            regTitle),
+                windowTitle = regTitle,
+                theme = "rap/bootstrap.css",
+
                  tabPanel("Fordelingsfigurer",
+                          shinyalert::useShinyalert(),
+                          rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
+                                                       organization = uiOutput("appOrgName"),
+                                                       addUserInfo = TRUE),
                           # sidebarLayout(
                           sidebarPanel(
                             shinyjs::useShinyjs(),
@@ -365,7 +387,18 @@ server <- function(input, output, session) {
                        reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
+  #Navbarwidget
+  output$appUserName <- renderText(rapbase::getUserFullName(session))
+  output$appOrgName <- renderText(rapbase::getUserReshId(session))
 
+  # Brukerinformasjon
+  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  observeEvent(input$userInfo, {
+    shinyalert("Dette vet Rapporteket om deg:", userInfo,
+               type = "", imageUrl = "rap/logo.svg",
+               closeOnEsc = TRUE, closeOnClickOutside = TRUE,
+               html = TRUE, confirmButtonText = "Den er grei!")
+  })
 
 }
 
