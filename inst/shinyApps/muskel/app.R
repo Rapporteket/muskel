@@ -10,6 +10,7 @@
 ######## Last data ########################################
 library(muskel)
 library(tidyverse)
+library(shinyalert)
 library(kableExtra)
 library(DT)
 
@@ -130,8 +131,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           ),
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
-                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde"),
-                                     tableOutput("text")),
+                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
@@ -161,9 +161,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   reshID <- reactive({
-    ifelse(onServer,"TESTNO",
-           #as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)),
-           "TESTNO")
+    ifelse(onServer,as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)),101719)
   })
   userRole <- reactive({
     ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
@@ -367,11 +365,8 @@ server <- function(input, output, session) {
                        reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
-  output$text <- function(){
-    text <- RegData[1:50,]
-    text%>% knitr::kable("html", digits = c(0,0,0,1,0,0,1)) %>%
-      kable_styling("hover", full_width = F)
-  }
+
+
 }
 
 # Run the application
