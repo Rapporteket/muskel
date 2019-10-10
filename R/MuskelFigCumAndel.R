@@ -85,7 +85,7 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   }
 
   # x11()
-  FigTypUt <- figtype(outfile)
+  FigTypUt <- rapFigurer::figtype(outfile)
   farger <- FigTypUt$farger
 
   NutvTxt <- length(utvalgTxt)
