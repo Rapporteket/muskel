@@ -1,0 +1,102 @@
+varValgGrVar <- c("Andel genetisk verifiserte etter diagnosegruppe (spes. diagnose)" =
+             "AndelGenVerifisertSpes", "Høyeste utdanning" = "HoyesteUtdanning",
+             "Hjerteaffeksjon" = "HjerteAff_samlet", "Andel med muskelbiopsi" = "DiagBiopsi",
+             "Andel genetisk verifisert" = "AndelGenVerifisert_subgr", "Fysioterapi" = "Fysioterapi",
+             "Ergoterapi" = "Ergoterapi", "Andel med DNA-undersøkelse" = "DiagDNA",
+             "Gangfunksjon" = "Gangfunksjon", "Bruk av smertestillende LGMD/DM1" =
+             "Smertestillende_LGMD_DM1","Bruk av smertestillende MD/CMT/SMA" =
+             "Smertestillende_MD_CMT_SMA", "Type hjerteaffeksjon DM1/LGMD2I" =
+             "TypeHjerteaffeksjonSamletDM1_LGMD2I","Psykisk helsetjeneste DM1-2/LGMD" =
+             "PsykiskHelsetjeneste_subgr", "Tilbud om kostveiledning" = "Kostveiledning_subgr")
+
+#shiny module
+forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
+                       datoSlutt = Sys.Date()){
+  ns <- shiny::NS(id)
+
+  shiny::sidebarLayout(
+
+    shiny::sidebarPanel(
+
+      shiny::selectInput(ns("var"), label = "Velg variabel",
+                         choices = vlgtvar, selected = vlgtvar[[1]] ),
+
+      shiny::sliderInput(ns("ald"), label = "Debutalder",
+                         min = 0, max = 120, value = c(0,120) ),
+
+      shiny::dateRangeInput(ns("dato"), label = "Tidsperiode",
+                            start = datoStart, end = datoSlutt,
+                            format = "yyyy-mm-dd"),
+
+      shiny::selectInput(ns("kjo"), label = "Kjønn",
+                         choices = c("Begge kjønn" = 99 , "Kvinne" = 0, "Mann" = 1),
+                         selected = 99),
+
+      shiny::selectInput(ns("avdod"), label = "Inkluder avdøde",
+                         choices = c("Ja" , "Nei" ),
+                         selected = "Nei"),
+
+      selectInput(inputId = ns("outfile"), label = "Velg bildeformat",
+                  choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+    ),#sidebarPanel
+
+    shiny::mainPanel(
+      tabsetPanel(
+      shiny::tabPanel("Figur",
+                      shiny::plotOutput(ns("Figur"), height="auto"),
+                      shiny::downloadButton(ns("lastNedBilde"), "Last ned bilde")),
+
+      shiny::tabPanel("Tabell",
+                      shiny::tableOutput(ns("Tabell")),
+                      shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell"))
+      )
+    )#mainpanel
+  )#sidebarLayout
+}
+
+
+forGrVar <- function(input, output, session, rID = reshID() ){
+
+  resp <- reactive({
+    tabData <- muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
+                                          datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
+                                          erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = "" )
+  })
+
+  output$Figur <- renderPlot({ resp()},
+                             width = 700, height = 700)
+
+  output$lastNedBilde <- downloadHandler(
+    filename = function(){
+      paste0(input$var, Sys.time(), '.', input$outfile)
+    },
+    content = function(file){
+      muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
+                                    datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
+                                    erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = file )
+    }
+  )
+
+
+  output$Tabell <- function() {
+    TabellData <- resp()
+    Tabell <- as.data.frame( TabellData$Andeler )
+    names(Tabell) <- c("Kategori", "Grupper","Andel")
+    Tabell %>%
+      knitr::kable("html", digits = c(0,0,1)) %>%
+      kable_styling("hover", full_width = F)
+  }
+
+  output$lastNedTabell <- downloadHandler(
+    filename = function(){
+      paste0(input$var, Sys.time(), '.csv')
+    },
+
+    content = function(file){
+      TabellData <- resp()
+      Tabell <- as.data.frame(TabellData$Andeler)
+      names(Tabell) <- c("Kategori", "Grupper","Andel")
+      write.csv2(Tabell, file, row.names = F)
+    }
+  )
+}
