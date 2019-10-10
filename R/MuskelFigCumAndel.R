@@ -124,5 +124,6 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
 
   if ( outfile != '') {dev.off()}
 
-
+  utData <- list(tittel = tittel, utvalgTxt = utvalgTxt, Andeler = cbind(grtxt+1,unname( CumAndel)))
+  return(invisible(utData))
 }
