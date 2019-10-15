@@ -13,6 +13,7 @@ library(tidyverse)
 library(shinyalert)
 library(kableExtra)
 library(DT)
+library(htmltools)
 
 
 
@@ -109,7 +110,7 @@ library(shiny)
 source("www/dataOGvar.R")
 source("www/forAndGr.R")
 source("www/kumandel.R")
-
+source("www/tabell.R")
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                 title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
@@ -170,6 +171,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel("Kummulative andeler",
                          kumulativAndelUI(id = "kumAnd")
                 ),
+                tabPanel("Pasient og forløpstabeller",
+                         tabellUI("muskeltabell")
+
+                ),
 
                 tabPanel("Administrative tabeller",
                           sidebarPanel(
@@ -186,8 +191,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             tabPanel("Annen admin rapport",
                                      tableOutput("Tabell_adm2"), downloadButton("lastNed2", "Last ned tabell"))
                           )
+
                           )
                  )
+
 )
 
 
@@ -403,6 +410,7 @@ server <- function(input, output, session) {
 
   callModule(forGrVar, "forgrvar", rID = reshID())
   callModule(kumulativAndel, "kumAnd", rID = reshID())
+  callModule(tabell, "muskeltabell")
 
   #Navbarwidget
   output$appUserName <- renderText(rapbase::getUserFullName(session))
