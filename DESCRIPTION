@@ -9,9 +9,20 @@ Description: Pakke for generering av resultatrapporter for Muskelregisteret
 License: GPL2
 LazyData: TRUE
 Encoding: UTF-8
-Depends: R (>= 3.0.2), rapbase
+Depends: 
+    R (>= 3.0.2),
+    rapbase (>= 1.10.0.9000)
 Imports:
-  DT, xtable, kableExtra, tidyverse, shinyjs, lubridate
+    DT,
+    xtable,
+    kableExtra,
+    tidyverse,
+    shinyjs,
+    lubridate,
+    rapFigurer (>= 0.1.0)
 RoxygenNote: 6.1.1
 Suggests: knitr
 VignetteBuilder: knitr
+Remotes:  
+    Rapporteket/rapbase@rel,
+    Rapporteket/rapFigurer
