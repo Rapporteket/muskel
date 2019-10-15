@@ -63,7 +63,11 @@ forGrVar <- function(input, output, session, rID = reshID() ){
                                           erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = "" )
   })
 
-  output$Figur <- renderPlot({ resp()},
+  output$Figur <- renderPlot({
+    muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
+                                  datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
+                                  erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = "" )
+    },
                              width = 700, height = 700)
 
   output$lastNedBilde <- downloadHandler(

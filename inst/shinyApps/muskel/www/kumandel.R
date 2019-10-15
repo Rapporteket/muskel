@@ -37,7 +37,7 @@ names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$
 
 
 
-#shinymodule
+#shinymodule UI
 kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-01" ,
     datoSlutt = Sys.Date(), utrstart = "1950-01-01", utrslutt = Sys.Date(),
     pasgr = c('Registrert ved HF'=0, 'Følges opp ved HF'=1, 'Diagnostisert ved HF'=2,
@@ -104,6 +104,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
     )#sidebarlayout
 }
 
+#shiny server mudule
 kumulativAndel <- function(input, output, session, rID){
 
   output$ICD10diag <-shiny::renderUI({
@@ -157,10 +158,19 @@ kumulativAndel <- function(input, output, session, rID){
   })
 
   #plot figure
+  observe({
   output$Figur <- shiny::renderPlot({
-    resp() },
+    muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
+                               datoTil =   input$dato[2], debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
+                               UtredningsaarFra = lubridate::year(input$utrar[1]),
+                               UtredningsaarTil = lubridate::year(input$utrar[2]) ,
+                               diagnosegr = convNull(input$diaggrupper), diagnose = convNull(input$ICD),
+                               undergr = convNull(input$Undrgr), undergr2 = convNull(input$Undrgr2),
+                               egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
+                               avdod = input$avdod ,reshID = rID, outfile = "" )
+     },
     width = 700, height = 700)
-
+  })
 
 
   #download figure
@@ -179,17 +189,17 @@ kumulativAndel <- function(input, output, session, rID){
                                  avdod = input$avdod ,reshID = rID, outfile = file )
     }
   )
-
+  #Tabeller
   output$Tabell <- function(){
     TabellData <- resp()
     Tabell <- as.data.frame(TabellData$Andel)
-    names(Tabell) <- c("År","Andel")
+    names(Tabell) <- c("Antall år","Andel")
     Tabell  %>%
       knitr::kable("html", digits = c(0,1)) %>%
       kable_styling("hover", full_width = F)
 
   }
-
+  #nedlasting av tabeller
   output$lastNedTabell <- downloadHandler(
     filename = function(){
       paste0(input$var, Sys.time(), '.csv')
@@ -198,7 +208,7 @@ kumulativAndel <- function(input, output, session, rID){
     content = function(file){
       TabellData <-  resp()
       Tabell <- as.data.frame(TabellData$Andeler)
-      names(Tabell) <- c("År","Andel")
+      names(Tabell) <- c("Antall år","Andel")
       write.csv2(Tabell, file, row.names = F)
     }
   )
