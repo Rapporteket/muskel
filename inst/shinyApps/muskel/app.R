@@ -107,10 +107,10 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 # #####################################################################
 
 library(shiny)
-source("www/dataOGvar.R")
-source("www/forAndGr.R")
-source("www/kumandel.R")
-source("www/tabell.R")
+source("www/dataOGvar.R", encoding = "UTF-8")
+source("www/forAndGr.R",encoding = "UTF-8")
+source("www/kumandel.R",encoding = "UTF-8")
+source("www/tabell.R",encoding = "UTF-8")
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                 title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
