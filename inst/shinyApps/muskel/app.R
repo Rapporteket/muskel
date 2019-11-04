@@ -28,7 +28,7 @@ logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
 logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
-
+{
 
 # context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 # onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
@@ -105,7 +105,7 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 # names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 #
 # #####################################################################
-
+}
 library(shiny)
 
 
@@ -425,7 +425,7 @@ server <- function(input, output, session) {
   output$appOrgName <- renderText(rapbase::getUserReshId(session))
 
   # Brukerinformasjon
-  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  #userInfo <- rapbase::howWeDealWithPersonalData(session)
   observeEvent(input$userInfo, {
     shinyalert("Dette vet Rapporteket om deg:", userInfo,
                type = "", imageUrl = "rap/logo.svg",
