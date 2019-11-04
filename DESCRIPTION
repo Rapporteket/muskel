@@ -19,10 +19,12 @@ Imports:
     tidyverse,
     shinyjs,
     lubridate,
-    rapFigurer (>= 0.1.0)
+    rapFigurer (>= 0.1.0),
+    magrittr
 RoxygenNote: 6.1.1
 Suggests: knitr
 VignetteBuilder: knitr
-Remotes:  
+Remotes: 
     Rapporteket/rapbase@rel,
     Rapporteket/rapFigurer
+Roxygen: list(markdown = TRUE)
