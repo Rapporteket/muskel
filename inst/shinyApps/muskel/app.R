@@ -110,14 +110,14 @@ library(shiny)
 
 
 
-system.file("shinyApps/muskel/www/dataOGvar.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/www/forAndGr.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/www/kumandel.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/www/tabell.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
+#system.file("shinyApps/muskel/www/dataOGvar.R",package = "muskel") %>%
+  source("shinyApps/muskel/www/dataOGvar.R",encoding = "UTF-8")
+#system.file("shinyApps/muskel/www/forAndGr.R",package = "muskel") %>%
+  source("shinyApps/muskel/www/forAndGr.R",encoding = "UTF-8")
+#system.file("shinyApps/muskel/www/kumandel.R",package = "muskel") %>%
+  source("shinyApps/muskel/www/kumandel.R",encoding = "UTF-8")
+#system.file("shinyApps/muskel/www/tabell.R",package = "muskel") %>%
+  source("shinyApps/muskel/www/kumandel.R",encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
