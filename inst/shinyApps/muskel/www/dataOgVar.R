@@ -1,15 +1,16 @@
-
+context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
+onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
 if (onServer) {
   RegData <- MuskelHentRegData()
 } else {
   # rm(list = ls())
-  ForlopsData <- read.table('V:/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+  ForlopsData <- read.table('v:/muskel/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 
-  RegData <- read.table('V:/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+  RegData <- read.table('v:/muskel/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 
-  skjemaoversikt <- read.table('V:/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F, encoding = 'UTF-8')
+  skjemaoversikt <- read.table('v:/muskel/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F, encoding = 'UTF-8')
 
-  RegDataLabel <- read.table('V:/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+  RegDataLabel <- read.table('v:/muskel/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 
   #ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
