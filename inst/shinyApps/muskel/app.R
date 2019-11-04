@@ -107,10 +107,26 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 # #####################################################################
 
 library(shiny)
+
+context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
+onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
+if (onServer) {
+system.file("shinyApps/muskel/www/dataOGvar.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/www/forAndGr.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/www/www/kumandel.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/www/tabell.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+} else  {
+
 source("www/dataOGvar.R", encoding = "UTF-8")
-source("www/forAndGr.R",encoding = "UTF-8")
-source("www/kumandel.R",encoding = "UTF-8")
-source("www/tabell.R",encoding = "UTF-8")
+source("www/forAndGr.R", encoding = "UTF-8")
+source("www/kumandel.R", encoding = "UTF-8")
+source("www/tabell.R", encoding = "UTF-8")
+
+}
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
                 title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
