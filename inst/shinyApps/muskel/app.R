@@ -425,7 +425,7 @@ server <- function(input, output, session) {
   output$appOrgName <- renderText(rapbase::getUserReshId(session))
 
   # Brukerinformasjon
-  #userInfo <- rapbase::howWeDealWithPersonalData(session)
+  userInfo <- rapbase::howWeDealWithPersonalData(session)
   observeEvent(input$userInfo, {
     shinyalert("Dette vet Rapporteket om deg:", userInfo,
                type = "", imageUrl = "rap/logo.svg",
