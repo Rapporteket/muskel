@@ -366,7 +366,7 @@ server <- function(input, output, session) {
     }
   )
 
-  WD <- reactive({paste0("text", getwd())})
+  WD <- reactive({paste0("text")})
   output$txtn <- renderText(WD())
 }
 
