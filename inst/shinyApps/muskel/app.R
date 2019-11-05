@@ -417,7 +417,7 @@ server <- function(input, output, session) {
   )
 
 #
-#   callModule(forGrVar, "forgrvar", rID = reshID())
+# #  callModule(forGrVar, "forgrvar", rID = reshID())
 #   callModule(kumulativAndel, "kumAnd", rID = reshID())
 #   callModule(tabell, "muskeltabell")
 
