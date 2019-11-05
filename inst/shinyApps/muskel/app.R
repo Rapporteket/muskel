@@ -131,10 +131,9 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                           ),
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
-                                     plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
+                                     plotOutput("Figur1", height="auto"),textOutput("txtn"), downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
-                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"),
-                                     textOutput("txtn"))
+                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
                           )
                           )
                  ),
