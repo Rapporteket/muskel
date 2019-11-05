@@ -111,14 +111,14 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 
-system.file("shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
-system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
-  source(encoding = "UTF-8")
+# system.file("shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
@@ -175,13 +175,13 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           )
                  ),
                 tabPanel("Fordelinger etter grupperingsvariabler",
-                  forGrVarUI(id = "forgrvar")
+                  #forGrVarUI(id = "forgrvar")
                 ),
                 tabPanel("Kummulative andeler",
-                         kumulativAndelUI(id = "kumAnd")
+                         #kumulativAndelUI(id = "kumAnd")
                 ),
                 tabPanel("Pasient og forløpstabeller",
-                         tabellUI("muskeltabell")
+                         #tabellUI("muskeltabell")
 
                 ),
 
@@ -416,10 +416,10 @@ server <- function(input, output, session) {
     }
   )
 
-
-  callModule(forGrVar, "forgrvar", rID = reshID())
-  callModule(kumulativAndel, "kumAnd", rID = reshID())
-  callModule(tabell, "muskeltabell")
+#
+#   callModule(forGrVar, "forgrvar", rID = reshID())
+#   callModule(kumulativAndel, "kumAnd", rID = reshID())
+#   callModule(tabell, "muskeltabell")
 
   #Navbarwidget
   output$appUserName <- renderText(rapbase::getUserFullName(session))
