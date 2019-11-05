@@ -111,13 +111,13 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 
-system.file("inst/shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
+system.file("dataOGvar.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("inst/shinyApps/muskel/forAndGr.R",package = "muskel") %>%
+system.file("forAndGr.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("inst/shinyApps/muskel/kumandel.R",package = "muskel") %>%
+system.file("kumandel.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("inst/shinyApps/muskel/tabell.R",package = "muskel") %>%
+system.file("tabell.R",package = "muskel") %>%
   source(encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
