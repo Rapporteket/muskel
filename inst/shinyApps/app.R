@@ -110,13 +110,13 @@ library(shiny)
 
 
 
-system.file("shinyApps/dataOGvar.R",package = "muskel") %>%
+system.file("./shinyApps/dataOGvar.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("shinyApps/forAndGr.R",package = "muskel") %>%
+system.file("./shinyApps/forAndGr.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("shinyApps/kumandel.R",package = "muskel") %>%
+system.file("./shinyApps/kumandel.R",package = "muskel") %>%
   source(encoding = "UTF-8")
-system.file("shinyApps/tabell.R",package = "muskel") %>%
+system.file("./shinyApps/tabell.R",package = "muskel") %>%
   source(encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
