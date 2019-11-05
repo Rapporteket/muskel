@@ -108,17 +108,11 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 }
 library(shiny)
 
-
-
-# system.file("shinyApps/dataOGvar.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/forAndGr.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/kumandel.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/tabell.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-
+context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
+onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
+if (onServer) {
+  RegData <- MuskelHentRegData()
+}
 RegData <- MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
@@ -252,7 +246,6 @@ forGrVar <- function(input, output, session, rID = reshID() ){
     }
   )
 }
-
 #alternative til dateInput med mulighet til  bare år, måned og år ..
 dateInput2 <- function(inputId, label, minview = "years", maxview = "decades", ...) {
   d <- shiny::dateInput(inputId, label, ...)
@@ -555,6 +548,16 @@ tabell <- function(input, output, session){
   })
 
 }
+
+
+# system.file("shinyApps/dataOGvar.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/forAndGr.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/kumandel.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
+# system.file("shinyApps/tabell.R",package = "muskel") %>%
+#   source(encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
