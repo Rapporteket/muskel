@@ -169,7 +169,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"),
-                                     h3(paste0("xsdkjhfkadhs",system.file("app.R",package = "muskel"), getwd())),
+                                     h3(paste0("xsdkjhfkadhs",system.file("muskel/shinyApps/muskel/app.R",package = "muskel"),R.home())),
                                      downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"),
