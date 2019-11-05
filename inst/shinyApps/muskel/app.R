@@ -20,13 +20,13 @@ if (onServer) {
   RegData <- MuskelHentRegData()
 } else {
   # rm(list = ls())
-  ForlopsData <- read.table('V:/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';')
+  ForlopsData <- read.table('V:/muskel/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';')
 
-  RegData <- read.table('V:/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';')
+  RegData <- read.table('V:/muskel/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';')
 
-  skjemaoversikt <- read.table('V:/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F)
+  skjemaoversikt <- read.table('V:/muskel/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F)
 
-  RegDataLabel <- read.table('V:/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';')
+  RegDataLabel <- read.table('V:/muskel/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';')
 
   #ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
   ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
@@ -133,7 +133,8 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"), downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
-                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
+                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"),
+                                     textOutput("txtn"))
                           )
                           )
                  ),
@@ -366,7 +367,8 @@ server <- function(input, output, session) {
     }
   )
 
-
+  WD <- reactive({getwd()})
+  output$txtn <- renderText(WD())
 }
 
 # Run the application
