@@ -110,14 +110,14 @@ names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 
 
 
-# system.file("shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
-#   source(encoding = "UTF-8")
+system.file("shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
+system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
+system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
+system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
