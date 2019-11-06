@@ -23,12 +23,13 @@ library(htmltools)
 
 system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
     source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
-#    source(encoding = "UTF-8")
+system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
+
 
 addResourcePath('rap', system.file('www', package='rapbase'))
 regTitle <-  "RAPPORTEKET MUSKELREGISTERET"
@@ -99,7 +100,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           )
                  ),
                 tabPanel("Fordelinger etter grupperingsvariabler",
-                  #forGrVarUI(id = "forgrvar")
+                  forGrVarUI(id = "forgrvar")
                 ),
                 tabPanel("Kummulative andeler",
                          #kumulativAndelUI(id = "kumAnd")
@@ -340,8 +341,8 @@ server <- function(input, output, session) {
     }
   )
 
-#
-# #  callModule(forGrVar, "forgrvar", rID = reshID())
+
+  callModule(forGrVar, "forgrvar", rID = reshID())
 #   callModule(kumulativAndel, "kumAnd", rID = reshID())
 #   callModule(tabell, "muskeltabell")
 
