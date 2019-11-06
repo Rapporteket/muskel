@@ -31,7 +31,7 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 
- system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
+system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
     source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
@@ -89,8 +89,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"),
-                                     h3(paste0(test,
-                                               system.file("shinyApps/muskel/app.R",package = "muskel"),
+                                     h3(paste0(system.file("shinyApps/muskel/app.R",package = "muskel"),
                                                system.file("shinyApps/muskel/dataOGvar.R",package = "muskel"),
                                                system.file("shinyApps/muskel/forAndGr.R",package = "muskel"),
                                                system.file("shinyApps/muskel/kumandel.R",package = "muskel"),
