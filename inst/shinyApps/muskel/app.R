@@ -27,8 +27,8 @@ system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
    source(encoding = "UTF-8")
 system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
    source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
-#    source(encoding = "UTF-8")
+system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
+    source(encoding = "UTF-8")
 
 
 addResourcePath('rap', system.file('www', package='rapbase'))
@@ -344,7 +344,7 @@ server <- function(input, output, session) {
 
   callModule(forGrVar, "forgrvar", rID = reshID())
   callModule(kumulativAndel, "kumAnd", rID = reshID())
-#   callModule(tabell, "muskeltabell")
+  callModule(tabell, "muskeltabell")
 
   #Navbarwidget
   output$appUserName <- renderText(rapbase::getUserFullName(session))
