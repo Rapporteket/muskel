@@ -17,9 +17,20 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
                        aldmin = 0, aldmax = 120, kjoen = 99, tidenh = "aar",
                        frlType = NULL, avd = "Nei", IDType = "PasientID"){
 
-    if (kjoen == 99) { kjoen <- c(0,1)}
-    if(is.null(frlType) ) {frlType <-  unique(RegData$ForlopsType1)}
-    if(avd == "Ja"){avd <-  c("Ja","Nei")}
+    if (kjoen == 99) {
+        kjoen <- c(0,1)
+    }
+    if (!exists("frlType")) {
+        frlType <-  unique(RegData$ForlopsType1)
+    } else if(is.null(frlType) ) {
+        frlType <-  unique(RegData$ForlopsType1)
+    } else {
+        frlType <- frlType
+    }
+
+    if(avd == "Ja"){
+        avd <-  c("Ja","Nei")
+    }
 
 
 

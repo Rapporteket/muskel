@@ -79,7 +79,7 @@ tabell <- function(input, output, session){
                                          tidenh = req(input$tidenh),
                                          avd = req(input$avdod),
                                          IDType = req(input$skjemarad),
-                                         frlType = req(input$forl) )
+                                         frlType = (input$forl) )
     ) })
 
     observe({
