@@ -18,15 +18,6 @@ library(htmltools)
 
 
 
-addResourcePath('rap', system.file('www', package='rapbase'))
-regTitle <-  "RAPPORTEKET MUSKELREGISTERET"
-logo <- includeHTML(system.file('www/logo.svg', package='rapbase'))
-logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
-                   "header.append('<div class=\"navbar-brand\" style=\"float:left;font-size:75%\">",
-                   logo,
-                   "</div>');\n",
-                   "console.log(header)")
-logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 
@@ -38,6 +29,18 @@ system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
+
+addResourcePath('rap', system.file('www', package='rapbase'))
+regTitle <-  "RAPPORTEKET MUSKELREGISTERET"
+logo <- includeHTML(system.file('www/logo.svg', package='rapbase'))
+logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
+                   "header.append('<div class=\"navbar-brand\" style=\"float:left;font-size:75%\">",
+                   logo,
+                   "</div>');\n",
+                   "console.log(header)")
+logoWidget <- tags$script(shiny::HTML(logoCode))
+
+
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
@@ -88,15 +91,9 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"),
-                                     h3(paste0(system.file("shinyApps/muskel/app.R",package = "muskel"),
-                                               system.file("shinyApps/muskel/dataOGvar.R",package = "muskel"),
-                                               system.file("shinyApps/muskel/forAndGr.R",package = "muskel"),
-                                               system.file("shinyApps/muskel/kumandel.R",package = "muskel"),
-                                               system.file("shinyApps/muskel/tabell.R",package = "muskel"))),
                                      downloadButton("lastNedBilde", "Last ned bilde")),
                             tabPanel("Tabell",
                                      tableOutput("Tabell1"),
-
                                      downloadButton("lastNed", "Last ned tabell"))
                           )
                           )
@@ -243,7 +240,7 @@ server <- function(input, output, session) {
 
   output$Figur1 <- renderPlot({
 
-    MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+    muskel::MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                      erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd), forlop = as.numeric(input$forlop),
                      maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil, avdod = input$avdod,
                      UtredningsaarFra =as.numeric(input$Utredningsaar[1]), UtredningsaarTil =as.numeric(input$Utredningsaar[2]),
@@ -261,7 +258,7 @@ server <- function(input, output, session) {
   # , diagnose = input$icd10_kntr_verdi
 
   tabellReager <- reactive({
-    TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
+    TabellData <- muskel::MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
                                    erMann = as.numeric(input$erMann), egenavd = as.numeric(input$egenavd), forlop = as.numeric(input$forlop),
                                    maxald=as.numeric(input$alder[2]), datoFra = input$datoFra, datoTil = input$datoTil, avdod = input$avdod,
                                    UtredningsaarFra =as.numeric(input$Utredningsaar[1]), UtredningsaarTil =as.numeric(input$Utredningsaar[2]),
