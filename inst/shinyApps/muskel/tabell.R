@@ -69,9 +69,17 @@ tabell <- function(input, output, session){
     output$txt1 <- renderText({ paste0("Antall " ,forloptxt()," per ",tidenhtxt(), " per avdeling") })
 
 
-    tabellData <- reactive({ as.data.frame.matrix( muskel::MuskelTabellerForlopspas(RegData, tidFra = input$dato[1],tidTil = input$dato[2],
-                                                              aldmin = input$ald[1], aldmax = input$ald[2], kjoen = input$kjo,
-                                                              tidenh = input$tidenh, avd = input$avdod,IDType = input$skjemarad, frlType = input$forl )
+    tabellData <- reactive({ as.data.frame.matrix(
+        muskel::MuskelTabellerForlopspas(RegData,
+                                         tidFra = req(input$dato[1]),
+                                         tidTil = req(input$dato[2]),
+                                         aldmin = req(input$ald[1]),
+                                         aldmax = req(input$ald[2]),
+                                         kjoen = req(input$kjo),
+                                         tidenh = req(input$tidenh),
+                                         avd = req(input$avdod),
+                                         IDType = req(input$skjemarad),
+                                         frlType = req(input$forl) )
     ) })
 
     observe({
