@@ -30,9 +30,9 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 
-
-system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
-    source(encoding = "UTF-8")
+#
+# system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
+#     source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
