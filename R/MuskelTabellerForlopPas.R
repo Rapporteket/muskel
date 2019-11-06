@@ -23,16 +23,31 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
 
 
 
-    utData <- RegData %>% dplyr::select( PasientID, ForlopsID, SykehusNavn, HovedDato,
-                                         erMann, PasientAlder, Avdod, ForlopsType1Num, ForlopsType1) %>%
-        dplyr::mutate(maaned = factor(lubridate::month(HovedDato),labels = c("Jan","Feb",
-                                                                             "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des")) ,
-                      aar = lubridate::year(HovedDato) ) %>%
-        dplyr::filter( as.Date(HovedDato) %>% dplyr::between(as.Date(tidFra) ,as.Date(tidTil)),
-                       PasientAlder %>% dplyr::between( aldmin,aldmax), erMann %in% kjoen,
-                       ForlopsType1 %in% frlType, Avdod %in% avd) %>% dplyr::select(PasientID, ForlopsID, SykehusNavn, maaned, aar) %>%
+    utData <- RegData %>%
+        dplyr::select( PasientID,
+                       ForlopsID,
+                       SykehusNavn,
+                       HovedDato,
+                       erMann,
+                       PasientAlder,
+                       Avdod,
+                       ForlopsType1Num,
+                       ForlopsType1) %>%
+        dplyr::mutate(maaned = factor(lubridate::month(HovedDato),
+             labels = c("Jan","Feb","Mar", "Apr", "Mai",
+            "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des")) ,
+            aar = lubridate::year(HovedDato) ) %>%
+        dplyr::filter( as.Date(HovedDato) %>%
+                           dplyr::between(as.Date(tidFra) ,as.Date(tidTil)),
+                       PasientAlder %>% dplyr::between( aldmin,aldmax),
+                       erMann %in% kjoen,
+                       ForlopsType1 %in% frlType,
+                       Avdod %in% avd) %>%
+        dplyr::select(PasientID, ForlopsID, SykehusNavn, maaned, aar) %>%
         dplyr::arrange(aar,maaned)
-    utData <- utData%>% dplyr::filter(!duplicated( utData[[IDType]]))
+    tData <- utData%>%
+        dplyr::filter(!duplicated( utData[[IDType]]))
 
-    tabData <-  stats::addmargins( table(utData[["SykehusNavn"]],utData[[tidenh]] ) )
+    tab <-  stats::addmargins( table(tData[["SykehusNavn"]],
+                                         tData[[tidenh]] ) )
 }

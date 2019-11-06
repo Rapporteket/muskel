@@ -136,10 +136,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
 server <- function(input, output, session) {
 
   reshID <- reactive({
-    ifelse(onServer,as.numeric(rapbase::getUserReshId(session, testCase = TRUE)),101719)
+    ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
   })
   userRole <- reactive({
-    ifelse(onServer, rapbase::getUserRole(session, testCase = TRUE), 'SC')
+    ifelse(onServer, rapbase::getUserRole(session), 'SC')
   })
 
   # observe(
