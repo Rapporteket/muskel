@@ -106,7 +106,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                   kumulativAndelUI(id = "kumAnd")
                 ),
                 tabPanel("Pasient og forløpstabeller",
-                         #tabellUI("muskeltabell")
+                         tabellUI("muskeltabell")
 
                 ),
 
