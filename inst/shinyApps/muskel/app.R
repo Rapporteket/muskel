@@ -109,7 +109,7 @@ names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 }
 
 
-system.file("shinyApps/muskel/tst.R",package = "muskel") %>%
+system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
    source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")

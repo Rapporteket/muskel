@@ -1,8 +1,8 @@
 context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
 if (onServer) {
-  RegData <- MuskelHentRegData()
-} else {
+  RegData <- muskel::MuskelHentRegData()
+} else if (context = "") {
   # rm(list = ls())
   ForlopsData <- read.table('v:/muskel/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 
@@ -44,9 +44,9 @@ if (onServer) {
   skjemaoversikt$HovedDato <- as.Date(skjemaoversikt$HovedDato)
 
   rm(list=c('ForlopsData', 'RegDataLabel'))
-}
+} else { NULL}
 
-RegData <- MuskelPreprosess(RegData=RegData)
+RegData <- muskel::MuskelPreprosess(RegData=RegData)
 
 diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
 names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
