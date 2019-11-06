@@ -25,8 +25,8 @@ system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
     source(encoding = "UTF-8")
 system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
    source(encoding = "UTF-8")
-# system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
-#    source(encoding = "UTF-8")
+system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
+   source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
 
@@ -103,7 +103,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                   forGrVarUI(id = "forgrvar")
                 ),
                 tabPanel("Kummulative andeler",
-                         #kumulativAndelUI(id = "kumAnd")
+                  kumulativAndelUI(id = "kumAnd")
                 ),
                 tabPanel("Pasient og forløpstabeller",
                          #tabellUI("muskeltabell")
@@ -343,7 +343,7 @@ server <- function(input, output, session) {
 
 
   callModule(forGrVar, "forgrvar", rID = reshID())
-#   callModule(kumulativAndel, "kumAnd", rID = reshID())
+  callModule(kumulativAndel, "kumAnd", rID = reshID())
 #   callModule(tabell, "muskeltabell")
 
   #Navbarwidget
