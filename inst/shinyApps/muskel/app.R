@@ -109,7 +109,7 @@ names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
 }
 
 
-system.file("shinyApps/muskel/dataOGvar.R",package = "muskel") %>%
+system.file("shinyApps/muskel/tst.R",package = "muskel") %>%
    source(encoding = "UTF-8")
 # system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
 #    source(encoding = "UTF-8")
@@ -167,7 +167,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           mainPanel(tabsetPanel(
                             tabPanel("Figur",
                                      plotOutput("Figur1", height="auto"),
-                                     h3(paste0("xsdkjhfkadhs",
+                                     h3(paste0(test,
                                                system.file("shinyApps/muskel/app.R",package = "muskel"),
                                                system.file("shinyApps/muskel/dataOGvar.R",package = "muskel"),
                                                system.file("shinyApps/muskel/forAndGr.R",package = "muskel"),
