@@ -122,9 +122,9 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           ),
                           mainPanel(tabsetPanel(
                             tabPanel("Antall skjema",
-                                     DTOutput("Tabell_adm1"), downloadButton("lastNed1", "Last ned tabell")),
+                                     DTOutput("Tabell_adm1"), downloadButton("lastNedAdm1", "Last ned tabell")),
                             tabPanel("Annen admin rapport",
-                                     tableOutput("Tabell_adm2"), downloadButton("lastNed2", "Last ned tabell"))
+                                     tableOutput("Tabell_adm2"), downloadButton("lastNedAdm2", "Last ned tabell"))
                           )
 
                           )
@@ -150,9 +150,9 @@ server <- function(input, output, session) {
   # )
 
   antskjema <- function() {
-    aux <- as.data.frame.matrix(addmargins(table(skjemaoversikt[skjemaoversikt$SkjemaStatus == as.numeric(input$regstatus) &
-                                                                  skjemaoversikt$HovedDato >= input$datoFra2 &
-                                                                  skjemaoversikt$HovedDato <= input$datoTil2,
+    aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus == as.numeric(input$regstatus) &
+                                                                  SkjemaOversikt$HovedDato >= input$datoFra2 &
+                                                                  SkjemaOversikt$HovedDato <= input$datoTil2,
                                                                 c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
     aux$Avdeling <- row.names(aux)
     ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
@@ -166,8 +166,20 @@ server <- function(input, output, session) {
     datatable(antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
               container = antskjema()$sketch,
               rownames = F,
-              options = list(pageLength = 25)
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                fixedHeader = TRUE,
+                lengthChange = FALSE,
+                dom = "t")
     )
+  )
+  output$lastNedAdm1 <- shiny::downloadHandler(
+    filename = paste0(
+      "Skjematabel", Sys.Date(),".csv"
+    ),
+    content = function (file) {write.csv2(antskjema()$ant_skjema, file, row.names = F)}
+
   )
 
   # output$Tabell_adm1 = renderDT(
