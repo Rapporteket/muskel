@@ -32,9 +32,13 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
         avd <-  c("Ja","Nei")
     }
 
+    lenFraTil <- length(seq(as.Date(tidFra), as.Date(tidTil), by = "month")) - 1
+    if (tidenh == "maaned" & lenFraTil < 14) {
+        tidenh <- "underEtAar"
+    }
 
 
-    utData <- RegData %>%
+    tabData <- RegData %>%
         dplyr::select( PasientID,
                        ForlopsID,
                        SykehusNavn,
@@ -47,18 +51,33 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
         dplyr::mutate(maaned = factor(lubridate::month(HovedDato),
              labels = c("Jan","Feb","Mar", "Apr", "Mai",
             "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des")) ,
-            aar = lubridate::year(HovedDato) ) %>%
+            aar = lubridate::year(HovedDato),
+            underEtAar = paste(maaned, "-", aar)) %>%
         dplyr::filter( as.Date(HovedDato) %>%
                            dplyr::between(as.Date(tidFra) ,as.Date(tidTil)),
                        PasientAlder %>% dplyr::between( aldmin,aldmax),
                        erMann %in% kjoen,
                        ForlopsType1 %in% frlType,
                        Avdod %in% avd) %>%
-        dplyr::select(PasientID, ForlopsID, SykehusNavn, maaned, aar) %>%
+        dplyr::select(PasientID, ForlopsID, SykehusNavn, maaned, aar, underEtAar) %>%
         dplyr::arrange(aar,maaned)
-    tData <- utData%>%
-        dplyr::filter(!duplicated( utData[[IDType]]))
 
-    tab <-  stats::addmargins( table(tData[["SykehusNavn"]],
-                                         tData[[tidenh]] ) )
+    if (length (tabData[[tidenh]]) == 0) {
+        return (data.frame(
+            registreringer="0 registreringer i den valgte tidsperioden",
+            Fra = as.character(lubridate::as_date(tidFra)),
+            Til = as.character( lubridate::as_date(tidTil))))
+    } else {
+
+        tabData <- tabData%>%
+            dplyr::filter(!duplicated( tabData[[IDType]]))
+        tabData$underEtAar <- ordered(
+            tabData$underEtAar,
+            levels = unique(tabData$underEtAar)
+        )
+
+        utData <-  stats::addmargins( table(tabData[["SykehusNavn"]],
+                                         tabData[[tidenh]] ) )
+        return( utData)
+    }
 }
