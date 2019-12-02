@@ -20,11 +20,14 @@ Imports:
     shinyjs,
     lubridate,
     rapFigurer (>= 0.1.0),
-    magrittr
+    magrittr,
+    raplog (>= 0.0.0.9000),
+    shinyalert
 RoxygenNote: 6.1.1
 Suggests: knitr
 VignetteBuilder: knitr
 Remotes: 
     Rapporteket/rapbase@rel,
-    Rapporteket/rapFigurer
+    Rapporteket/rapFigurer,
+    Rapporteket/raplog@rel
 Roxygen: list(markdown = TRUE)

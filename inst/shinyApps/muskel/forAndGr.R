@@ -41,12 +41,12 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
     ),#sidebarPanel
 
     shiny::mainPanel(
-      tabsetPanel(
-      shiny::tabPanel("Figur",
+      tabsetPanel(id = "tab",
+      shiny::tabPanel("Figur",value = "fig",
                       shiny::plotOutput(ns("Figur"), height="auto"),
                       shiny::downloadButton(ns("lastNedBilde"), "Last ned bilde")),
 
-      shiny::tabPanel("Tabell",
+      shiny::tabPanel("Tabell", value = "tab",
                       shiny::tableOutput(ns("Tabell")),
                       shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell"))
       )
@@ -55,7 +55,7 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
 }
 
 
-forGrVar <- function(input, output, session, rID = reshID() ){
+forGrVar <- function(input, output, session, rID = reshID() , ss){
 
   resp <- reactive({
     tabData <- muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
@@ -103,4 +103,47 @@ forGrVar <- function(input, output, session, rID = reshID() ){
       write.csv2(Tabell, file, row.names = F)
     }
   )
+
+  shiny::observe({
+    if (onServer) {
+      if (req(input$tab) == "fig") {
+        mldandel <- paste(
+          "Muskel: figur - fordeling etter grupperingsvariabler. variabel -",
+          input$var
+        )
+      } else if (req(input$tab) == "tab") {
+        mldandel <- paste(
+          "Muskel: tabell - fordeling etter grupperingsvariabler. variabel -",
+          input$var
+        )
+      }
+      raplog::repLogger(
+        session = ss,
+        msg = mldandel
+      )
+      mldNLF <- paste(
+        "Muskel: nedlasting figur - fordeling etter grupperingsvariabler. variabel -",
+        input$var
+      )
+      mldNLT <- paste(
+        "Muskel: nedlasting tabell - fordeling etter grupperingsvariabler. variabel -",
+        input$var
+      )
+      shinyjs::onclick(
+        "lastNedBilde",
+        raplog::repLogger(
+          session = ss,
+          msg = mldNLF
+        )
+      )
+      shinyjs::onclick(
+        "lastNedTabell",
+        raplog::repLogger(
+          session = ss,
+          msg = mldNLT
+        )
+      )
+    }
+  })
+
 }

@@ -63,7 +63,7 @@ tabellUI <- function(
 
 
 
-tabell <- function(input, output, session){
+tabell <- function(input, output, session, ss){
 
     forloptxt <- reactive({if(input$skjemarad=="ForlopsID") {
         "registrerte pasientforløp"
@@ -150,6 +150,10 @@ tabell <- function(input, output, session){
     observe({
         cont <- headerFooter(tabellData())
         subS <- dim(tabellData())[1]-1
+        raplog::repLogger(
+            session = ss,
+            msg = "Muskel: tabell unikepasienter/pasientforløp"
+        )
 
         output$Tabell <-  renderDT(
             as.data.frame.matrix(tabellData())[1:subS, ] %>%
@@ -182,6 +186,14 @@ tabell <- function(input, output, session){
             write.csv2(tab, file, row.names = T)
         }
     )
-
+    observe({
+        shinyjs::onclick(
+            "lastNedTabell",
+            raplog::repLogger(
+                session = ss,
+                msg = "Muskel: nedlasting tabell unikepasienter/pasientforløp"
+            )
+        )
+    })
 
 }

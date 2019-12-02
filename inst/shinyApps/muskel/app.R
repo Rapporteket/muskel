@@ -16,6 +16,7 @@ library(kableExtra)
 library(DT)
 library(htmltools)
 library(lubridate)
+library(shinyjs)
 
 
 
@@ -90,11 +91,11 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             selectInput(inputId = "bildeformat", label = "Velg bildeformat",
                                         choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
                           ),
-                          mainPanel(tabsetPanel(
-                            tabPanel("Figur",
+                          mainPanel(tabsetPanel(id = "tab",
+                            tabPanel("Figur", value = "andelFig",
                                      plotOutput("Figur1", height="auto"),
                                      downloadButton("lastNedBilde", "Last ned bilde")),
-                            tabPanel("Tabell",
+                            tabPanel("Tabell",value = "andelTab",
                                      tableOutput("Tabell1"),
                                      downloadButton("lastNed", "Last ned tabell"))
                           )
@@ -142,6 +143,9 @@ server <- function(input, output, session) {
   userRole <- reactive({
     ifelse(onServer, rapbase::getUserRole(session), 'SC')
   })
+  if (onServer){
+    raplog::appLogger(session, msg = "Muskel: shiny app starter")
+  }
 
   # observe(
   #   if (userRole() != 'SC') {
@@ -162,18 +166,35 @@ server <- function(input, output, session) {
     list(ant_skjema=ant_skjema, sketch=sketch)
   }
 
-  output$Tabell_adm1 = renderDT(
-    datatable(antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
-              container = antskjema()$sketch,
-              rownames = F,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                fixedHeader = TRUE,
-                lengthChange = FALSE,
-                dom = "t")
+  shiny::observe({
+    raplog::repLogger(
+      session = session,
+      msg = "Muskel: tabell admin-skjema"
     )
-  )
+    output$Tabell_adm1 = DT::renderDT(
+      DT::datatable(
+        antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
+        container = antskjema()$sketch,
+        rownames = F,
+        selection = "none",
+        options = list(
+          pageLength = 50,
+          fixedHeader = TRUE,
+          lengthChange = FALSE,
+          dom = "t")
+      )
+    )
+  })
+
+  shiny::observe({
+    shinyjs::onclick(
+      "lastNedAdm1",
+      raplog::repLogger(
+        session = session,
+        msg = "Muskel: Nedlasting tabell admin-skjema"
+      )
+    )
+  })
   output$lastNedAdm1 <- shiny::downloadHandler(
     filename = paste0(
       "Skjematabel", Sys.Date(),".csv"
@@ -355,9 +376,51 @@ server <- function(input, output, session) {
   )
 
 
-  callModule(forGrVar, "forgrvar", rID = reshID())
-  callModule(kumulativAndel, "kumAnd", rID = reshID())
-  callModule(tabell, "muskeltabell")
+  callModule(forGrVar, "forgrvar", rID = reshID(), ss = session)
+  callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
+  callModule(tabell, "muskeltabell", ss = session)
+
+  shiny::observe({
+    if (onServer) {
+      if (input$tab == "andelFig") {
+        mldandel <- paste(
+          "Muskel: figur - fordeling. variabel -",
+          input$valgtVar
+        )
+      } else if (input$tab == "andelTab") {
+        mldandel <- paste(
+          "Muskel: tabell - fordeling. variabel -",
+          input$valgtVar
+        )
+      }
+      raplog::repLogger(
+        session = session,
+        msg = mldandel
+      )
+      mldNLF <- paste(
+        "Muskel: nedlasting figur - Fordeling. variabel -",
+        input$valgtVar
+      )
+      mldNLT <- paste(
+        "Muskel: nedlasting tabell - Fordeling. variabel -",
+        input$valgtVar
+      )
+      shinyjs::onclick(
+        "lastNedBilde",
+        raplog::repLogger(
+          session = session,
+          msg = mldNLF
+        )
+      )
+      shinyjs::onclick(
+        "lastNed",
+        raplog::repLogger(
+          session = session,
+          msg = mldNLT
+        )
+      )
+    }
+  })
 
   #Navbarwidget
   output$appUserName <- renderText(rapbase::getUserFullName(session))

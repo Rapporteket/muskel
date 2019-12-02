@@ -92,11 +92,11 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
         ),#sidebarPanel
 
         shiny::mainPanel(
-            shiny::tabsetPanel(
-              shiny::tabPanel("Figur",
+            shiny::tabsetPanel(id = "tab",
+              shiny::tabPanel("Figur", value = "fig",
                        shiny::plotOutput(ns("Figur"), height="auto", hover = ns("hov")),
                        shiny::downloadButton(ns("lastNedBilde"), "Last ned bilde")),
-              shiny::tabPanel("Tabell",
+              shiny::tabPanel("Tabell", value = "tab",
                        shiny::tableOutput(ns("Tabell")),
                        shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell"))
             )#tabsetPanel
@@ -105,7 +105,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
 }
 
 #shiny server mudule
-kumulativAndel <- function(input, output, session, rID){
+kumulativAndel <- function(input, output, session, rID, ss){
 
   output$ICD10diag <-shiny::renderUI({
     ns <- session$ns
@@ -212,6 +212,47 @@ kumulativAndel <- function(input, output, session, rID){
       write.csv2(Tabell, file, row.names = F)
     }
   )
+  shiny::observe({
+    if (onServer) {
+      if (req(input$tab) == "fig") {
+        mldandel <- paste(
+          "Muskel: figur - kummulative andeler. variabel -",
+          input$var
+        )
+      } else if (req(input$tab) == "tab") {
+        mldandel <- paste(
+          "Muskel: tabell - kummulative andeler. variabel -",
+          input$var
+        )
+      }
+      raplog::repLogger(
+        session = ss,
+        msg = mldandel
+      )
+      mldNLF <- paste(
+        "Muskel: nedlasting figur - kummulative andeler. variabel -",
+        input$var
+      )
+      mldNLT <- paste(
+        "Muskel: nedlasting tabell - kummulative andeler. variabel -",
+        input$var
+      )
+      shinyjs::onclick(
+        "lastNedBilde",
+        raplog::repLogger(
+          session = ss,
+          msg = mldNLF
+        )
+      )
+      shinyjs::onclick(
+        "lastNedTabell",
+        raplog::repLogger(
+          session = ss,
+          msg = mldNLT
+        )
+      )
+    }
+  })
 
 }#kumulativeAndel
 
