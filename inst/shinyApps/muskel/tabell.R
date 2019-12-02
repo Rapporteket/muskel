@@ -155,7 +155,7 @@ tabell <- function(input, output, session){
             as.data.frame.matrix(tabellData())[1:subS, ] %>%
                 DT::datatable(
                     container = cont,
-                    extensions = 'FixedHeader',
+                    #extensions = 'FixedHeader',
                     selection = "none",
                     options = list(
                         pageLength = 50,
