@@ -66,7 +66,7 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
         return (data.frame(
             registreringer="0 registreringer i den valgte tidsperioden",
             Fra = as.character(lubridate::as_date(tidFra)),
-            Til = as.character( lubridate::as_date(tidTil))))
+            Til = as.character( lubridate::as_date(tidTil))) )
     } else {
 
         tabData <- tabData%>%
