@@ -92,7 +92,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
         ),#sidebarPanel
 
         shiny::mainPanel(
-            shiny::tabsetPanel(id = "tab",
+            shiny::tabsetPanel(id = ns("tab"),
               shiny::tabPanel("Figur", value = "fig",
                        shiny::plotOutput(ns("Figur"), height="auto", hover = ns("hov")),
                        shiny::downloadButton(ns("lastNedBilde"), "Last ned bilde")),
@@ -215,19 +215,19 @@ kumulativAndel <- function(input, output, session, rID, ss){
   shiny::observe({
     if (onServer) {
       if (req(input$tab) == "fig") {
-        mldandel <- paste(
+        mldKA <- paste(
           "Muskel: figur - kummulative andeler. variabel -",
           input$var
         )
       } else if (req(input$tab) == "tab") {
-        mldandel <- paste(
+        mldKA <- paste(
           "Muskel: tabell - kummulative andeler. variabel -",
           input$var
         )
       }
       raplog::repLogger(
         session = ss,
-        msg = mldandel
+        msg = mldKA
       )
       mldNLF <- paste(
         "Muskel: nedlasting figur - kummulative andeler. variabel -",

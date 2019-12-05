@@ -41,7 +41,7 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
     ),#sidebarPanel
 
     shiny::mainPanel(
-      tabsetPanel(id = "tab",
+      tabsetPanel(id = ns("tab"),
       shiny::tabPanel("Figur",value = "fig",
                       shiny::plotOutput(ns("Figur"), height="auto"),
                       shiny::downloadButton(ns("lastNedBilde"), "Last ned bilde")),
