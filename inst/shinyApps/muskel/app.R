@@ -57,6 +57,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
                                                        organization = uiOutput("appOrgName"),
                                                        addUserInfo = TRUE),
+                          tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico")),
                           # sidebarLayout(
                           sidebarPanel(
                             shinyjs::useShinyjs(),
