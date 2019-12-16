@@ -113,29 +113,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel("Kumulative andeler",
                   kumulativAndelUI(id = "kumAnd")
                 ),
-                tabPanel("Pasient og forløpstabeller",
+                tabPanel("Administrative tabeller",
                          tabellUI("muskeltabell")
 
-                ),
-
-                tabPanel("Administrative tabeller",
-                          sidebarPanel(
-                            dateInput(inputId = 'datoFra2', value = '2008-01-01', min = '2008-01-01',
-                                      label = "F.o.m. dato", language="nb"),
-                            dateInput(inputId = 'datoTil2', value = Sys.Date(), min = '2012-01-01',
-                                      label = "T.o.m. dato", language="nb"),
-                            selectInput(inputId = "regstatus", label = "Skjemastatus",
-                                        choices = c('Ferdigstilt'=1, 'Kladd'=0))
-                          ),
-                          mainPanel(tabsetPanel(
-                            tabPanel("Antall skjema",
-                                     DTOutput("Tabell_adm1"), downloadButton("lastNedAdm1", "Last ned tabell")),
-                            tabPanel("Annen admin rapport",
-                                     tableOutput("Tabell_adm2"), downloadButton("lastNedAdm2", "Last ned tabell"))
-                          )
-
-                          )
-                 )
+                )
 
 )
 

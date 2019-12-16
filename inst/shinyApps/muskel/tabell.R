@@ -11,72 +11,125 @@ headerFooter <- function(data){
 
 forlop <- unique(RegData$ForlopsType1)
 
-tabellUI <- function(
-    id, datoStart = "2008-01-01",
-    datoSlutt = Sys.Date(),forltype = forlop){
+tabellUI <- function(id){
 
     ns <- shiny::NS(id)
     shiny::sidebarLayout(
         shiny::sidebarPanel(
-            shiny::dateRangeInput(
-                ns("dato"), "Tidsperiode:",
-                language = "no",separator = "til",
-                start = datoStart, end = datoSlutt,
-                format = "yyyy-mm-dd"
-            ),
-            shiny::sliderInput(
-                ns("ald"), label = "Alder",
-                min = 0, max = 120, value = c(0,120)
-            ),
-            shiny::selectInput(
-                ns("kjo"), "Kjønn",
-                choices = c(
-                    "Begge" = 99, "Kvinne" = 0, "Mann" = 1),
-                selected = 99
-            ),
-            shiny::selectInput(
-                ns("tidenh"), "Velg tidsenhet",
-                choices = c("Måned" = "maaned", "År" = "aar")
-            ),
-            shiny::selectInput(
-                ns("forl"), label = "Forløpstype",
-                choices = forltype, multiple = TRUE
-            ),
-            shiny::selectInput(
-                ns("avdod"), label = "Inkluder avdøde",
-                choices = c("Ja" , "Nei" ), selected = "Nei"
-            ),
-            shiny::radioButtons(
-                ns("skjemarad"), "",
-                choices = c("Forløp"= "ForlopsID","Pasient"= "PasientID"),
-                inline = TRUE
-            )
+            shiny::uiOutput(ns("sidebar"))
         ),
         shiny::mainPanel(
-            shiny::h3(textOutput(ns("txt1")),
-                      style = "text-align:center"),
-            shiny::uiOutput(ns("tidsIntervall")),
-            #hr(),
-            DT::DTOutput(ns("Tabell")),
-            shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell")
+            tabsetPanel(id = ns("tab"),
+                tabPanel("Antall skjema", value = "antskjema",
+                         DTOutput(ns("Tabell_adm1")), downloadButton(ns("lastNedAdm1"), "Last ned tabell")),
+                tabPanel("Antall unike Pasienter/pasientforløp", value = "pasforl",
+                    shiny::h3(textOutput(ns("txt1")),
+                              style = "text-align:center"),
+                    shiny::uiOutput(ns("tidsIntervall")),
+                    DT::DTOutput(ns("Tabell")),
+                    shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell")
+            )
         )
-    )
+    ))
+
 }
 
 
 
-tabell <- function(input, output, session, ss){
+tabell <- function(input, output, session, ss, forltype = forlop){
 
-    forloptxt <- reactive({if(input$skjemarad=="ForlopsID") {
+    output$sidebar <- renderUI({
+        ns <- session$ns
+        if (input$tab == "pasforl") {
+            tagList(
+                shiny::dateRangeInput(
+                    ns("dato"), "Tidsperiode:",
+                    language = "no",separator = "til",
+                    start = "2008-01-01", end = Sys.Date(),
+                    format = "yyyy-mm-dd"
+                ),
+                shiny::sliderInput(
+                    ns("ald"), label = "Alder",
+                    min = 0, max = 120, value = c(0,120)
+                ),
+                shiny::selectInput(
+                    ns("kjo"), "Kjønn",
+                    choices = c(
+                        "Begge" = 99, "Kvinne" = 0, "Mann" = 1),
+                    selected = 99
+                ),
+                shiny::selectInput(
+                    ns("tidenh"), "Velg tidsenhet",
+                    choices = c("Måned" = "maaned", "År" = "aar")
+                ),
+                shiny::selectInput(
+                    ns("forl"), label = "Forløpstype",
+                    choices = forltype, multiple = TRUE
+                ),
+                shiny::selectInput(
+                    ns("avdod"), label = "Inkluder avdøde",
+                    choices = c("Ja" , "Nei" ), selected = "Nei"
+                ),
+                shiny::radioButtons(
+                    ns("skjemarad"), "",
+                    choices = c("Forløp"= "ForlopsID","Pasient"= "PasientID"),
+                    inline = TRUE
+                )
+            )
+        } else if (input$tab == "antskjema"){
+            tagList(
+                dateInput(inputId = ns('datoFra2'), value = '2008-01-01', min = '2008-01-01',
+                          label = "F.o.m. dato", language="nb"),
+                dateInput(inputId = ns('datoTil2'), value = Sys.Date(), min = '2012-01-01',
+                          label = "T.o.m. dato", language="nb"),
+                selectInput(inputId = ns("regstatus"), label = "Skjemastatus",
+                            choices = c('Ferdigstilt'=1, 'Kladd'=0))
+
+            )
+        }
+    })
+
+    antskjema <- function() {
+        aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus == as.numeric(req(input$regstatus)) &
+                                                                        SkjemaOversikt$HovedDato >= req(input$datoFra2) &
+                                                                        SkjemaOversikt$HovedDato <= req(input$datoTil2),
+                                                                    c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
+        aux$Avdeling <- row.names(aux)
+        ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
+        sketch <- htmltools::withTags(table(
+            tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
+            tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1], 2:dim(ant_skjema)[2]])))))
+        list(ant_skjema=ant_skjema, sketch=sketch)
+    }
+
+    output$Tabell_adm1 = DT::renderDT(
+        DT::datatable(
+            antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
+            container = antskjema()$sketch,
+            rownames = F,
+            selection = "none",
+            options = list(
+                pageLength = 50,
+                fixedHeader = TRUE,
+                lengthChange = FALSE,
+                dom = "t")
+        )
+    )
+
+    observe({
+    if ( input$tab == "pasforl" ) {
+    forloptxt <- reactive({if(req(input$skjemarad)=="ForlopsID") {
         "registrerte pasientforløp"
     }else{ "unike pasienter"}  })
 
-    tidenhtxt <- reactive({if(input$tidenh == "maaned") {
+    tidenhtxt <- reactive({if(req(input$tidenh) == "maaned") {
         "måned"
     }else{ "år"}  })
 
 
     output$txt1 <- renderText({ paste0("Antall " ,forloptxt()," per ",tidenhtxt(), " per avdeling") })
+    }
+    })
 
     output$tidsIntervall <- renderUI({
         ns <- session$ns
@@ -100,8 +153,8 @@ tabell <- function(input, output, session, ss){
 
     #
     observeEvent(input$tre,{
-        valgtDato <- as.Date(max(input$dato)) -
-            lubridate::day(as.Date(max(input$dato))) + 1
+        valgtDato <- as.Date(max(req(input$dato))) -
+            lubridate::day(as.Date(max(req(input$dato)))) + 1
 
         shiny::updateDateRangeInput(
             session,
@@ -110,8 +163,8 @@ tabell <- function(input, output, session, ss){
         )
     })
     observeEvent(input$seks,{
-        valgtDato <- as.Date(max(input$dato)) -
-            lubridate::day(as.Date(max(input$dato))) + 1
+        valgtDato <- as.Date(max(req(input$dato))) -
+            lubridate::day(as.Date(max(req(input$dato)))) + 1
 
         shiny::updateDateRangeInput(
             session,
@@ -120,8 +173,8 @@ tabell <- function(input, output, session, ss){
         )
     })
     observeEvent(input$et,{
-        valgtDato <- as.Date(max(input$dato)) -
-            lubridate::day(as.Date(max(input$dato))) + 1
+        valgtDato <- as.Date(max(req(input$dato))) -
+            lubridate::day(as.Date(max(req(input$dato)))) + 1
 
         shiny::updateDateRangeInput(
             session,
