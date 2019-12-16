@@ -196,8 +196,8 @@ tabell <- function(input, output, session, ss, forltype = forlop){
     tabellData <- reactive({ as.data.frame.matrix(
         muskel::MuskelTabellerForlopspas(
             RegData,
-            tidFra = req(input$dato[1]),
-            tidTil = req(input$dato[2]),
+            tidFra = min(req(input$dato)),
+            tidTil = max(req(input$dato)),
             aldmin = req(input$ald[1]),
             aldmax = req(input$ald[2]),
             kjoen = req(input$kjo),
@@ -248,6 +248,8 @@ tabell <- function(input, output, session, ss, forltype = forlop){
             write.csv2(tab, file, row.names = T)
         }
     )
+
+
     observe({
         shinyjs::onclick(
             "lastNedTabell",
@@ -263,7 +265,7 @@ tabell <- function(input, output, session, ss, forltype = forlop){
                 msg = "Muskel: Nedlasting tabell admin-skjema"
             )
         )
-        if ( input$tab = "antskjema"){
+        if ( input$tab == "antskjema"){
             raplog::repLogger(
                 session = ss,
                 msg = "Muskel: tabell - admin-skjema"
