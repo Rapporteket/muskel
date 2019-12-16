@@ -24,7 +24,7 @@ br(),
 br(),
 h4('Oversikt over registerets kvalitetsindikatorer og resultater finner du på www.kvalitetsregistre.no: ', #helpText
    a("Muskel", href="https://www.kvalitetsregistre.no/registers/507/resultater"),
-   target="_blank", align='center'),
+   target="_blank", align='center' ),
 br(),
 h4('Mer informasjon om registeret finnes på muskelregisteret sin hjemmeside: ', align='center',
    a("www.muskelregisteret.no", href="http://www.muskelregisteret.no", target="_blank"))
