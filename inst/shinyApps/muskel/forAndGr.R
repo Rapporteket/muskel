@@ -26,6 +26,7 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
 
       shiny::dateRangeInput(ns("dato"), label = "Tidsperiode",
                             start = datoStart, end = datoSlutt,
+                            language = "no",separator = "til",
                             format = "yyyy-mm-dd"),
 
       shiny::selectInput(ns("kjo"), label = "Kjønn",

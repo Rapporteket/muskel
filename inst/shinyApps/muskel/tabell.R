@@ -14,11 +14,13 @@ forlop <- unique(RegData$ForlopsType1)
 tabellUI <- function(
     id, datoStart = "2008-01-01",
     datoSlutt = Sys.Date(),forltype = forlop){
+
     ns <- shiny::NS(id)
     shiny::sidebarLayout(
         shiny::sidebarPanel(
             shiny::dateRangeInput(
                 ns("dato"), "Tidsperiode:",
+                language = "no",separator = "til",
                 start = datoStart, end = datoSlutt,
                 format = "yyyy-mm-dd"
             ),

@@ -54,10 +54,12 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
 
                 shiny::dateRangeInput(ns("dato"), label = "Tidsperiode",
                                   start = datoStart, end = datoSlutt,
+                                  language = "no",separator = "til",
                                   format = "yyyy-mm-dd"),
 
                 dateRangeInput2(ns("utrar"), label = "Utredningsår",
                                 start = utrstart, end = utrslutt,
+                                language = "no",separator = "til",
                                 minview = "years", format = "yyyy"),
 
                 shiny::sliderInput(ns("ald"), label = "Debutalder",
