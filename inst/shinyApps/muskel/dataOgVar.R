@@ -77,6 +77,8 @@ aux <- c('Alder ved førstegangsregistrering', 'Alder', 'Alder i dag', 'AlderDag
 
 varvalg <- aux[seq(2,length(aux), by = 2)]
 names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
+avdValg <- unique(RegData$AvdRESH)
+names(avdValg) <- vapply(seq_along(avdValg), function(x) (unique(RegData$SykehusNavn[RegData$AvdRESH == avdValg[x]])),FUN.VALUE = character(1))
 
 #####################################################################
 

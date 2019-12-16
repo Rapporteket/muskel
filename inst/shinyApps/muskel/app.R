@@ -74,6 +74,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                                       label = "T.o.m. dato", language="nb"),
                             sliderInput(inputId="alder", label = "Alder", min = 0,
                                         max = 120, value = c(0, 120)),
+                            uiOutput("SC"),
                             selectInput(inputId = "egenavd", label = "Pasientgruppe", selected = 0,
                                         choices = c('Registrert ved HF'=0, 'Følges opp ved HF'=1, 'Diagnostisert ved HF'=2,
                                         'Bosatt i fylke'=3)),
@@ -184,6 +185,20 @@ server <- function(input, output, session) {
                                                             RegData$Undergruppe2)])
                                                },
                                                multiple = TRUE)})
+  output$SC <- renderUI({
+    if (userRole() == "SC"){
+      selectInput("shSelect", label = "Velg Avdeling",
+                  choices = avdValg, selected = reshID())
+    }
+  })
+
+  resh <- reactive({
+    if (userRole() == "SC") {
+      input$shSelect
+    }else{
+      reshID()
+    }
+  })
 
   observe(
     if (is.null(input$diagnosegr)) {
@@ -220,7 +235,7 @@ server <- function(input, output, session) {
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                     reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
+                     reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
   # , height = function() {                       # Hvis du ønsker automatisk resizing
   #   1*session$clientData$output_Figur1_width
@@ -238,7 +253,7 @@ server <- function(input, output, session) {
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                                    undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                                   reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
+                                   reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
@@ -307,7 +322,7 @@ server <- function(input, output, session) {
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                        undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                       reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
+                       reshID = resh(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
 
