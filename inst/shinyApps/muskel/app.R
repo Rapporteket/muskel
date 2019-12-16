@@ -139,57 +139,6 @@ server <- function(input, output, session) {
   #     shinyjs::hide(id = 'alder')
   #   }
   # )
-
-  antskjema <- function() {
-    aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus == as.numeric(input$regstatus) &
-                                                                  SkjemaOversikt$HovedDato >= input$datoFra2 &
-                                                                  SkjemaOversikt$HovedDato <= input$datoTil2,
-                                                                c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
-    aux$Avdeling <- row.names(aux)
-    ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
-    sketch <- htmltools::withTags(table(
-      tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
-      tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1], 2:dim(ant_skjema)[2]])))))
-    list(ant_skjema=ant_skjema, sketch=sketch)
-  }
-
-  shiny::observe({
-    raplog::repLogger(
-      session = session,
-      msg = "Muskel: tabell admin-skjema"
-    )
-    output$Tabell_adm1 = DT::renderDT(
-      DT::datatable(
-        antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
-        container = antskjema()$sketch,
-        rownames = F,
-        selection = "none",
-        options = list(
-          pageLength = 50,
-          fixedHeader = TRUE,
-          lengthChange = FALSE,
-          dom = "t")
-      )
-    )
-  })
-
-  shiny::observe({
-    shinyjs::onclick(
-      "lastNedAdm1",
-      raplog::repLogger(
-        session = session,
-        msg = "Muskel: Nedlasting tabell admin-skjema"
-      )
-    )
-  })
-  output$lastNedAdm1 <- shiny::downloadHandler(
-    filename = paste0(
-      "Skjematabel", Sys.Date(),".csv"
-    ),
-    content = function (file) {write.csv2(antskjema()$ant_skjema, file, row.names = F)}
-
-  )
-
   # output$Tabell_adm1 = renderDT(
   #   datatable(dt_test()[-dim(dt_test())[1], ],
   #             container = htmltools::withTags(table(
