@@ -22,15 +22,16 @@ library(shinyjs)
 
 
 
-
+system.file("shinyApps/muskel/startside.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
 system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
-    source(encoding = "UTF-8")
+  source(encoding = "UTF-8")
 system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
-   source(encoding = "UTF-8")
+  source(encoding = "UTF-8")
 system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
-   source(encoding = "UTF-8")
+  source(encoding = "UTF-8")
 system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
-    source(encoding = "UTF-8")
+  source(encoding = "UTF-8")
 
 
 addResourcePath('rap', system.file('www', package='rapbase'))
@@ -51,13 +52,17 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             regTitle),
                 windowTitle = regTitle,
                 theme = "rap/bootstrap.css",
+                tabPanel("Startside",
+                         shinyalert::useShinyalert(),
+                         rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
+                                                      organization = uiOutput("appOrgName"),
+                                                      addUserInfo = TRUE),
+                         tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico")),
+                         startside()
+                         ),
 
                  tabPanel("Fordelingsfigurer",
-                          shinyalert::useShinyalert(),
-                          rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
-                                                       organization = uiOutput("appOrgName"),
-                                                       addUserInfo = TRUE),
-                          tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico")),
+
                           # sidebarLayout(
                           sidebarPanel(
                             shinyjs::useShinyjs(),
@@ -105,7 +110,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel("Fordelinger etter grupperingsvariabler",
                   forGrVarUI(id = "forgrvar")
                 ),
-                tabPanel("Kummulative andeler",
+                tabPanel("Kumulative andeler",
                   kumulativAndelUI(id = "kumAnd")
                 ),
                 tabPanel("Pasient og forløpstabeller",
