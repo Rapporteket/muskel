@@ -116,6 +116,13 @@ tabell <- function(input, output, session, ss, forltype = forlop){
         )
     )
 
+    output$lastNedAdm1 <- shiny::downloadHandler(
+        filename = paste0(
+            "Skjematabel", Sys.Date(),".csv"
+        ),
+        content = function (file) {write.csv2(antskjema()$ant_skjema, file, row.names = F)}
+    )
+
     observe({
     if ( input$tab == "pasforl" ) {
     forloptxt <- reactive({if(req(input$skjemarad)=="ForlopsID") {
@@ -249,6 +256,19 @@ tabell <- function(input, output, session, ss, forltype = forlop){
                 msg = "Muskel: nedlasting tabell unikepasienter/pasientforløp"
             )
         )
+        shinyjs::onclick(
+            "lastNedAdm1",
+            raplog::repLogger(
+                session = ss,
+                msg = "Muskel: Nedlasting tabell admin-skjema"
+            )
+        )
+        if ( input$tab = "antskjema"){
+            raplog::repLogger(
+                session = ss,
+                msg = "Muskel: tabell - admin-skjema"
+        )
+        }
     })
 
 }
