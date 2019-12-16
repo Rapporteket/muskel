@@ -181,10 +181,10 @@ kumulativAndel <- function(input, output, session, rID, ss){
         paste0(input$var, Sys.time(), '.', input$outfile)
     },
     content = function(file){
-      muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
-                                 datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
-                                 UtredningsaarFra = lubridate::year(input$utrar[1]),
-                                 UtredningsaarTil = lubridate::year(input$utrar[2]) ,
+      muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = min(req(input$dato)),
+                                 datoTil =   max(req(input$dato)), minald = input$ald[1], maxald = input$ald[2] ,
+                                 UtredningsaarFra = lubridate::year(min(req(input$utrar))),
+                                 UtredningsaarTil = lubridate::year(max(req(input$utrar))) ,
                                  diagnosegr = convNull(input$diaggrupper), diagnose = convNull(input$ICD),
                                  undergr = convNull(input$Undrgr), undergr2 = convNull(input$Undrgr2),
                                  egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,

@@ -65,8 +65,8 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
   })
 
   output$Figur <- renderPlot({
-    muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
-                                  datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
+    muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = min(req(input$dato)),
+                                  datoTil =   max(req(input$dato)), minald = input$ald[1], maxald = input$ald[2] ,
                                   erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = "" )
     },
                              width = 700, height = 700)
@@ -76,8 +76,8 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
       paste0(input$var, Sys.time(), '.', input$outfile)
     },
     content = function(file){
-      muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
-                                    datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
+      muskel::MuskelFigAndelStabel( RegData = RegData, valgtVar = input$var, datoFra = min(input$dato),
+                                    datoTil =   max(input$dato), minald = input$ald[1], maxald = input$ald[2] ,
                                     erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = file )
     }
   )
