@@ -161,13 +161,13 @@ kumulativAndel <- function(input, output, session, rID, ss){
                                           avdod = input$avdod ,reshID = rID, outfile = "" )
   })
 
-  #plot figure
+  #figure
   observe({
   output$Figur <- shiny::renderPlot({
     muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = min(input$dato),
                                datoTil =   max(input$dato), debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
-                               UtredningsaarFra = lubridate::year(min(input$utrar)),
-                               UtredningsaarTil = lubridate::year(max(input$utrar)) ,
+                               UtredningsaarFra = as.numeric(lubridate::year(min(input$utrar))),
+                               UtredningsaarTil = as.numeric(lubridate::year(max(input$utrar))) ,
                                diagnosegr = convNull(input$diaggrupper), diagnose = convNull(input$ICD),
                                undergr = convNull(input$Undrgr), undergr2 = convNull(input$Undrgr2),
                                egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
