@@ -63,7 +63,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indVarMed <- 1:Ninn
   # indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
   indAld <- which(RegData$Alder >= minald & RegData$Alder <= maxald)
-  indUtredningAar <- if (UtredningsaarFra != 1950 | UtredningsaarTil != 2050) {
+  indUtredningAar <- if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(),"%Y"))) {
     which(RegData$Utredningsstart >= UtredningsaarFra & RegData$Utredningsstart <= UtredningsaarTil)} else {indUtredningAar <- 1:Ninn}
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
   indAvdod <- if (avdod == 'Nei') {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
