@@ -47,8 +47,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
 
     shiny::sidebarLayout(
 
-        shiny::sidebarPanel(
-
+        shiny::sidebarPanel(div(id = ns("snPanel"),
                 shiny::selectInput(ns("var"), label = "Velg variabel",
                                choices = vlgtvar, selected = vlgtvar[[1]] ),
 
@@ -88,7 +87,10 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
                                choices = c("Ja" , "Nei" ),
                                selected = "Nei"  ),
                 selectInput(inputId = ns("outfile"), label = "Velg bildeformat",
-                            choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+                            choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))),
+                shiny::actionLink(inputId=ns("nullstill"),
+                                  style="color:black" ,
+                                  label = "Nullstill Valg")
 
 
         ),#sidebarPanel
@@ -147,12 +149,12 @@ kumulativAndel <- function(input, output, session, rID, ss){
       }
     }
   })
-
+  observeEvent(req(input$nullstill), {shinyjs::reset("snPanel")})
   resp <- reactive({
-    tabData <- muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
-                                          datoTil =   input$dato[2], debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
-                                          UtredningsaarFra = lubridate::year(input$utrar[1]),
-                                          UtredningsaarTil = lubridate::year(input$utrar[2]) ,
+    tabData <- muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = min(input$dato),
+                                          datoTil =   max(input$dato), debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
+                                          UtredningsaarFra = lubridate::year(min(input$utrar)),
+                                          UtredningsaarTil = lubridate::year(max(input$utrar)) ,
                                           diagnosegr = convNull(input$diaggrupper), diagnose = convNull(input$ICD),
                                           undergr = convNull(input$Undrgr), undergr2 = convNull(input$Undrgr2),
                                           egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
@@ -162,10 +164,10 @@ kumulativAndel <- function(input, output, session, rID, ss){
   #plot figure
   observe({
   output$Figur <- shiny::renderPlot({
-    muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = input$dato[1],
-                               datoTil =   input$dato[2], debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
-                               UtredningsaarFra = lubridate::year(input$utrar[1]),
-                               UtredningsaarTil = lubridate::year(input$utrar[2]) ,
+    muskel::MuskelFigCumAndel( RegData = RegData, valgtVar = input$var, datoFra = min(input$dato),
+                               datoTil =   max(input$dato), debutAlderFra = input$ald[1], debutAlderTil = input$ald[2] ,
+                               UtredningsaarFra = lubridate::year(min(input$utrar)),
+                               UtredningsaarTil = lubridate::year(max(input$utrar)) ,
                                diagnosegr = convNull(input$diaggrupper), diagnose = convNull(input$ICD),
                                undergr = convNull(input$Undrgr), undergr2 = convNull(input$Undrgr2),
                                egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,

@@ -15,7 +15,7 @@ tabellUI <- function(id){
 
     ns <- shiny::NS(id)
     shiny::sidebarLayout(
-        shiny::sidebarPanel(
+        shiny::sidebarPanel(id = ns("sbpanel"),
             shiny::uiOutput(ns("sidebar"))
         ),
         shiny::mainPanel(
@@ -41,7 +41,7 @@ tabell <- function(input, output, session, ss, forltype = forlop){
     output$sidebar <- renderUI({
         ns <- session$ns
         if (input$tab == "pasforl") {
-            tagList(
+            tagList(div(id = ns("sbPas"),
                 shiny::dateRangeInput(
                     ns("dato"), "Tidsperiode:",
                     language = "no",separator = "til",
@@ -74,20 +74,29 @@ tabell <- function(input, output, session, ss, forltype = forlop){
                     ns("skjemarad"), "",
                     choices = c("Forløp"= "ForlopsID","Pasient"= "PasientID"),
                     inline = TRUE
-                )
+                )),
+                shiny::actionLink(inputId = ns("nullstillPas"),
+                                  style="color:black",
+                                  label = "Nullstill Valg")
+
             )
         } else if (input$tab == "antskjema"){
-            tagList(
+            tagList(div(id = ns("sbSkj"),
                 dateInput(inputId = ns('datoFra2'), value = '2008-01-01', min = '2008-01-01',
                           label = "F.o.m. dato", language="nb"),
                 dateInput(inputId = ns('datoTil2'), value = Sys.Date(), min = '2012-01-01',
                           label = "T.o.m. dato", language="nb"),
                 selectInput(inputId = ns("regstatus"), label = "Skjemastatus",
-                            choices = c('Ferdigstilt'=1, 'Kladd'=0))
+                            choices = c('Ferdigstilt'=1, 'Kladd'=0))),
+                shiny::actionLink(inputId=ns("nullstillSkj"),
+                                  style="color:black" ,
+                                  label = "Nullstill Valg")
 
             )
         }
     })
+    observeEvent(req(input$nullstillSkj), {shinyjs::reset("sbSkj")})
+    observeEvent(req(input$nullstillPas), {shinyjs::reset("sbPas")})
 
     antskjema <- function() {
         aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus == as.numeric(req(input$regstatus)) &

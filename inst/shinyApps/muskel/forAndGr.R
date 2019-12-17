@@ -16,7 +16,7 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
 
   shiny::sidebarLayout(
 
-    shiny::sidebarPanel(
+    shiny::sidebarPanel(div(id=ns("sbPanel"),
 
       shiny::selectInput(ns("var"), label = "Velg variabel",
                          choices = vlgtvar, selected = vlgtvar[[1]] ),
@@ -38,7 +38,10 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
                          selected = "Nei"),
 
       selectInput(inputId = ns("outfile"), label = "Velg bildeformat",
-                  choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+                  choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))),
+      shiny::actionLink(inputId=ns("nullstill"),
+                        style="color:black" ,
+                        label = "Nullstill Valg")
     ),#sidebarPanel
 
     shiny::mainPanel(
@@ -81,7 +84,7 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
                                     erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = rID, outfile = file )
     }
   )
-
+  observeEvent(req(input$nullstill), {shinyjs::reset("sbPanel")})
 
   output$Tabell <- function() {
     TabellData <- resp()

@@ -66,6 +66,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                           # sidebarLayout(
                           sidebarPanel(
                             shinyjs::useShinyjs(),
+                            div(id = "sbpFordeling",
                             selectInput(inputId = "valgtVar", label = "Velg variabel",
                                         choices = varvalg),
                             dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
@@ -96,7 +97,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             sliderInput(inputId="debutalder", label = "Debutalder", min = 0,
                                         max = 90, value = c(0, 90)),
                             selectInput(inputId = "bildeformat", label = "Velg bildeformat",
-                                        choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+                                        choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))),
+                            actionLink(inputId="nullstillFordeling",
+                                              style="color:black" ,
+                                              label = "Nullstill Valg")
                           ),
                           mainPanel(tabsetPanel(id = "tab",
                             tabPanel("Figur", value = "andelFig",
@@ -135,6 +139,7 @@ server <- function(input, output, session) {
     raplog::appLogger(session, msg = "Muskel: shiny app starter")
   }
 
+  observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
   # observe(
   #   if (userRole() != 'SC') {
   #     shinyjs::hide(id = 'alder')
