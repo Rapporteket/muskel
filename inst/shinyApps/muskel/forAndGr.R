@@ -21,7 +21,7 @@ forGrVarUI <- function(id,vlgtvar =varValgGrVar, datoStart = "2008-01-01",
       shiny::selectInput(ns("var"), label = "Velg variabel",
                          choices = vlgtvar, selected = vlgtvar[[1]] ),
 
-      shiny::sliderInput(ns("ald"), label = "Debutalder",
+      shiny::sliderInput(ns("ald"), label = "Alder",
                          min = 0, max = 120, value = c(0,120) ),
 
       shiny::dateRangeInput(ns("dato"), label = "Tidsperiode",

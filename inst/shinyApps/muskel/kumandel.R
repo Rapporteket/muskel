@@ -62,7 +62,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
                                 minview = "years", format = "yyyy"),
 
                 shiny::sliderInput(ns("ald"), label = "Debutalder",
-                                   min = 0, max = 120, value = c(0,120) ),
+                                   min = 0, max = 90, value = c(0,90) ),
 
                 shiny::selectInput(ns("psgr"), label = "Pasientgruppe" ,
                                choices = pasgr,

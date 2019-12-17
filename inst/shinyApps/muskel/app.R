@@ -91,7 +91,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             uiOutput(outputId = 'undergruppe1'),
                             uiOutput(outputId = 'undergruppe2'),
                             selectInput(inputId = "avdod", label = "Inkluder avdøde",
-                                        choices = c('Ja'='Ja', 'Nei'='Nei')),
+                                        choices = c('Ja'='Ja', 'Nei'='Nei'), selected = "Nei"),
                             sliderInput(inputId="Utredningsaar", label = "Utredningsår", sep='', min = 1950,
                                         max = as.numeric(format(Sys.Date(), '%Y')), value = c(1950, as.numeric(format(Sys.Date(), '%Y')))),
                             sliderInput(inputId="debutalder", label = "Debutalder", min = 0,

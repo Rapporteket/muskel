@@ -12,7 +12,7 @@
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
                          diagnose='-1', undergr=-1, undergr2=-1, avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1950,
-                         UtredningsaarTil=2050, debutAlderFra=0, debutAlderTil=90)
+                         UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), debutAlderFra=0, debutAlderTil=90)
 {
   # Definerer intersect-operator
   "%i%" <- intersect

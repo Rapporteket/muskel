@@ -8,7 +8,7 @@ shiny::bootstrapPage(
       div(class = "panel-body",style = "background-color:#F0F0F0",
         div(class="panel-text",
           br(),
-        h4(tags$b('Her skal XXX og YYYY formulere kloke og reflekterte meldinger til Rapportekets brukere. En foreløpig variant er gitt under:')),
+        #h4(tags$b('Her skal XXX og YYYY formulere kloke og reflekterte meldinger til Rapportekets brukere. En foreløpig variant er gitt under:')),
         br(),
         h4('Du er nå inne på Rapporteket for Muskel, registerets resultattjeneste.
                 Disse sidene inneholder en samling av figurer og tabeller som viser resultater fra registeret.
@@ -28,7 +28,7 @@ shiny::bootstrapPage(
         ),
         br(),
         br(),
-        h3('HER KAN MAN F.EKS. VISE ANTALL REGISTRERINGER SISTE X MND.'),
+        #h3('HER KAN MAN F.EKS. VISE ANTALL REGISTRERINGER SISTE X MND.'),
         br(),
         br(),
         div(class="container",
