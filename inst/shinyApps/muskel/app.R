@@ -162,7 +162,7 @@ server <- function(input, output, session) {
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
-                                             choices = if (is.null(input$diagnosegr)){
+                                             choices = if (is.null(input$diagnosegr)  ){
                                                "-1"
                                              } else {
                                                sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)]))
@@ -206,7 +206,7 @@ server <- function(input, output, session) {
   })
 
   observe(
-    if (is.null(input$diagnosegr)) {
+    if (is.null(input$diagnosegr) | length(input$diagnosegr) != 1) {
       shinyjs::hide(id = 'icd10_kntr')
     } else {
       shinyjs::show(id = 'icd10_kntr')

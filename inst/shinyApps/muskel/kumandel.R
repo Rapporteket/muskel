@@ -73,7 +73,7 @@ kumulativAndelUI <- function(id,vlgtvar = varValgtKumAnd, datoStart = "2008-01-0
                                selected = 0 ),
 
                 shiny::selectInput(ns("diaggrupper"),
-                                      label = "Velg diagnosegruppe",
+                                      label = "Velg diagnosegruppe(r)",
                                       choices = diagngr,
                                    multiple = TRUE),
 
@@ -113,7 +113,7 @@ kumulativAndel <- function(input, output, session, rID, ss){
 
   output$ICD10diag <-shiny::renderUI({
     ns <- session$ns
-    if(!is.null(input$diaggrupper)){
+    if(!is.null(input$diaggrupper)  & length(input$diaggrupper) == 1 ){
       if(!is.null(sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diaggrupper)]))) ){
         ICd10 <- sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diaggrupper)]))
         shiny::selectInput(ns("ICD"),label = "Velg diagnosekode(r)",
@@ -124,7 +124,7 @@ kumulativAndel <- function(input, output, session, rID, ss){
 
   output$undergr <- shiny::renderUI({
     ns <- session$ns
-    if(!is.null(input$ICD) ){
+    if(!is.null(input$ICD)){
       undrgr <- sort(unique(RegData$Undergruppe[RegData$DiagICD10 %in% input$ICD]))
       names(undrgr) <- RegData$Undergruppe_label[match(sort(
                                      unique(RegData$Undergruppe[RegData$DiagICD10 %in% input$ICD])),
