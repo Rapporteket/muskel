@@ -90,8 +90,12 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
     TabellData <- resp()
     Tabell <- as.data.frame( TabellData$Andeler )
     names(Tabell) <- c("Kategori", "Grupper","Andel")
+    antallKat <- length(Tabell[["Kategori"]])
+    Tabell <- Tabell %>%
+      tidyr::spread(key = Kategori, value = Andel )
+
     Tabell %>%
-      knitr::kable("html", digits = c(0,0,1)) %>%
+      knitr::kable("html", digits = c(0, rep(1, antallKat-1 ) )) %>%
       kable_styling("hover", full_width = F)
   }
 
@@ -104,6 +108,8 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
       TabellData <- resp()
       Tabell <- as.data.frame(TabellData$Andeler)
       names(Tabell) <- c("Kategori", "Grupper","Andel")
+      Tabell <- Tabell %>%
+      tidyr::spread(key = Kategori, value = Andel )
       write.csv2(Tabell, file, row.names = F)
     }
   )

@@ -109,6 +109,17 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
 
   if ( outfile != '') {dev.off()}
 
+  #pga tabellen i shiny-app
+  if (valgtVar == "TypeHjerteaffeksjonSamletDM1_LGMD2I") {
+    totDys <- sum(tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"])
+    totLGM <- sum(tmp$Antall[tmp$Group.1 == "LGMD 2I"])
+    tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"] <-
+      tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"] * 100/ totDys
+    tmp$Antall[tmp$Group.1 == "LGMD 2I"] <-
+      tmp$Antall[tmp$Group.1 == "LGMD 2I"] *100 / totLGM
+
+    AndelVar <- tmp[c(2,1,3)]
+  }
   utData <- list(tittel = tittel, utvalgTxt = utvalgTxt, Andeler = AndelVar)
   return(invisible(utData))
 

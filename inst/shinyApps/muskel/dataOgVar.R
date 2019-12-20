@@ -8,6 +8,13 @@ if (onServer) {
     query = "SELECT *
              FROM SkjemaOversikt"
   )
+  SkjemaOversikt <- rapbase::LoadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT *
+             FROM SkjemaOversikt"
+  )
+
 } #else if (context = "") {
 #   # rm(list = ls())
 #   ForlopsData <- read.table('v:/muskel/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';', encoding = 'UTF-8')
