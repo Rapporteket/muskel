@@ -19,9 +19,6 @@ library(lubridate)
 library(shinyjs)
 
 
-
-
-
 system.file("shinyApps/muskel/startside.R",package = "muskel") %>%
   source(encoding = "UTF-8")
 system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
@@ -102,6 +99,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                                               style="color:black" ,
                                               label = "Nullstill Valg")
                           ),
+
                           mainPanel(tabsetPanel(id = "tab",
                             tabPanel("Figur", value = "andelFig",
                                      plotOutput("Figur1", height="auto"),
@@ -109,8 +107,7 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                             tabPanel("Tabell",value = "andelTab",
                                      tableOutput("Tabell1"),
                                      downloadButton("lastNed", "Last ned tabell"))
-                          )
-                          )
+                          ))
                  ),
                 tabPanel("Fordelinger etter grupperingsvariabler",
                   forGrVarUI(id = "forgrvar")
@@ -391,6 +388,7 @@ server <- function(input, output, session) {
                html = TRUE, confirmButtonText = "Den er grei!")
   })
   #rsconnect::showLogs()
+
 }
 
 # Run the application
