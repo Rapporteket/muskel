@@ -10,9 +10,9 @@
 #'
 #' @export
 #'
-MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr='',
-                                minald=0, maxald=120, erMann=99, outfile='', forlop = 99, diagnose='', undergr='',
-                                undergr2='', enhetsUtvalg=0, egenavd=0, preprosess=F, hentData=F, incl_N=F, avdod='', inkl_tittel=T)
+MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr=-1,
+                                minald=0, maxald=120, erMann=99, outfile='', forlop = 99, diagnose=-1, undergr=-1,
+                                undergr2=-1, enhetsUtvalg=0, egenavd=0, preprosess=F, hentData=F, incl_N=F, avdod='', inkl_tittel=T)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -62,7 +62,7 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
   ##-----------Figur---------------------------------------
   tittel <- PlotParams$tittel; stabel <- PlotParams$stabel;
   subtxt <- PlotParams$subtxt; cexgr <- PlotParams$cexgr;
-  FigTypUt <- figtype(outfile=outfile, fargepalett=MuskelUtvalg$fargepalett, pointsizePDF=12)
+  FigTypUt <- rapFigurer::figtype(outfile=outfile, fargepalett=MuskelUtvalg$fargepalett, pointsizePDF=12)
 
   farger <- FigTypUt$farger
   NutvTxt <- length(utvalgTxt)
@@ -109,7 +109,19 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
 
   if ( outfile != '') {dev.off()}
 
+  #pga tabellen i shiny-app
+  if (valgtVar == "TypeHjerteaffeksjonSamletDM1_LGMD2I") {
+    totDys <- sum(tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"])
+    totLGM <- sum(tmp$Antall[tmp$Group.1 == "LGMD 2I"])
+    tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"] <-
+      tmp$Antall[tmp$Group.1 == "Dystrophia myotonica 1"] * 100/ totDys
+    tmp$Antall[tmp$Group.1 == "LGMD 2I"] <-
+      tmp$Antall[tmp$Group.1 == "LGMD 2I"] *100 / totLGM
 
+    AndelVar <- tmp[c(2,1,3)]
+  }
+  utData <- list(tittel = tittel, utvalgTxt = utvalgTxt, Andeler = AndelVar)
+  return(invisible(utData))
 
 }
 

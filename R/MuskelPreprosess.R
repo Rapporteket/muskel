@@ -14,13 +14,15 @@ MuskelPreprosess <- function(RegData)
 {
   RegData <- RegData[which(RegData$BasisRegStatus==1), ]
 
-  RegData$HovedDato <- as.POSIXlt(RegData$HovedDato, format="%Y-%m-%d") # Ordne datoformat
-  RegData$AvdodDato <- as.POSIXlt(RegData$AvdodDato, format="%Y-%m-%d")
-  RegData$Foedselsdato <- as.POSIXlt(RegData$Foedselsdato, format="%Y-%m-%d")
+  RegData$HovedDato <- as.Date(RegData$HovedDato, format="%Y-%m-%d") # Ordne datoformat
+  RegData$AvdodDato <- as.Date(RegData$AvdodDato, format="%Y-%m-%d")
+  RegData$Foedselsdato <- as.Date(RegData$Foedselsdato, format="%Y-%m-%d")
 
-  RegData$Alder <- round(as.numeric(difftime(Sys.Date(), RegData$Foedselsdato)/365.25),0)
-  RegData$AlderVreg <- round(as.numeric(difftime(RegData$HovedDato,
-                                             strptime(RegData$Foedselsdato, format="%Y-%m-%d" ))/365.25),0)
+  # RegData$Alder <- round(as.numeric(difftime(Sys.Date(), RegData$Foedselsdato)/365.25),0)
+  RegData$Alder <- age(RegData$Foedselsdato, Sys.Date())
+  # RegData$AlderVreg <- round(as.numeric(difftime(RegData$HovedDato,
+  #                                            strptime(RegData$Foedselsdato, format="%Y-%m-%d" ))/365.25),0)
+  RegData$AlderVreg <- age(RegData$Foedselsdato, RegData$HovedDato)
 
   RegData$Diagnosegr <- 99
   RegData$Diagnosegr[RegData$DiagICD10 %in%
@@ -29,15 +31,15 @@ MuskelPreprosess <- function(RegData)
   RegData$Diagnosegr[substr(RegData$DiagICD10, 1, 3) == 'G60'] <- 3
 
   RegData$Diagnosegr_label <- factor(RegData$Diagnosegr, levels = c(1:3, 99),
-                               labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati', 'Ikke reg.'))
+                               labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati', 'Annet/Ikke reg.'))
 
-  RegData$Debut <- RegData$Foedselsdato$year+1900 + RegData$DebutAlder
-  RegData$DiagnoseAlder <- RegData$DiagnoseAar - (RegData$Foedselsdato$year+1900)
+  RegData$Debut <- as.numeric(format(RegData$Foedselsdato, '%Y')) + RegData$DebutAlder
+  RegData$DiagnoseAlder <- RegData$DiagnoseAar - as.numeric(format(RegData$Foedselsdato, '%Y'))
   RegData$TidDebDiag <- RegData$DiagnoseAar - RegData$Debut
   RegData$TidDebUtred <- RegData$Utredningsstart - RegData$Debut
   RegData$TidUtredDiag <- RegData$DiagnoseAar - RegData$Utredningsstart
 
-  RegData$Aar <- RegData$HovedDato$year+1900
+  RegData$Aar <- as.numeric(format(RegData$HovedDato, '%Y'))
 
 
   return(invisible(RegData))

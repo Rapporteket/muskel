@@ -43,10 +43,10 @@ library(muskel)
 rm(list = ls())
 hentData <- F
 
-ForlopsData <- read.table('I:/muskel/ForlopsOversikt2018-09-25 08-59-11.txt', header=TRUE, sep=';')
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-05-22 12-50-07.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-RegData <- read.table('I:/muskel/AlleVarNum2018-09-25 08-59-09.txt', header=TRUE, sep=';')
+RegData <- read.table('I:/muskel/AlleVarNum2019-05-22 12-44-01.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
                         "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
                         "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
@@ -60,29 +60,29 @@ RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", 
                         "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
                         "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
 RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-RegDataLabel <- read.table('I:/muskel/AlleVar2018-09-25 08-59-07.txt', header=TRUE, sep=';')
+RegDataLabel <- read.table('I:/muskel/AlleVar2019-05-22 12-43-59.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
                                  "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
                                  'Arvegang', 'Gangfunksjon')]
 RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
-RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
-RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
+# RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
+# RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
 rm(list=c('ForlopsData', 'RegDataLabel'))
 
 # RegData <- MuskelPreprosess(RegData=RegData)
 #
 reshID <- 101719
 datoFra='2008-01-01'
-datoTil='2017-12-31'
-Rapportaar <- 2017
+datoTil='2018-12-31'
+Rapportaar <- 2018
 # datoTil=as.character(Sys.Date())
 flervalgsliste <- ''
 
 valgtShus <- flervalgsliste
 RegData <- MuskelPreprosess(RegData=RegData)
 
-RegData$SykehusNavn <- iconv(RegData$SykehusNavn, from = 'UTF-8', to = '')  # Fiks lokale encoding issues
-RegData$Fylke <- iconv(RegData$Fylke, from = 'UTF-8', to = '')
+# RegData$SykehusNavn <- iconv(RegData$SykehusNavn, from = 'UTF-8', to = '')  # Fiks lokale encoding issues
+# RegData$Fylke <- iconv(RegData$Fylke, from = 'UTF-8', to = '')
 RegDataAll <- RegData
 RegData <- RegData[RegData$HovedDato <= as.POSIXlt(datoTil), ]
 
@@ -112,12 +112,6 @@ if (valgtShus[1] == '') {
   }
 }
 
-# dekn_grad <- read.table('C:/GIT/muskel/doc/dekn_grad2016.csv', header=TRUE, sep=';', stringsAsFactors = F)
-innbyggere <- read.table('C:/GIT/muskel/doc/Innbyggere2015aldkj.csv', header=TRUE, sep=';', stringsAsFactors = F, encoding = 'UTF-8')
-innbygg_fylk <- tapply(innbyggere$AntInnb, innbyggere$Fylke, sum)
-rm(innbyggere)
-innbygg_fylk <- as.data.frame(innbygg_fylk)
-
 figstr <- 0.61
 tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
 @
@@ -141,40 +135,6 @@ tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
 
 \newpage
 
-<<'Tab: dekningsgrad', results='asis', echo=FALSE>>=
-
-dekn_grad <- read.table('C:/GIT/muskel/doc/NPR_diagnosevis.csv', header=TRUE, sep=';', stringsAsFactors = F)
-dekn_grad$Antall.unike.pasienter <- as.numeric(gsub(" ", "", dekn_grad$Antall.unike.pasienter, fixed = TRUE))
-
-aux <- RegData[RegData$Aar>=2009 & RegData$Aar <= 2017, ]
-aux <- aux[aux$DiagICD10 != '', ]
-aux <- aux[order(aux$HovedDato, decreasing = TRUE), ]
-aux <- aux[match(unique(aux$PasientID), aux$PasientID), ]
-aux <- aux[aux$Avdod == 'Nei', ]
-
-
-aux$DiagICD10 <- as.character(aux$DiagICD10)
-aux <- as.data.frame(table(aux$DiagICD10, useNA = 'ifany'))
-
-dekn_grad <- merge(dekn_grad, aux, by.x = 'ICD.10.kode', by.y = 'Var1', all = T)
-dekn_grad$Freq[is.na(dekn_grad$Freq)] <- 0
-dekn_grad$Freq[dekn_grad$ICD.10.kode == 'Totalt'] <- sum(dekn_grad$Freq)
-
-names(dekn_grad) <- c('ICD10-kode', 'NPR', 'Muskelregisteret')
-dekn_grad$Dekningsgrad <- round(dekn_grad$Muskelregisteret/dekn_grad$NPR*100, 1)
-dekn_grad <- dekn_grad[, c(1,3,2,4)]
-# dekn_grad$Dekningsgrad <- paste0(dekn_grad$Dekningsgrad, ' %')
-names(dekn_grad)[4] <- 'Dekningsgrad (%)'
-
-print(xtable::xtable(dekn_grad, digits=c(0,0,0,0,1), align=c('l', 'l', 'r', 'r', 'r'), caption='Dekningsgrad i Muskelregisteret 2009-2017'), include.rownames = F)
-
-write.csv2(dekn_grad, 'dekn_grad.csv', row.names = F)
-
-
-
-@
-
-
 <<'Tab: oppfølginger', results='asis', echo=FALSE>>=
 library(xtable)
 ## Oppfølginger
@@ -196,18 +156,18 @@ xtable::xtable(OppfolgPst, digits=1, caption='Andel 5-årsoppfølginger etter å
 write.csv2(OppfolgPst, 'OppfolgPst.csv', row.names = F)
 
 AntReg <- addmargins(table(RegData[RegData$ForlopsType1Num==1, c("SykehusNavn", "Aar")]), 1)
-AntReg <- AntReg[, 6:10]
+AntReg <- AntReg[, (dim(AntReg)[2]-4):dim(AntReg)[2]]
 write.csv2(AntReg, 'AntReg.csv')
 
 
 
-xtable::xtable(AntReg, digits=0, align=c('l', 'r', 'r', 'r', 'r', 'r'), caption='Antall registreringer per år per enhet')
+xtable::xtable(AntReg, digits=0, align=c('l', 'r', 'r', 'r', 'r', 'r'), caption='Antall basisregistreringer per år per enhet')
 
 @
 
 <<'Fig:hjerteaff', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
 BasisReg <- RegData[RegData$ForlopsType1Num == 1, ]
-BasisReg <- BasisReg[BasisReg$Aar<2018, ]
+BasisReg <- BasisReg[BasisReg$Aar<=Rapportaar, ]
 AntTot <- length(unique(BasisReg$PasientID))
 AntDod <- length(unique(BasisReg$PasientID[which(BasisReg$Avdod=='Ja')]))
 
@@ -411,12 +371,12 @@ MuskelFigCumAndel(RegData=RegDataAll, valgtVar='TidUtredDiag', datoFra=datoFra, 
                   enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei',
                    UtredningsaarFra=2005, UtredningsaarTil=2010, inkl_tittel=inkl_tittel)
 
-varNavnCumAndel <- 'TidUtredDiag_2012_2017'
+varNavnCumAndel <- 'TidUtredDiag_2013_2018'
 outfile=paste0(varNavnCumAndel, '.pdf')
 MuskelFigCumAndel(RegData=RegDataAll, valgtVar='TidUtredDiag', datoFra=datoFra, reshID=reshID, diagnosegr=diagnosegr,
                   minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
                   enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei',
-                   UtredningsaarFra=2012, UtredningsaarTil=2017, inkl_tittel=inkl_tittel)
+                   UtredningsaarFra=2013, UtredningsaarTil=2018, inkl_tittel=inkl_tittel)
 
 
 outfile='AndelGenVerifisert_muskel.pdf'
@@ -548,7 +508,7 @@ MuskelFigAndeler(RegData=RegData, valgtVar='RespStotte', datoFra=datoFra, datoTi
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\Sexpr{figstr}\textwidth]{TidUtredDiag_2012_2017.pdf}
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TidUtredDiag_2013_2018.pdf}
 \caption{Tid utredning til diagnose}
 \end{figure}
 

@@ -51,7 +51,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 
   if (valgtVar=='Alder') {
     RegData$Variabel <- RegData$AlderVreg
-    RegData <- RegData[RegData$ForlopsType1Num == 1, ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
     tittel <- 'Alder ved førstegangsregistrering'	#bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
@@ -61,7 +62,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 
   if (valgtVar=='AlderDagens') {
     RegData$Variabel <- RegData$Alder
-    RegData <- RegData[RegData$ForlopsType1Num == 1, ]
+    RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
+    RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
     tittel <- 'Dagens alder'	#bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
