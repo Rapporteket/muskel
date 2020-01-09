@@ -10,9 +10,9 @@
 #'
 #' @export
 
-MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr='', forlop,
-                         diagnose='', undergr='', undergr2='', avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1900,
-                         UtredningsaarTil=2100, debutAlderFra=0, debutAlderTil=120)
+MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
+                         diagnose='-1', undergr=-1, undergr2=-1, avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1950,
+                         UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), debutAlderFra=0, debutAlderTil=90)
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -39,7 +39,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   }
   if (egenavd==3) { # Bosatt i samme fylke som aktuelt HF
     fylke <- map_shus_fylke$x[match(reshID, map_shus_fylke$avdresh)]
-    # Hvis man ikke skal sammenligne, får man ut resultat for eget sykehus
+    # Hvis man ikke skal sammenligne, får man ut resultat for eget fylke
     if (enhetsUtvalg == 2) {RegData <- RegData[which(RegData$Fylke == fylke), ]}
     # Sykehustekst avhengig av bruker og brukervalg
     if (enhetsUtvalg==0) {
@@ -63,18 +63,18 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indVarMed <- 1:Ninn
   # indAld <- which(RegData$AlderVreg >= minald & RegData$AlderVreg <= maxald) # Filtrerer på alder ved registrering
   indAld <- which(RegData$Alder >= minald & RegData$Alder <= maxald)
-  indUtredningAar <- if (UtredningsaarFra != 1900 | UtredningsaarTil != 2100) {
+  indUtredningAar <- if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(),"%Y") )) {
     which(RegData$Utredningsstart >= UtredningsaarFra & RegData$Utredningsstart <= UtredningsaarTil)} else {indUtredningAar <- 1:Ninn}
   indDato <- which(RegData$HovedDato >= as.POSIXlt(datoFra) & RegData$HovedDato <= as.POSIXlt(datoTil))
-  indAvdod <- if (avdod %in% c('Ja', 'Nei')) {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
-  indKj <- if (erMann %in% 0:1) {which(RegData$ErMann == erMann)} else {indKj <- 1:Ninn}
+  indAvdod <- if (avdod == 'Nei') {which(RegData$Avdod == avdod)} else {indAvdod <- 1:Ninn}
+  indKj <- if (erMann %in% 0:1) {which(RegData$erMann == erMann)} else {indKj <- 1:Ninn}
   # indDiagSatt <- if (diagnoseSatt != 99) {which(RegData$DiagnoseStiltAv == diagnoseSatt)} else {indDiagSatt <- 1:Ninn}
-  indDiagnosegr <- if (diagnosegr[1] != '') {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
-  indDiagnose <- if (diagnose[1] != '') {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
-  indUndergr <- if (undergr[1] != '') {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
-  indUndergr2 <- if (undergr2[1] != '') {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
+  indDiagnosegr <- if (diagnosegr[1] != -1) {which(RegData$Diagnosegr %in% as.numeric(diagnosegr))} else {indDiagnosegr <- 1:Ninn}
+  indDiagnose <- if (diagnose[1] != '-1') {which(RegData$DiagICD10 %in% diagnose)} else {indDiagnose <- 1:Ninn}
+  indUndergr <- if (undergr[1] != -1) {which(RegData$Undergruppe %in% as.numeric(undergr))} else {indUndergr <- 1:Ninn}
+  indUndergr2 <- if (undergr2[1] != -1) {which(RegData$Undergruppe2 %in% as.numeric(undergr2))} else {indUndergr2 <- 1:Ninn}
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
-  indDebutAlder <- if (debutAlderFra != 0 | debutAlderTil != 120) {
+  indDebutAlder <- if (debutAlderFra != 0 | debutAlderTil != 90) {
     which(RegData$DebutAlder >= debutAlderFra & RegData$DebutAlder <= debutAlderTil)} else {indDebutAlder <- 1:Ninn}
 
   indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar %i% indDebutAlder
@@ -87,19 +87,19 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                  #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
                  if ((minald>0) | (maxald<120)) {
                    paste0('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år')},
-                 if (UtredningsaarFra != 1900 | UtredningsaarTil != 2100){
+                 if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(),"%Y"))){
                    paste0('Utredningstart fra år ', min(RegData$Utredningsstart, na.rm=T), ' til ', max(RegData$Utredningsstart, na.rm=T))},
-                 if (avdod %in% c('Ja', 'Nei')) {paste0('Inkluder avdøde: ', avdod)}, # Ikke korrekt for valg "Ja"
+                 if (avdod %in% c('Ja', 'Nei')) {paste0('Avdøde inkludert: ', avdod)}, # Ikke korrekt for valg "Ja"
                  if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
                  # if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
-                 if (diagnosegr[1] != '') {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
-                 if (diagnose[1] != ''){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
-                 if (undergr[1] != ''){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
+                 if (diagnosegr[1] != -1) {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
+                 if (diagnose[1] != '-1'){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
+                 if (undergr[1] != -1){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
                                                                         collapse=', '))},
-                 if (undergr2[1] != ''){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
+                 if (undergr2[1] != -1){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
                                                                                 collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])},
-                 if (debutAlderFra != 0 | debutAlderTil != 120) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' år')}
+                 if (debutAlderFra != 0 | debutAlderTil != 90) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' år')}
   )
   } else {
     utvalgTxt <- paste0('Dato: ', datoFra, ' til ', datoTil)

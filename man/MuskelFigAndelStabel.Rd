@@ -5,11 +5,11 @@
 \title{Lag grupperte stabelplot for valgte variabler}
 \usage{
 MuskelFigAndelStabel(RegData, valgtVar, datoFra = "2000-01-01",
-  datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
+  datoTil = "2050-01-01", reshID, diagnosegr = -1, minald = 0,
   maxald = 120, erMann = 99, outfile = "", forlop = 99,
-  diagnose = diagnose, undergr = undergr, undergr2 = undergr2,
-  enhetsUtvalg = 1, egenavd = egenavd, preprosess = F, hentData = F,
-  incl_N = F, avdod = "")
+  diagnose = -1, undergr = -1, undergr2 = -1, enhetsUtvalg = 0,
+  egenavd = 0, preprosess = F, hentData = F, incl_N = F,
+  avdod = "", inkl_tittel = T)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -46,8 +46,8 @@ til systemets default output device (som regel skjerm))}
 3: Annet}
 
 \item{enhetsUtvalg}{Lag figur for
-0: Hele landet
-1: Egen enhet mot resten av landet (Default)
+0: Hele landet (Default)
+1: Egen enhet mot resten av landet
 2: Egen enhet}
 
 \item{egenavd}{0: Registrert ved HF

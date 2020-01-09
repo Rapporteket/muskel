@@ -1,0 +1,675 @@
+\documentclass[norsk,a4paper]{article} % ,twoside
+\usepackage[norsk]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{subfig}
+\usepackage{pdfpages}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+
+
+\title{Figurer og tabeller til årsrapport for Muskelregisteret 2017}
+\author{Muskelregisteret}
+
+\renewcommand\thempfootnote{\fnsymbol{mpfootnote}}
+\def\labelitemi{$\bullet$}
+\def\labelitemii{--}
+\def\labelitemiii{$\ast$}
+\def\labelitemiv{$\cdot$}
+
+%setter grå skrift fremfort sort
+\usepackage{xcolor}
+\usepackage{graphicx}
+\pagestyle{myheadings}
+% \definecolor{SKDE}{rgb}{0,0.32,0.61}
+\definecolor{lysblaa}{rgb}{0.27,0.51,0.71}
+% \definecolor{moerkblaa}{rgb}{0.0,0.0,0.47}
+% \definecolor{lysgraa}{rgb}{0.8,0.8,0.8}
+% \definecolor{middelsgraa}{rgb}{0.5,0.5,0.5}
+\definecolor{moerkgraa}{rgb}{0.25,0.25,0.25}
+\color{moerkgraa}
+% \color{lysblaa}
+
+<<'initOpts',include=FALSE>>=
+knitr::opts_chunk$set(warnings=FALSE,echo=FALSE)
+knitr::opts_knit$set(root.dir = './')
+@
+
+\begin{document}
+
+<<LastData, include=FALSE, cache=FALSE>>=
+library(muskel)
+rm(list = ls())
+hentData <- F
+
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2018-09-25 08-59-11.txt', header=TRUE, sep=';')
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('I:/muskel/AlleVarNum2018-09-25 08-59-09.txt', header=TRUE, sep=';')
+RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
+                        "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
+                        "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
+                        "Fysioterapi", "Ergoterapi", "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","HjerteAffAnnet",
+                        "HjerteAffAnnetSpes", "DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
+                        'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
+                        'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
+                        "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Steroider', 'AngiGenetiskAarsak', 'Hjerteoppfoelging',
+                        'KognitivSvikt', 'MedikBehandling', 'Smertestillende', "Antiarytmika", "ACEHemmer", "AnnetHjerteMed",
+                        "AnnenMedikBeh", "OppfolgBarnelegeNevrolog", "PsykiskHelsetjeneste", "OppholdRehab", "TilbudKostveiledning",
+                        "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
+                        "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('I:/muskel/AlleVar2018-09-25 08-59-07.txt', header=TRUE, sep=';')
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
+                                 "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
+                                 'Arvegang', 'Gangfunksjon')]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
+RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+# RegData <- MuskelPreprosess(RegData=RegData)
+#
+reshID <- 101719
+datoFra='2008-01-01'
+datoTil='2017-12-31'
+Rapportaar <- 2017
+# datoTil=as.character(Sys.Date())
+flervalgsliste <- ''
+
+valgtShus <- flervalgsliste
+RegData <- MuskelPreprosess(RegData=RegData)
+
+RegData$SykehusNavn <- iconv(RegData$SykehusNavn, from = 'UTF-8', to = '')  # Fiks lokale encoding issues
+RegData$Fylke <- iconv(RegData$Fylke, from = 'UTF-8', to = '')
+RegDataAll <- RegData
+RegData <- RegData[RegData$HovedDato <= as.POSIXlt(datoTil), ]
+
+incl_N<-F
+inkl_tittel <- F
+minald=0
+maxald=120
+erMann=99
+diagnoseSatt=99
+enhetsUtvalg=0
+preprosess=F
+diagnosegr <- -1
+diagnose <- -1
+undergr <- -1
+undergr2 <- -1
+forlop <- 99
+avdod=''
+
+if (valgtShus[1] == '') {
+  shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+} else {
+  if (length(valgtShus)==1) {
+    reshID<-as.numeric(valgtShus[1])
+    shtxt <- as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)])
+  } else {
+    shtxt <- as.character(RegData$SykehusNavn[match(as.numeric(valgtShus), RegData$AvdRESH)])
+  }
+}
+
+# dekn_grad <- read.table('C:/GIT/muskel/doc/dekn_grad2016.csv', header=TRUE, sep=';', stringsAsFactors = F)
+innbyggere <- read.table('C:/GIT/muskel/doc/Innbyggere2015aldkj.csv', header=TRUE, sep=';', stringsAsFactors = F, encoding = 'UTF-8')
+innbygg_fylk <- tapply(innbyggere$AntInnb, innbyggere$Fylke, sum)
+rm(innbyggere)
+innbygg_fylk <- as.data.frame(innbygg_fylk)
+
+figstr <- 0.61
+tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
+@
+
+%%%%% Forside
+
+\color{moerkgraa}
+\thispagestyle{empty}
+
+\maketitle
+%
+% \tableofcontents
+% \newpage
+\thispagestyle{empty}
+\listoffigures
+% \newpage
+% \thispagestyle{empty}
+\listoftables
+
+\clearpage
+
+\newpage
+
+<<'Tab: dekningsgrad', results='asis', echo=FALSE>>=
+
+dekn_grad <- read.table('C:/GIT/muskel/doc/NPR_diagnosevis.csv', header=TRUE, sep=';', stringsAsFactors = F)
+dekn_grad$Antall.unike.pasienter <- as.numeric(gsub(" ", "", dekn_grad$Antall.unike.pasienter, fixed = TRUE))
+
+aux <- RegData[RegData$Aar>=2009 & RegData$Aar <= 2017, ]
+aux <- aux[aux$DiagICD10 != '', ]
+aux <- aux[order(aux$HovedDato, decreasing = TRUE), ]
+aux <- aux[match(unique(aux$PasientID), aux$PasientID), ]
+aux <- aux[aux$Avdod == 'Nei', ]
+
+
+aux$DiagICD10 <- as.character(aux$DiagICD10)
+aux <- as.data.frame(table(aux$DiagICD10, useNA = 'ifany'))
+
+dekn_grad <- merge(dekn_grad, aux, by.x = 'ICD.10.kode', by.y = 'Var1', all = T)
+dekn_grad$Freq[is.na(dekn_grad$Freq)] <- 0
+dekn_grad$Freq[dekn_grad$ICD.10.kode == 'Totalt'] <- sum(dekn_grad$Freq)
+
+names(dekn_grad) <- c('ICD10-kode', 'NPR', 'Muskelregisteret')
+dekn_grad$Dekningsgrad <- round(dekn_grad$Muskelregisteret/dekn_grad$NPR*100, 1)
+dekn_grad <- dekn_grad[, c(1,3,2,4)]
+# dekn_grad$Dekningsgrad <- paste0(dekn_grad$Dekningsgrad, ' %')
+names(dekn_grad)[4] <- 'Dekningsgrad (%)'
+
+print(xtable::xtable(dekn_grad, digits=c(0,0,0,0,1), align=c('l', 'l', 'r', 'r', 'r'), caption='Dekningsgrad i Muskelregisteret 2009-2017'), include.rownames = F)
+
+write.csv2(dekn_grad, 'dekn_grad.csv', row.names = F)
+
+
+
+@
+
+
+<<'Tab: oppfølginger', results='asis', echo=FALSE>>=
+library(xtable)
+## Oppfølginger
+BasisReg <- RegData[difftime(as.POSIXlt('2017-12-31'), RegData$HovedDato) > 5*365.25 & RegData$Avdod == 'Nei' &
+                     RegData$ForlopsType1Num==1, ] # Registreriner mer enn 5 år tilbake i tid
+Oppfolging <- RegData[RegData$ForlopsType1Num==2 & RegData$PasientID %in% BasisReg$PasientID, ]
+
+OppfolgPst1 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-8)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-3)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-8),])[1]*100
+OppfolgPst2 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-7)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-2)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-7),])[1]*100
+OppfolgPst3 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-6)], Oppfolging$PasientID[Oppfolging$Aar<=(Rapportaar-1)]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-6),])[1]*100
+OppfolgPst4 <- length(intersect(BasisReg$PasientID[BasisReg$Aar<=(Rapportaar-5)], Oppfolging$PasientID[Oppfolging$Aar<=Rapportaar]))/dim(BasisReg[BasisReg$Aar<=(Rapportaar-5),])[1]*100
+
+OppfolgPst <- data.frame(OppfolgPst1, OppfolgPst2, OppfolgPst3, OppfolgPst4)
+names(OppfolgPst) <- as.character(c(Rapportaar-3, Rapportaar-2, Rapportaar-1, Rapportaar))
+row.names(OppfolgPst)[1] <- 'Oppfølgingsprosent'
+
+xtable::xtable(OppfolgPst, digits=1, caption='Andel 5-årsoppfølginger etter år. Andelen er kummulativ i betydning at tallet for et gitt år er beregnet som andelen med basisregistrering 5 år eller tidligere som har fått oppfølging i det gitte året eller tidligere')
+
+write.csv2(OppfolgPst, 'OppfolgPst.csv', row.names = F)
+
+AntReg <- addmargins(table(RegData[RegData$ForlopsType1Num==1, c("SykehusNavn", "Aar")]), 1)
+AntReg <- AntReg[, 6:10]
+write.csv2(AntReg, 'AntReg.csv')
+
+
+
+xtable::xtable(AntReg, digits=0, align=c('l', 'r', 'r', 'r', 'r', 'r'), caption='Antall registreringer per år per enhet')
+
+@
+
+<<'Fig:hjerteaff', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+BasisReg <- RegData[RegData$ForlopsType1Num == 1, ]
+BasisReg <- BasisReg[BasisReg$Aar<2018, ]
+AntTot <- length(unique(BasisReg$PasientID))
+AntDod <- length(unique(BasisReg$PasientID[which(BasisReg$Avdod=='Ja')]))
+
+valgtVar <- 'AntReg'
+outfile <- paste0(valgtVar, '.pdf')
+MuskelFigKumsum(RegData=BasisReg, valgtVar=valgtVar, datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+
+outfile <- 'HjerteOppf_samlet.pdf'
+MuskelFigAndelStabel(RegData=RegData, valgtVar='Hjerteoppf_samlet', datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                     minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                     enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'HyppighetEKG_DM1.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HyppighetEKG', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 20, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'HyppighetUltralyd_BMD.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HyppighetUltralyd', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 2, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'HyppighetUltralyd_DMD_6-10.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HyppighetUltralyd', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=6, maxald=10, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 1, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'HyppighetUltralyd_DMD_10plus.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HyppighetUltralyd', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=11, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 1, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'TypeMedikBehandling.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='TypeMedikBehandling', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 1, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+outfile <- 'TilbudGenetiskVeiledning.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='TilbudGenetiskVeiledning', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = '', enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+
+outfile <- 'HyppighetEKG_Holter_DM1.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HyppighetEKG_Holter', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 undergr = 20, enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+@
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AntReg.pdf}
+\caption{Antall registrerte i Muskelregisteret. Av disse er \Sexpr{AntDod} avdøde.}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HjerteOppf_samlet.pdf}
+\caption{Hjerteoppfølging for utvalgte diagnoser}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HyppighetEKG_DM1.pdf}
+\caption{Hyppighet av EKG (blant de som får hjerteoppfølging)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HyppighetEKG_Holter_DM1.pdf}
+\caption{Hyppighet av EKG eller Holter (blant de som får hjerteoppfølging)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HyppighetUltralyd_DMD_6-10.pdf}
+\caption{Hyppighet av ultralyd (blant de som får hjerteoppfølging)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HyppighetUltralyd_DMD_10plus.pdf}
+\caption{Hyppighet av ultralyd (blant de som får hjerteoppfølging)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HyppighetUltralyd_BMD.pdf}
+\caption{Hyppighet av ultralyd (blant de som får hjerteoppfølging)}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TilbudGenetiskVeiledning.pdf}
+\caption{Tilbud om genetisk veiledning}
+\end{figure}
+
+
+% \begin{figure}[ht]
+% \centering
+% \includegraphics[width=\Sexpr{figstr}\textwidth]{TypeMedikBehandling.pdf}
+% \caption{Type medikamentell behandling}
+% \end{figure}
+
+<<'Enkelttall', results='asis', echo=FALSE>>=
+DMD_hjaff <- RegData[which(RegData$Undergruppe == 1 & RegData$HjerteAff == 1), ]
+DMD_hjaff <- DMD_hjaff[order(DMD_hjaff$HovedDato, decreasing = TRUE), ]
+DMD_hjaff <- DMD_hjaff[match(unique(DMD_hjaff$PasientID), DMD_hjaff$PasientID), ]
+
+Andel_ace_duchenne <- sum(DMD_hjaff$ACEHemmer, na.rm = T)/length(DMD_hjaff$ACEHemmer)*100
+
+genavklart <- RegData[which(RegData$GenetiskAarsakPaavist==1), ]
+genavklart <- genavklart[order(genavklart$HovedDato, decreasing = TRUE), ]
+genavklart <- genavklart[match(unique(genavklart$PasientID), genavklart$PasientID), ]
+
+# table(genavklart$TilbudGenetiskVeiledning, useNA = 'ifany')
+
+andelTilbudGenVeiledning <- length(which(genavklart$TilbudGenetiskVeiledning==1))/dim(genavklart)[1]*100
+
+## Lag figur
+
+@
+
+Andel Duchenne med hjerteaffeksjon som bruker ACE-hemmer er \Sexpr{round(Andel_ace_duchenne,1)} \%. Andel genetisk avklarte som har fått tilbud om genetisk veiledning er \Sexpr{round(andelTilbudGenVeiledning,1)} \%.
+
+
+<<'Kompletthet', results='asis', echo=FALSE>>=
+
+komplett <- RegData[, c("HovedDato", "PasientID", "ForlopsType1Num", "Debut", "Utredningsstart", "DiagnoseAar", "GenetiskAarsakPaavist",
+                        "AarstallGenAarsak", "AlderTapGang", "Gangfunksjon", "RespStotte", "AlderRespStotte", "HjerteAff",
+                        "HjerteAffAlder", "Hjerteoppfoelging")]
+
+komplett <- komplett[komplett$ForlopsType1Num %in% c(1,3), ]
+komplett <- komplett[order(komplett$HovedDato, decreasing = TRUE), ]
+komplett <- komplett[match(unique(komplett$PasientID), komplett$PasientID), ]
+
+Debut_missing <- sum(is.na(komplett$Debut))
+Utredningsstart_missing <- sum(is.na(komplett$Utredningsstart))
+DiagnoseAar_missing <- sum(is.na(komplett$DiagnoseAar))
+Hjerteoppfolging <- sum(komplett$Hjerteoppfoelging==9 | is.na(komplett$Hjerteoppfoelging))
+
+AarstallGenAarsak_missing <-sum(is.na(komplett$AarstallGenAarsak[which(komplett$GenetiskAarsakPaavist==1)]))
+N_AarstallGenAarsak <- length(which(komplett$GenetiskAarsakPaavist==1))
+
+AlderTapGang_missing <-sum(is.na(komplett$AlderTapGang[which(komplett$Gangfunksjon==3)]))
+N_AlderTapGang <- length(which(komplett$Gangfunksjon==3))
+
+AlderRespStotte_missing <-sum(is.na(komplett$AlderRespStotte[which(komplett$RespStotte==1)]))
+N_AlderRespStotte <- length(which(komplett$RespStotte==1))
+
+HjerteAffAlder_missing <-sum(is.na(komplett$HjerteAffAlder[which(komplett$HjerteAff==1)]))
+N_HjerteAffAlder <- length(which(komplett$HjerteAff==1))
+
+
+
+
+kompletthet <- data.frame(Variabel = c('Debut alder', 'Utredningsstart', 'Diagnoseår', 'Hjerteoppfølging', 'AarstallGenAarsak',
+                                       'AlderTapGang', 'AlderRespStotte', 'HjerteAffAlder'),
+           Ukjent_missing = c(Debut_missing, Utredningsstart_missing, DiagnoseAar_missing, Hjerteoppfolging, AarstallGenAarsak_missing,
+                              AlderTapGang_missing, AlderRespStotte_missing, HjerteAffAlder_missing),
+           N = c(dim(komplett)[1], dim(komplett)[1], dim(komplett)[1], dim(komplett)[1], N_AarstallGenAarsak, N_AlderTapGang,
+                 N_AlderRespStotte, N_HjerteAffAlder))
+
+kompletthet$Andel <- round(kompletthet$Ukjent_missing/kompletthet$N*100, 1)
+
+names(kompletthet)[c(2,4)] <- c('Antall ukjent/missing', 'Andel ukjent/missing')
+
+print(xtable::xtable(kompletthet, digits=c(0,0,0,0,1), align=c('l', 'l', 'r', 'r', 'r'), caption='Andel ukjent/missing for utvalgte variabler. Per pasient, nyeste registrering benyttet (av basis og ad-hoc registreringene)'), include.rownames = F)
+
+
+write.csv2(kompletthet, 'kompletthet.csv', row.names = F)
+@
+
+<<'Fig:Resten', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
+
+varNavn <- c('Muskeldystrofier', 'DiagICD10', 'AlderDagens', 'AlderDagensUnge')
+# varNavn <- c('Alder', 'Diagnosegr', 'DiagICD10', 'Muskeldystrofier', 'LGMD', 'CMT', 'SMA')
+
+for (p in 1:length(varNavn)){
+  outfile=paste0(varNavn[p], '.pdf')
+  MuskelFigAndeler(RegData=RegData, valgtVar=varNavn[p], datoFra=datoFra, datoTil=datoTil, reshID=reshID, diagnosegr=diagnosegr,
+                       minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                       enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+}
+
+varNavnCumAndel <- 'TidUtredDiag_1995_2000'
+outfile=paste0(varNavnCumAndel, '.pdf')
+MuskelFigCumAndel(RegData=RegDataAll, valgtVar='TidUtredDiag', datoFra=datoFra, reshID=reshID, diagnosegr=diagnosegr,
+                  minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                  enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei',
+                   UtredningsaarFra=1995, UtredningsaarTil=2000, inkl_tittel=inkl_tittel)
+
+varNavnCumAndel <- 'TidUtredDiag_2005_2010'
+outfile=paste0(varNavnCumAndel, '.pdf')
+MuskelFigCumAndel(RegData=RegDataAll, valgtVar='TidUtredDiag', datoFra=datoFra, reshID=reshID, diagnosegr=diagnosegr,
+                  minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                  enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei',
+                   UtredningsaarFra=2005, UtredningsaarTil=2010, inkl_tittel=inkl_tittel)
+
+varNavnCumAndel <- 'TidUtredDiag_2012_2017'
+outfile=paste0(varNavnCumAndel, '.pdf')
+MuskelFigCumAndel(RegData=RegDataAll, valgtVar='TidUtredDiag', datoFra=datoFra, reshID=reshID, diagnosegr=diagnosegr,
+                  minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                  enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei',
+                   UtredningsaarFra=2012, UtredningsaarTil=2017, inkl_tittel=inkl_tittel)
+
+
+outfile='AndelGenVerifisert_muskel.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='AndelGenVerifisert', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 diagnosegr=1, diagnose = c('G71.0', 'G71.1', 'G71.2', 'G71.3', 'G71.8', 'G72.3', 'G73.6'),
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='AndelGenVerifisert_LGMD.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='AndelGenVerifisert', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 diagnosegr=1, diagnose = '', undergr = 4,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='AndelGenVerifisert_CMT.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='AndelGenVerifisert', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 diagnose = 'G60.0',
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='TilbudGenetiskVeiledning_DM1.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='TilbudGenetiskVeiledning', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 undergr = 20,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='TilbudGenetiskVeiledning_Duchenne.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='TilbudGenetiskVeiledning', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 undergr = 1,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+# outfile<-''
+# x11()
+outfile<- 'TilbudGenetiskVeiledning_gruppert.pdf'
+MuskelFigAndelStabel(RegData=RegData, valgtVar='TilbudGenetiskVeiledning', datoFra=datoFra, datoTil=datoTil,
+                     reshID=reshID, diagnosegr=diagnosegr,
+                     minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                     enhetsUtvalg=0, preprosess=preprosess, hentData=hentData, inkl_tittel=inkl_tittel)
+
+
+outfile='HjerteAff_myopati.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='HjerteAff', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 diagnosegr=1, diagnose = 'G71.9',
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='Fysioterapi.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='Fysioterapi', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='FysioManglerAarsak.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='FysioManglerAarsak', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='TilbudKostveiledning.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='TilbudKostveiledning', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop, undergr = 1,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='OppfolgBarnelegeNevrolog.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='OppfolgBarnelegeNevrolog', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=18, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop, undergr = 20,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='Sivilstatus.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='Sivilstatus', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=18, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='Arbeid.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='Arbeid', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=18, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='Uforetrygd.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='Uforetrygd', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=18, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='AnsvarsgruppeIP.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='AnsvarsgruppeIP', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='BPA.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='BPA', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='Gangfunksjon.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='Gangfunksjon', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+
+outfile='RespStotte.pdf'
+MuskelFigAndeler(RegData=RegData, valgtVar='RespStotte', datoFra=datoFra, datoTil=datoTil, reshID=reshID,
+                 minald=minald, maxald=maxald, erMann=erMann, outfile=outfile, forlop=forlop,
+                 enhetsUtvalg=enhetsUtvalg, preprosess=preprosess, hentData=hentData, avdod = 'Nei', inkl_tittel=inkl_tittel)
+@
+
+\clearpage
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{DiagICD10.pdf}
+\caption{Fordeling av diagnoser}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Muskeldystrofier.pdf}
+\caption{Undergrupper av muskeldystrofier}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TidUtredDiag_1995_2000.pdf}
+\caption{Tid utredning til diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TidUtredDiag_2005_2010.pdf}
+\caption{Tid utredning til diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TidUtredDiag_2012_2017.pdf}
+\caption{Tid utredning til diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AndelGenVerifisert_muskel.pdf}
+\caption{Genetisk verifisert diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AndelGenVerifisert_LGMD.pdf}
+\caption{Genetisk verifisert diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AndelGenVerifisert_CMT.pdf}
+\caption{Genetisk verifisert diagnose}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TilbudGenetiskVeiledning_DM1.pdf}
+\caption{Tilbud genetisk veiledning}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TilbudGenetiskVeiledning_Duchenne.pdf}
+\caption{Tilbud genetisk veiledning}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TilbudGenetiskVeiledning_gruppert.pdf}
+\caption{Tilbud genetisk veiledning}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{HjerteAff_myopati.pdf}
+\caption{Hjerteaffeksjon}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Fysioterapi.pdf}
+\caption{Fysioterapi}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{FysioManglerAarsak.pdf}
+\caption{Årsak manglende fysioterapi}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{TilbudKostveiledning.pdf}
+\caption{Kostveiledning}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{OppfolgBarnelegeNevrolog.pdf}
+\caption{Oppfølging hos barnelege/nevrolog}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AlderDagens.pdf}
+\caption{Alder i dag}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AlderDagensUnge.pdf}
+\caption{Aldersfordeling blant mindreårige}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Sivilstatus.pdf}
+\caption{Sivilstatus}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Arbeid.pdf}
+\caption{Arbeidsstatus}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Uforetrygd.pdf}
+\caption{Uføretrygd}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{AnsvarsgruppeIP.pdf}
+\caption{Ansvarsgruppe/Individuell plan}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{BPA.pdf}
+\caption{Ansvarsgruppe/Individuell plan}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{Gangfunksjon.pdf}
+\caption{Gangfunksjon}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{RespStotte.pdf}
+\caption{Respirasjonsstøtte}
+\end{figure}
+
+\end{document}

@@ -4,7 +4,7 @@
 \alias{MuskelPrepVar}
 \title{Preparer variabler for plotting}
 \usage{
-MuskelPrepVar(RegData, valgtVar)
+MuskelPrepVar(RegData, valgtVar, inkl_tittel = T)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}

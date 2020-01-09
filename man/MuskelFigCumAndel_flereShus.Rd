@@ -44,8 +44,8 @@ til systemets default output device (som regel skjerm))}
 3: Annet}
 
 \item{enhetsUtvalg}{Lag figur for
-0: Hele landet
-1: Egen enhet mot resten av landet (Default)
+0: Hele landet (Default)
+1: Egen enhet mot resten av landet
 2: Egen enhet}
 
 \item{preprosess}{Preprosesser data
