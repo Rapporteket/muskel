@@ -12,7 +12,7 @@
 MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr=-1,
                              diagnose=-1, undergr=-1, undergr2=-1, minald=0, maxald=120, erMann=99, outfile='', forlop = 99,
                              enhetsUtvalg=0, egenavd=0, avdod='', preprosess=F, hentData=F, debutAlderFra=0, debutAlderTil=120,
-                             UtredningsaarFra=1900, UtredningsaarTil=2100, inkl_tittel=T)
+                             UtredningsaarFra=1900, UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), inkl_tittel=T)
 {
 
 
@@ -85,7 +85,7 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
   }
 
   # x11()
-  FigTypUt <- figtype(outfile)
+  FigTypUt <- rapFigurer::figtype(outfile)
   farger <- FigTypUt$farger
 
   NutvTxt <- length(utvalgTxt)
@@ -124,5 +124,6 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
 
   if ( outfile != '') {dev.off()}
 
-
+  utData <- list(tittel = tittel, utvalgTxt = utvalgTxt, Andeler = cbind(grtxt+1,unname( CumAndel)))
+  return(invisible(utData))
 }

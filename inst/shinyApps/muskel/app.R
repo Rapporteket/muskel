@@ -8,96 +8,62 @@
 #
 
 ######## Last data ########################################
+library(shiny)
 library(muskel)
 library(tidyverse)
 library(shinyalert)
 library(kableExtra)
 library(DT)
+library(htmltools)
+library(lubridate)
+library(shinyjs)
 
-context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
-onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION"
-if (onServer) {
-  RegData <- MuskelHentRegData()
-} else {
-  # rm(list = ls())
-  ForlopsData <- read.table('V:/muskel/ForlopsOversikt2019-08-19 13-30-02.txt', header=TRUE, sep=';')
 
-  RegData <- read.table('V:/muskel/AlleVarNum2019-08-19 13-29-40.txt', header=TRUE, sep=';')
+system.file("shinyApps/muskel/startside.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/dataOgVar.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/forAndGr.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/kumandel.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
+system.file("shinyApps/muskel/tabell.R",package = "muskel") %>%
+  source(encoding = "UTF-8")
 
-  skjemaoversikt <- read.table('V:/muskel/SkjemaOversikt2019-08-19 13-30-03.txt', header=TRUE, sep=';', stringsAsFactors = F)
 
-  RegDataLabel <- read.table('V:/muskel/AlleVar2019-08-19 13-29-38.txt', header=TRUE, sep=';')
+addResourcePath('rap', system.file('www', package='rapbase'))
+regTitle <-  "RAPPORTEKET MUSKELREGISTERET"
+logo <- includeHTML(system.file('www/logo.svg', package='rapbase'))
+logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
+                   "header.append('<div class=\"navbar-brand\" style=\"float:left;font-size:75%\">",
+                   logo,
+                   "</div>');\n",
+                   "console.log(header)")
+logoWidget <- tags$script(shiny::HTML(logoCode))
 
-  #ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';')
-  ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
-                                 "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-  #RegData <- read.table('I:/muskel/AlleVarNum2019-03-26 14-57-28.txt', header=TRUE, sep=';')
-  RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
-                          "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
-                          "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
-                          "Fysioterapi", "Ergoterapi", "UndergruppeSpes", "Undergruppe2Spes", "HjerteAff","HjerteAffAnnet",
-                          "HjerteAffAnnetSpes", "DiagAnamese", 'DiagEMG', 'DiagCK', 'DiagDNA',
-                          'DiagBiopsi', 'Gangfunksjon', 'AlderTapGang', 'RespStotte', 'AlderRespStotte', "TrygdFraAlder",
-                          'Uforetrygd', 'FysioManglerAarsak', "KognitivSvikt", "Utdanning", "Sivilstatus", "Delesjon",
-                          "PunktMutasjon", "Duplikasjon", 'Arvegang', 'Steroider', 'AngiGenetiskAarsak', 'Hjerteoppfoelging',
-                          'KognitivSvikt', 'MedikBehandling', 'Smertestillende', "Antiarytmika", "ACEHemmer", "AnnetHjerteMed",
-                          "AnnenMedikBeh", "OppfolgBarnelegeNevrolog", "PsykiskHelsetjeneste", "OppholdRehab", "TilbudKostveiledning",
-                          "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
-                          "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
-  RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-  #RegDataLabel <- read.table('I:/muskel/AlleVar2019-03-26 14-57-25.txt', header=TRUE, sep=';')
-  RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
-                                   "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
-                                   'Arvegang', 'Gangfunksjon')]
-  RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
-  RegData$Undergruppe_label <- iconv(RegData$Undergruppe_label, from = 'UTF-8', to = '')
-  RegData$Undergruppe2_label <- iconv(RegData$Undergruppe2_label, from = 'UTF-8', to = '')
-  RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
 
-  #skjemaoversikt <- read.table('I:/muskel/SkjemaOversikt2019-03-26 14-57-31.txt', header=TRUE, sep=';', stringsAsFactors = F)
-  skjemaoversikt$Sykehusnavn <- iconv(skjemaoversikt$Sykehusnavn, from = 'UTF-8', to = '')
-  skjemaoversikt$Skjemanavn <- iconv(skjemaoversikt$Skjemanavn, from = 'UTF-8', to = '')
-  skjemaoversikt$HovedDato <- as.Date(skjemaoversikt$HovedDato)
-
-  rm(list=c('ForlopsData', 'RegDataLabel'))
-}
-
-RegData <- MuskelPreprosess(RegData=RegData)
-
-diagnosegrvalg <- sort(unique(RegData$Diagnosegr))
-names(diagnosegrvalg) <- RegData$Diagnosegr_label[match(diagnosegrvalg, RegData$Diagnosegr)]
-aux <- c('Alder ved førstegangsregistrering', 'Alder', 'Alder i dag', 'AlderDagens',
-         'Debutalder', 'DebutAlder', 'Alder ved diagnose', 'DiagnoseAlder', 'Andel med fysioterapi',
-         'Fysioterapi', 'Høyeste utdanning', 'Utdanning', 'Diagnosegrupper', 'Diagnosegr',
-         'Hoveddiagnoser (ICD-10)', 'DiagICD10', 'Undergrupper av muskeldystrofier', 'Muskeldystrofier',
-         'Undergrupper av spinal muskelatrofi', 'SMA', 'Undergrupper av myotonier/periodiske paralyser',
-         'PeriodiskeParalyser', 'Andel med steroidbehandling', 'AndelSteroider', 'Hjerteaffeksjon',
-         'HjerteAff', 'Hjerteoppfølging', 'Hjerteoppf', 'Diagnose basert på', 'DiagByggerPaa',
-         'DMD/BMD-diagnose basert på', 'DiagByggerPaa_v2', 'Gangfunksjon', 'Gangfunksjon', 'Arvegang',
-         'Arvegang', 'Andel genetisk verifisert', 'AndelGenVerifisert', 'Type hjerteaffeksjon',
-         'TypeHjerteaffeksjon', 'Tilsvarende sykdom/symptomer i familien', 'SympFamilie',
-         'Respirasjonsstøtte', 'RespStotte', 'Kognitiv svikt', 'KognitivSvikt',
-         'Type medikamentell behandling', 'TypeMedikBehandling', 'Fysioterapi', 'Fysioterapi',
-         'Årsak til manglende fysioterapi', 'FysioManglerAarsak', 'Ergoterapi', 'Ergoterapi',
-         'Oppfølging hos nevrolog/barnelege', 'OppfolgBarnelegeNevrolog', 'Oppfølging av psykisk helsetjeneste',
-         'PsykiskHelsetjeneste', 'Rehabiliteringsopphold', 'OppholdRehab', 'Tilbud om kostveiledning',
-         'TilbudKostveiledning', 'Tilbud om genetisk veiledning', 'TilbudGenetiskVeiledning',
-         'Ansvarsgruppe/Individuell plan', 'AnsvarsgruppeIP', 'Brukerstyrt personlig assistent', 'BPA',
-         'Arbeidsstatus', 'Arbeid', 'Uføretrygdet', 'Uforetrygd', 'Sivilstatus', 'Sivilstatus')
-
-varvalg <- aux[seq(2,length(aux), by = 2)]
-names(varvalg) <- aux[-seq(2,length(aux), by = 2)]
-
-######################################################################
-
-library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+                title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
+                            regTitle),
+                windowTitle = regTitle,
+                theme = "rap/bootstrap.css",
+                tabPanel("Startside",
+                         shinyalert::useShinyalert(),
+                         rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
+                                                      organization = uiOutput("appOrgName"),
+                                                      addUserInfo = TRUE),
+                         tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico")),
+                         startside()
+                         ),
+
                  tabPanel("Fordelingsfigurer",
+
                           # sidebarLayout(
                           sidebarPanel(
                             shinyjs::useShinyjs(),
+                            div(id = "sbpFordeling",
                             selectInput(inputId = "valgtVar", label = "Velg variabel",
                                         choices = varvalg),
                             dateInput(inputId = 'datoFra', value = '2008-01-01', min = '2008-01-01',
@@ -106,6 +72,7 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                                       label = "T.o.m. dato", language="nb"),
                             sliderInput(inputId="alder", label = "Alder", min = 0,
                                         max = 120, value = c(0, 120)),
+                            uiOutput("SC"),
                             selectInput(inputId = "egenavd", label = "Pasientgruppe", selected = 0,
                                         choices = c('Registrert ved HF'=0, 'Følges opp ved HF'=1, 'Diagnostisert ved HF'=2,
                                         'Bosatt i fylke'=3)),
@@ -121,39 +88,38 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
                             uiOutput(outputId = 'undergruppe1'),
                             uiOutput(outputId = 'undergruppe2'),
                             selectInput(inputId = "avdod", label = "Inkluder avdøde",
-                                        choices = c('Ja'='Ja', 'Nei'='Nei')),
+                                        choices = c('Ja'='Ja', 'Nei'='Nei'), selected = "Nei"),
                             sliderInput(inputId="Utredningsaar", label = "Utredningsår", sep='', min = 1950,
                                         max = as.numeric(format(Sys.Date(), '%Y')), value = c(1950, as.numeric(format(Sys.Date(), '%Y')))),
                             sliderInput(inputId="debutalder", label = "Debutalder", min = 0,
                                         max = 90, value = c(0, 90)),
                             selectInput(inputId = "bildeformat", label = "Velg bildeformat",
-                                        choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))
+                                        choices = c('pdf', 'png', 'jpg', 'bmp', 'tif', 'svg'))),
+                            actionLink(inputId="nullstillFordeling",
+                                              style="color:black" ,
+                                              label = "Nullstill Valg")
                           ),
-                          mainPanel(tabsetPanel(
-                            tabPanel("Figur",
-                                     plotOutput("Figur1", height="auto"),textOutput("txtn"), downloadButton("lastNedBilde", "Last ned bilde")),
-                            tabPanel("Tabell",
-                                     tableOutput("Tabell1"), downloadButton("lastNed", "Last ned tabell"))
-                          )
-                          )
+
+                          mainPanel(tabsetPanel(id = "tab",
+                            tabPanel("Figur", value = "andelFig",
+                                     plotOutput("Figur1", height="auto"),
+                                     downloadButton("lastNedBilde", "Last ned bilde")),
+                            tabPanel("Tabell",value = "andelTab",
+                                     tableOutput("Tabell1"),
+                                     downloadButton("lastNed", "Last ned tabell"))
+                          ))
                  ),
-                 tabPanel("Administrative tabeller",
-                          sidebarPanel(
-                            dateInput(inputId = 'datoFra2', value = '2008-01-01', min = '2008-01-01',
-                                      label = "F.o.m. dato", language="nb"),
-                            dateInput(inputId = 'datoTil2', value = Sys.Date(), min = '2012-01-01',
-                                      label = "T.o.m. dato", language="nb"),
-                            selectInput(inputId = "regstatus", label = "Skjemastatus",
-                                        choices = c('Ferdigstilt'=1, 'Kladd'=0))
-                          ),
-                          mainPanel(tabsetPanel(
-                            tabPanel("Antall skjema",
-                                     DTOutput("Tabell_adm1"), downloadButton("lastNed1", "Last ned tabell")),
-                            tabPanel("Annen admin rapport",
-                                     tableOutput("Tabell_adm2"), downloadButton("lastNed2", "Last ned tabell"))
-                          )
-                          )
-                 )
+                tabPanel("Fordelinger etter grupperingsvariabler",
+                  forGrVarUI(id = "forgrvar")
+                ),
+                tabPanel("Kumulative andeler",
+                  kumulativAndelUI(id = "kumAnd")
+                ),
+                tabPanel("Administrative tabeller",
+                         tabellUI("muskeltabell")
+
+                )
+
 )
 
 
@@ -161,39 +127,21 @@ ui <- navbarPage(title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css"
 server <- function(input, output, session) {
 
   reshID <- reactive({
-    ifelse(onServer,as.numeric(rapbase::getShinyUserReshId(session, testCase = TRUE)),101719)
+    ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
   })
   userRole <- reactive({
-    ifelse(onServer, rapbase::getShinyUserRole(session, testCase = TRUE), 'SC')
+    ifelse(onServer, rapbase::getUserRole(session), 'SC')
   })
+  if (onServer){
+    raplog::appLogger(session, msg = "Muskel: shiny app starter")
+  }
 
+  observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
   # observe(
   #   if (userRole() != 'SC') {
   #     shinyjs::hide(id = 'alder')
   #   }
   # )
-
-  antskjema <- function() {
-    aux <- as.data.frame.matrix(addmargins(table(skjemaoversikt[skjemaoversikt$SkjemaStatus == as.numeric(input$regstatus) &
-                                                                  skjemaoversikt$HovedDato >= input$datoFra2 &
-                                                                  skjemaoversikt$HovedDato <= input$datoTil2,
-                                                                c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
-    aux$Avdeling <- row.names(aux)
-    ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
-    sketch <- htmltools::withTags(table(
-      tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
-      tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1], 2:dim(ant_skjema)[2]])))))
-    list(ant_skjema=ant_skjema, sketch=sketch)
-  }
-
-  output$Tabell_adm1 = renderDT(
-    datatable(antskjema()$ant_skjema[-dim(antskjema()$ant_skjema)[1], ],
-              container = antskjema()$sketch,
-              rownames = F,
-              options = list(pageLength = 25)
-    )
-  )
-
   # output$Tabell_adm1 = renderDT(
   #   datatable(dt_test()[-dim(dt_test())[1], ],
   #             container = htmltools::withTags(table(
@@ -211,7 +159,7 @@ server <- function(input, output, session) {
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
-                                             choices = if (is.null(input$diagnosegr)){
+                                             choices = if (is.null(input$diagnosegr)  ){
                                                "-1"
                                              } else {
                                                sort(unique(RegData$DiagICD10[RegData$Diagnosegr %in% as.numeric(input$diagnosegr)]))
@@ -239,9 +187,23 @@ server <- function(input, output, session) {
                                                             RegData$Undergruppe2)])
                                                },
                                                multiple = TRUE)})
+  output$SC <- renderUI({
+    if (userRole() == "SC"){
+      selectInput("shSelect", label = "Velg Avdeling",
+                  choices = avdValg, selected = reshID())
+    }
+  })
+
+  resh <- reactive({
+    if (userRole() == "SC") {
+      input$shSelect
+    }else{
+      reshID()
+    }
+  })
 
   observe(
-    if (is.null(input$diagnosegr)) {
+    if (is.null(input$diagnosegr) | length(input$diagnosegr) != 1) {
       shinyjs::hide(id = 'icd10_kntr')
     } else {
       shinyjs::show(id = 'icd10_kntr')
@@ -275,7 +237,7 @@ server <- function(input, output, session) {
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                     reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
+                     reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
   # , height = function() {                       # Hvis du ønsker automatisk resizing
   #   1*session$clientData$output_Figur1_width
@@ -293,7 +255,7 @@ server <- function(input, output, session) {
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                                    undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                                   reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
+                                   reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
@@ -362,12 +324,71 @@ server <- function(input, output, session) {
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                        undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                       reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
+                       reshID = resh(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
 
-  WD <- reactive({paste0("text")})
-  output$txtn <- renderText(WD())
+
+  callModule(forGrVar, "forgrvar", rID = reshID(), ss = session)
+  callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
+  callModule(tabell, "muskeltabell", ss = session)
+
+  shiny::observe({
+    if (onServer) {
+      if (input$tab == "andelFig") {
+        mldandel <- paste(
+          "Muskel: figur - fordeling. variabel -",
+          input$valgtVar
+        )
+      } else if (input$tab == "andelTab") {
+        mldandel <- paste(
+          "Muskel: tabell - fordeling. variabel -",
+          input$valgtVar
+        )
+      }
+      raplog::repLogger(
+        session = session,
+        msg = mldandel
+      )
+      mldNLF <- paste(
+        "Muskel: nedlasting figur - Fordeling. variabel -",
+        input$valgtVar
+      )
+      mldNLT <- paste(
+        "Muskel: nedlasting tabell - Fordeling. variabel -",
+        input$valgtVar
+      )
+      shinyjs::onclick(
+        "lastNedBilde",
+        raplog::repLogger(
+          session = session,
+          msg = mldNLF
+        )
+      )
+      shinyjs::onclick(
+        "lastNed",
+        raplog::repLogger(
+          session = session,
+          msg = mldNLT
+        )
+      )
+    }
+  })
+
+  #Navbarwidget
+  output$appUserName <- renderText(rapbase::getUserFullName(session))
+  output$appOrgName <- renderText(rapbase::getUserReshId(session))
+
+  # Brukerinformasjon
+  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  observeEvent(input$userInfo, {
+    shinyalert("Dette vet Rapporteket om deg:", userInfo,
+               type = "", imageUrl = "rap/logo.svg",
+               closeOnEsc = TRUE, closeOnClickOutside = TRUE,
+               html = TRUE, confirmButtonText = "Den er grei!")
+  })
+  #rsconnect::showLogs()
+
 }
 
 # Run the application
