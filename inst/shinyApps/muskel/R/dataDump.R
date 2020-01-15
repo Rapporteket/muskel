@@ -21,28 +21,27 @@ dataDumpUI <- function(id) {
       ),
       shiny::fluidRow(
         column(4, offset = 6,
-        shiny::actionLink(class ="actnLink aarlink5",
-          ns("siste5"),
-          label = "5-år "
-        ),#),
-        #column(2,
+          shiny::actionLink(class ="actnLink aarlink5",
+            ns("siste5"),
+            label = "5-år "
+          ),
           shiny::actionLink(class ="actnLink aarlink1",
             ns("sistear"),
             label = "1-år "
-        )),
-        column(2,#offset = 1,
+          )),
+        column(2,
           shiny::actionLink(class ="actnLink",
             ns("nullstill"),
             label = "Nullstill"
-      ))),
+       ))),
       fluidRow(
-      column(6, offset = 6,
-      shiny::downloadButton(
-        style="float:right;margin-top:5px",
-        ns("dataDumpNedLasting"),
-        label = "Last ned!",
-      ))
-    )),
+        column(6, offset = 6,
+          shiny::downloadButton(
+            style="float:right;margin-top:5px",
+            ns("dataDumpNedLasting"),
+            label = "Last ned!",
+        ))
+      )),
     shiny::mainPanel(
       fluidRow( column(width = 10,
         shiny::tags$h3('Datadump - Muskel', align='center'),
@@ -133,10 +132,6 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
   })
   observeEvent(input$nullstill, {shinyjs::reset("sidebarDataDump")})
 
-  output$txt <- renderText(
-   qry()
-  )
-
   output$dataDumpNedLasting <- shiny::downloadHandler(
     filename = function(){
       paste0(input$ddselect,"Muskel",Sys.Date(),".csv")
@@ -156,5 +151,15 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
       )
       write_csv2(dataDump, file)
     }
+  )
+  shinyjs::onclick(
+    "dataDumpNedLasting",
+    raplog::repLogger(
+      session = mainSession,
+      msg = paste0(
+        "Muskel: datadump ", input$ddselect, " ",
+        min(input$ddDateRange),"-",max(input$ddDateRange)
+      )
+    )
   )
 }
