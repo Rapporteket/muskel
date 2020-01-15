@@ -19,6 +19,7 @@ library(lubridate)
 library(shinyjs)
 
 
+
 system.file("shinyApps/muskel/R/startside.R",package = "muskel") %>%
   source(encoding = "UTF-8")
 system.file("shinyApps/muskel/R/dataOgVar.R",package = "muskel") %>%
@@ -56,8 +57,10 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                          rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
                                                       organization = uiOutput("appOrgName"),
                                                       addUserInfo = TRUE),
+
                          tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"),
                          tags$link(rel="stylesheet", type = "text/css", href="dataDump.css")),
+
                          startside()
                          ),
 
@@ -121,9 +124,11 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel("Administrative tabeller",
                          tabellUI("muskeltabell")
 
+
                 ),
                 tabPanel(
                   "Datadump", dataDumpUI("dataDumpMuskel")
+
                 )
 
 )
@@ -339,6 +344,7 @@ server <- function(input, output, session) {
   callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
   callModule(tabell, "muskeltabell", ss = session)
   callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID(),userRole=userRole())
+
 
   shiny::observe({
     if (onServer) {
