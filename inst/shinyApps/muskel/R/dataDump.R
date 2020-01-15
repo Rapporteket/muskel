@@ -110,7 +110,8 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
        paste0(
          "SELECT ",input$ddselect, ".* ", AddHovedDatoVariabels(),
          " FROM ", input$ddselect, " ", AddHovedDatoJoin(), " WHERE ",
-         input$ddselect, ".AvdRESH = ", reshID)
+         input$ddselect, ".AvdRESH = ", reshID
+       )
     }
   })
 
