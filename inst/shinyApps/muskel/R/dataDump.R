@@ -48,7 +48,7 @@ dataDumpUI <- function(id) {
         shiny::tags$hr(),
         shiny::tags$p(
           'Her kan du laste ned forskjellige varianter av datadump for
-          muskelregistret. Lokale brukere vil bare kunne laste ned data
+          muskel. Lokale brukere vil bare kunne laste ned data
           for egen avdeling.'
         ),
         shiny::tags$h5(
@@ -95,7 +95,7 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
             "AlleVarNum" = "INNER JOIN ForlopsOversikt
             ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID ",
             "AlleVar" = "INNER JOIN ForlopsOversikt
-            ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID ",
+            ON AlleVar.ForlopsID = ForlopsOversikt.ForlopsID ",
             "ForlopsOversikt" = "",
             "SkjemaOversikt" = ""
     )
@@ -109,7 +109,7 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
     } else {
        paste0(
          "SELECT ",input$ddselect, ".* ", AddHovedDatoVariabels(),
-         " FROM ", input$ddselect, " ", AddHovedDatoJoin())
+         " FROM ", input$ddselect, " ", AddHovedDatoJoin(), "WHERE AvdRESH = ", reshID  )
     }
   })
 
@@ -142,7 +142,8 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
         query = qry(),
         dbType = "mysql"
       )
-      dataDump <- dataDump %>% dplyr::filter(
+      dataDump <- dataDump %>%
+        dplyr::filter(
         HovedDato %>%
           dplyr::between(
             min(input$ddDateRange),
