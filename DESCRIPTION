@@ -29,7 +29,9 @@ Imports:
     tidyr,
     dplyr
 RoxygenNote: 7.0.1
-Suggests: knitr
+Suggests: 
+    knitr,
+    covr
 VignetteBuilder: knitr
 Remotes: 
     Rapporteket/rapbase,
