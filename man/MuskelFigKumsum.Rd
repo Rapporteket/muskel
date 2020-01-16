@@ -57,6 +57,8 @@ til systemets default output device (som regel skjerm))}
 2: Oppfølging
 3: Annet}
 
+\item{avdod}{avdød.}
+
 \item{enhetsUtvalg}{Lag figur for
 0: Hele landet (Default)
 1: Egen enhet mot resten av landet
@@ -69,6 +71,8 @@ TRUE: Ja}
 \item{hentData}{Gjør spørring mot database
 FALSE: Nei, RegData gis som input til funksjonen (Default)
 TRUE: Ja}
+
+\item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
 }
 \value{
 En figur med kummulativt vekst i registeret

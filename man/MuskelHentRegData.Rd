@@ -2,7 +2,7 @@
 % Please edit documentation in R/MuskelHentData.R
 \name{MuskelHentRegData}
 \alias{MuskelHentRegData}
-\title{Provide global dataframe for NoRGast}
+\title{Provide global dataframe for Muskel}
 \usage{
 MuskelHentRegData()
 }
@@ -10,5 +10,5 @@ MuskelHentRegData()
 RegData data frame
 }
 \description{
-Provides NoRGast data from staging
+Provides muskel data from staging
 }

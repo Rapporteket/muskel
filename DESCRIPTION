@@ -8,7 +8,7 @@ Author: person(given = "Kevin Otto",
               role = c("aut","cre"),
               email = "kevin.thon@skde.no"))
 Maintainer: Kevin Thon <kevin.thon@skde.no>
-Description: Pakke for generering av resultatrapporter for Muskelregisteret
+Description: Pakke for generering av resultatrapporter for Muskelregisteret.
 License: GPL-3
 LazyData: TRUE
 Encoding: UTF-8
@@ -25,7 +25,9 @@ Imports:
     rapFigurer (>= 0.1.0),
     magrittr,
     raplog (>= 0.0.0.9000),
-    shinyalert
+    shinyalert,
+    tidyr,
+    dplyr
 RoxygenNote: 7.0.1
 Suggests: knitr
 VignetteBuilder: knitr

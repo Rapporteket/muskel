@@ -9,11 +9,13 @@ age(dob, ageDay = Sys.Date(), units = "years", floor = TRUE)
 \arguments{
 \item{dob}{date-of-birth, the day to start calculating age.}
 
-\item{units}{unit to measure age in. Defaults to "years". Passed to duration.}
+\item{ageDay}{the date on which age is to be calculated.}
 
-\item{floor}{boolean for whether or not to floor the result. Defaults to TRUE.}
+\item{units}{unit to measure age in. Defaults to "years".
+Passed to duration.}
 
-\item{age.day}{the date on which age is to be calculated.}
+\item{floor}{boolean for whether or not to floor the result.
+Defaults to TRUE.}
 }
 \value{
 Age in units. Will be an integer if floor = TRUE.
@@ -26,9 +28,9 @@ floor applied so that you are, e.g., 5 years old from
 for units other than years.
 }
 \examples{
-my.dob <- as.Date('1983-10-20')
-age(my.dob)
-age(my.dob, units = "minutes")
-age(my.dob, floor = FALSE)
+mydob <- as.Date('1983-10-20')
+age(mydob)
+age(mydob, units = "minutes")
+age(mydob, floor = FALSE)
 
 }

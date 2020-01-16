@@ -6,21 +6,26 @@
 #' \code{floor = FALSE} to return decimal ages, and change units
 #' for units other than years.
 #' @param dob date-of-birth, the day to start calculating age.
-#' @param age.day the date on which age is to be calculated.
-#' @param units unit to measure age in. Defaults to "years". Passed to duration.
-#' @param floor boolean for whether or not to floor the result. Defaults to TRUE.
+#' @param ageDay the date on which age is to be calculated.
+#' @param units unit to measure age in. Defaults to "years".
+#'  Passed to duration.
+#' @param floor boolean for whether or not to floor the result.
+#' Defaults to TRUE.
 #' @return Age in units. Will be an integer if floor = TRUE.
 #' @examples
-#' my.dob <- as.Date('1983-10-20')
-#' age(my.dob)
-#' age(my.dob, units = "minutes")
-#' age(my.dob, floor = FALSE)
+#' mydob <- as.Date('1983-10-20')
+#' age(mydob)
+#' age(mydob, units = "minutes")
+#' age(mydob, floor = FALSE)
 #'
 #' @export
 #'
-age <- function(dob, age.day = today(), units = "years", floor = TRUE) {
+age <- function(
+  dob,  ageDay = Sys.Date(),  units = "years",  floor = TRUE
+) {
 
-  calc.age = lubridate::interval(dob, age.day) / lubridate::duration(num = 1, units = units)
-  if (floor) return(as.integer(floor(calc.age)))
-  return(calc.age)
+  calcAge <-  lubridate::interval(dob, ageDay) /
+    lubridate::duration(num = 1, units = units)
+  if (floor) return(as.integer(floor(calcAge)))
+  return(calcAge)
 }

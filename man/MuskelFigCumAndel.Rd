@@ -48,6 +48,12 @@ hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 2: Spinal muskelatrofi
 3: Polynevropati}
 
+\item{diagnose}{diagnosegrupper}
+
+\item{undergr}{undergruppe av diagnosegruppen}
+
+\item{undergr2}{undergruppe to}
+
 \item{minald}{Alder, fra og med (Default: 0)}
 
 \item{maxald}{Alder, til og med (Default: 130)}
@@ -75,6 +81,8 @@ til systemets default output device (som regel skjerm))}
 2: Diagnostisert ved HF
 3: Bostatt i fylke}
 
+\item{avdod}{avdød.}
+
 \item{preprosess}{Preprosesser data
 FALSE: Nei (Default)
 TRUE: Ja}
@@ -82,6 +90,16 @@ TRUE: Ja}
 \item{hentData}{Gjør spørring mot database
 FALSE: Nei, RegData gis som input til funksjonen (Default)
 TRUE: Ja}
+
+\item{debutAlderFra}{debutalder f.o.m}
+
+\item{debutAlderTil}{debutalder t.o.m}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
+
+\item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
 }
 \value{
 Et plot som viser kummulativ andel av valgt variabel

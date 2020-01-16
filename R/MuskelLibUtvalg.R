@@ -29,7 +29,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
     RegData$AvdRESH <- RegData$FoelgesOppAvIns
     RegData <- RegData[!is.na(RegData$AvdRESH), ]
     RegData$SykehusNavn <- mapping_avdresh_shusnavn$SykehusNavn[match(RegData$AvdRESH, mapping_avdresh_shusnavn$AvdRESH)]
-    shtxt <- paste0('Følges opp: ', as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)]))
+    shtxt <- paste0('F\u00F8lges opp: ', as.character(RegData$SykehusNavn[match(reshID, RegData$AvdRESH)]))
   }
   if (egenavd==2) { # Diagnostiserende institusjon HF
     RegData$AvdRESH <- RegData$DiagnoseStiltAv
@@ -84,22 +84,22 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   utvalgTxt <- c(paste('Registrert: ',
                        min(RegData$HovedDato, na.rm=T), ' til ', max(RegData$HovedDato, na.rm=T), sep='' ),
                  # if ((minald>0) | (maxald<120)) {
-                 #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' år', sep='')},
+                 #   paste('Pasienter fra ', min(RegData$AlderVreg, na.rm=T), ' til ', max(RegData$AlderVreg, na.rm=T), ' \u00E5r', sep='')},
                  if ((minald>0) | (maxald<120)) {
-                   paste0('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' år')},
+                   paste0('Pasienter fra ', min(RegData$Alder, na.rm=T), ' til ', max(RegData$Alder, na.rm=T), ' \u00E5r')},
                  if (UtredningsaarFra != 1950 | UtredningsaarTil != as.numeric(format(Sys.Date(),"%Y"))){
-                   paste0('Utredningstart fra år ', min(RegData$Utredningsstart, na.rm=T), ' til ', max(RegData$Utredningsstart, na.rm=T))},
-                 if (avdod %in% c('Ja', 'Nei')) {paste0('Avdøde inkludert: ', avdod)}, # Ikke korrekt for valg "Ja"
-                 if (erMann %in% 0:1) {paste('Kjønn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
-                 # if (diagnoseSatt != 99){paste0('Først diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
+                   paste0('Utredningstart fra \u00E5r ', min(RegData$Utredningsstart, na.rm=T), ' til ', max(RegData$Utredningsstart, na.rm=T))},
+                 if (avdod %in% c('Ja', 'Nei')) {paste0('Avd\u00F8de inkludert: ', avdod)}, # Ikke korrekt for valg "Ja"
+                 if (erMann %in% 0:1) {paste('Kj\u00F8nn: ', c('Kvinner', 'Menn')[erMann+1], sep='')},
+                 # if (diagnoseSatt != 99){paste0('F\u00F8rst diagnostisert: ', RegData$SykehusNavn[match(diagnoseSatt, RegData$AvdRESH)])},
                  if (diagnosegr[1] != -1) {paste0('Diagnosegruppe(r): ', paste(sort(unique(RegData$Diagnosegr_label)), collapse = ', '))},
                  if (diagnose[1] != '-1'){paste0('Diagnose(r): ', paste(sort(unique(RegData$DiagICD10)), collapse=', '))},
                  if (undergr[1] != -1){paste0('Undergruppe(r): ', paste(na.omit(RegData$Undergruppe_label[match(undergr, RegData$Undergruppe)]),
                                                                         collapse=', '))},
-                 if (undergr2[1] != -1){paste0('Undergruppe(r) nivå 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
+                 if (undergr2[1] != -1){paste0('Undergruppe(r) niv\u00E5 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
                                                                                 collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])},
-                 if (debutAlderFra != 0 | debutAlderTil != 90) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' år')}
+                 if (debutAlderFra != 0 | debutAlderTil != 90) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' \u00E5r')}
   )
   } else {
     utvalgTxt <- paste0('Dato: ', datoFra, ' til ', datoTil)

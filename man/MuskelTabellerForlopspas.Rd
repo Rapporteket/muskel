@@ -2,7 +2,7 @@
 % Please edit documentation in R/MuskelTabellerForlopPas.R
 \name{MuskelTabellerForlopspas}
 \alias{MuskelTabellerForlopspas}
-\title{Forløps of pasient tabeller for Muskelregisteret}
+\title{Unik pasient/pasientforløps  tabeller for Muskelregisteret}
 \usage{
 MuskelTabellerForlopspas(
   RegDt = RegData,
@@ -18,9 +18,27 @@ MuskelTabellerForlopspas(
 )
 }
 \arguments{
-\item{RegDt}{en dataramme}
+\item{RegDt}{dataramme fra muskelregisteret med variabler som
+forløpsID og paientID}
 
-\item{tidfra}{}
+\item{tidFra}{tidligste dato. Tekststreng skrevet som 'YYYY-mm-dd'}
+
+\item{tidTil}{seineste dato. Tekststreng skrevet som 'YYYY-mm-dd'}
+
+\item{aldmin}{Alder, f.o.m}
+
+\item{aldmax}{Alder, t.o.m}
+
+\item{kjoen}{0-kvinner, 1-menn, 99 - begge}
+
+\item{tidenh}{tidsenhet. "aar" - år eller "maned" - måned}
+
+\item{frlType}{Forløpstype.
+kan være Basisregistrering, Oppfølging, NULL}
+
+\item{avd}{Avdød."Ja", "Nei"}
+
+\item{IDType}{"pasientID" eller "forlopsID"}
 }
 \value{
 tabelldata med antall pasienter/forløp per sykhus
@@ -28,5 +46,5 @@ per tidsenhet
 }
 \description{
 Denne funksjonen tar inn registerdata lager tabeller
-av antall pasienter/forløp per sykehus per tidsenhet
+av antall pasienter/pasientforløp per sykehus per tidsenhet
 }

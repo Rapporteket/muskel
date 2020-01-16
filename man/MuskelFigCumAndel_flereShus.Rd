@@ -51,6 +51,8 @@ hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 \item{outfile}{Navn på fil figuren skrives til. Default: '' (Figur skrives
 til systemets default output device (som regel skjerm))}
 
+\item{diagnoseSatt}{daignosesatt}
+
 \item{forlop}{Forløpstype
 1: Basisregistrering
 2: Oppfølging

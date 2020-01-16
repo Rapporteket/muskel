@@ -63,10 +63,26 @@ MuskelUtvalg(
 2: Oppfølging
 3: Annet}
 
+\item{diagnose}{diagnosegrupper}
+
+\item{undergr}{undergruppe av diagnosegruppen}
+
+\item{undergr2}{undergruppe to}
+
+\item{avdod}{avdød.}
+
 \item{fargepalett}{Hvilken fargepalett skal brukes i figurer (Default: BlaaRapp)}
 
 \item{reshID}{Parameter følger fra innlogging helseregister.no og angir
 hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
+
+\item{debutAlderFra}{debutalder f.o.m}
+
+\item{debutAlderTil}{debutalder t.o.m}
 }
 \value{
 UtData En liste bestående av det filtrerte datasettet, utvalgstekst for figur og tekststreng som angir fargepalett

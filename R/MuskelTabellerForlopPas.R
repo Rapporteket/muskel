@@ -1,11 +1,20 @@
-#' Forløps of pasient tabeller for Muskelregisteret
+#' Unik pasient/pasientforløps  tabeller for Muskelregisteret
 #'
 #' Denne funksjonen tar inn registerdata lager tabeller
-#' av antall pasienter/forløp per sykehus per tidsenhet
+#' av antall pasienter/pasientforløp per sykehus per tidsenhet
 #'
-#' @param RegDt en dataramme
-#' @param tidfra
-#'
+#' @param RegDt dataramme fra muskelregisteret med variabler som
+#'  forløpsID og paientID
+#' @param tidFra tidligste dato. Tekststreng skrevet som 'YYYY-mm-dd'
+#' @param tidTil seineste dato. Tekststreng skrevet som 'YYYY-mm-dd'
+#' @param aldmin Alder, f.o.m
+#' @param aldmax Alder, t.o.m
+#' @param kjoen 0-kvinner, 1-menn, 99 - begge
+#' @param tidenh tidsenhet. "aar" - år eller "maned" - måned
+#' @param frlType Forløpstype.
+#'         kan være Basisregistrering, Oppfølging, NULL
+#' @param avd Avdød."Ja", "Nei"
+#' @param IDType "pasientID" eller "forlopsID"
 #'
 #' @return tabelldata med antall pasienter/forløp per sykhus
 #' per tidsenhet
@@ -13,9 +22,11 @@
 #' @export
 #'
 
-MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tidTil = Sys.Date() ,
-                       aldmin = 0, aldmax = 120, kjoen = 99, tidenh = "aar",
-                       frlType = NULL, avd = "Nei", IDType = "PasientID"){
+MuskelTabellerForlopspas <- function(
+    RegDt = RegData, tidFra = "2008-01-01",
+    tidTil = Sys.Date(), aldmin = 0, aldmax = 120,
+    kjoen = 99, tidenh = "aar", frlType = NULL,
+    avd = "Nei", IDType = "PasientID") {
 
     if (kjoen == 99) {
         kjoen <- c(0,1)
@@ -32,34 +43,33 @@ MuskelTabellerForlopspas <- function(RegDt = RegData, tidFra = "2008-01-01", tid
         avd <-  c("Ja","Nei")
     }
 
-    lenFraTil <- length(seq(as.Date(tidFra), as.Date(tidTil), by = "month")) - 1
+    lenFraTil <- length(
+        seq(as.Date(tidFra), as.Date(tidTil), by = "month")) - 1
     if (tidenh == "maaned" & lenFraTil < 14) {
         tidenh <- "underEtAar"
     }
 
 
     tabData <- RegData %>%
-        dplyr::select( PasientID,
-                       ForlopsID,
-                       SykehusNavn,
-                       HovedDato,
-                       erMann,
-                       PasientAlder,
-                       Avdod,
-                       ForlopsType1Num,
-                       ForlopsType1) %>%
-        dplyr::mutate(maaned = factor(lubridate::month(HovedDato),
-             labels = c("Jan","Feb","Mar", "Apr", "Mai",
+        dplyr::select(
+            PasientID, ForlopsID, SykehusNavn, HovedDato, erMann,
+            PasientAlder, Avdod, ForlopsType1Num, ForlopsType1) %>%
+        dplyr::mutate(
+            maaned = factor(lubridate::month(HovedDato),
+            labels = c("Jan","Feb","Mar", "Apr", "Mai",
             "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des")) ,
             aar = lubridate::year(HovedDato),
             underEtAar = paste(maaned, "-", aar)) %>%
-        dplyr::filter( as.Date(HovedDato) %>%
-                           dplyr::between(as.Date(tidFra) ,as.Date(tidTil)),
-                       PasientAlder %>% dplyr::between( aldmin,aldmax),
-                       erMann %in% kjoen,
-                       ForlopsType1 %in% frlType,
-                       Avdod %in% avd) %>%
-        dplyr::select(PasientID, ForlopsID, SykehusNavn, maaned, aar, underEtAar) %>%
+        dplyr::filter(
+            as.Date(HovedDato) %>%
+                dplyr::between(as.Date(tidFra) ,as.Date(tidTil)),
+            PasientAlder %>% dplyr::between( aldmin,aldmax),
+            erMann %in% kjoen,
+            ForlopsType1 %in% frlType,
+            Avdod %in% avd) %>%
+        dplyr::select(
+            PasientID, ForlopsID, SykehusNavn, maaned, aar, underEtAar
+        ) %>%
         dplyr::arrange(aar,maaned)
 
     if (length (tabData[[tidenh]]) == 0) {
