@@ -4,16 +4,16 @@
 \alias{age}
 \title{Calculate age}
 \usage{
-age(dob, age.day = today(), units = "years", floor = TRUE)
+age(dob, ageDay = Sys.Date(), units = "years", floor = TRUE)
 }
 \arguments{
 \item{dob}{date-of-birth, the day to start calculating age.}
 
-\item{age.day}{the date on which age is to be calculated.}
-
 \item{units}{unit to measure age in. Defaults to "years". Passed to duration.}
 
 \item{floor}{boolean for whether or not to floor the result. Defaults to TRUE.}
+
+\item{age.day}{the date on which age is to be calculated.}
 }
 \value{
 Age in units. Will be an integer if floor = TRUE.

@@ -5,9 +5,19 @@
 \title{S' - Vertikale eller hor. søyler
 L' - Linjer}
 \usage{
-FigFordeling(RegData, libkat, outfile = "", valgtVar,
-  datoFra = "2000-01-01", datoTil = "2050-01-01", minald = 0,
-  maxald = 120, erMann = "", plotType = "S", diagnoseSatt = "")
+FigFordeling(
+  RegData,
+  libkat,
+  outfile = "",
+  valgtVar,
+  datoFra = "2000-01-01",
+  datoTil = "2050-01-01",
+  minald = 0,
+  maxald = 120,
+  erMann = "",
+  plotType = "S",
+  diagnoseSatt = ""
+)
 }
 \description{
 S' - Vertikale eller hor. søyler
