@@ -3,15 +3,17 @@ Type: Package
 Title: Resultatrapporter for Muskelregisteret
 Version: 0.1
 Date: 2016-01-22
-Author: Kevin Thon
+Author: person(given = "Kevin Otto",
+              family = "Thon",
+              role = c("aut","cre"),
+              email = "kevin.thon@skde.no"))
 Maintainer: Kevin Thon <kevin.thon@skde.no>
 Description: Pakke for generering av resultatrapporter for Muskelregisteret
-License: GPL2
+License: GPL-3
 LazyData: TRUE
 Encoding: UTF-8
 Depends: 
-    R (>= 3.0.2),
-    rapbase (>= 1.10.0.9000)
+    R (>= 3.4.0)
 Imports:
     DT,
     xtable,
@@ -24,7 +26,7 @@ Imports:
     magrittr,
     raplog (>= 0.0.0.9000),
     shinyalert
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1
 Suggests: knitr
 VignetteBuilder: knitr
 Remotes: 
