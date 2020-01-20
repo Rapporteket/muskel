@@ -24,7 +24,8 @@ shiny::bootstrapPage(
         h4(tags$b('Fordelinger '), 'viser fordelinger (figur/tabell) av ulike variabler.'),
         h4(tags$b('Fordeling etter grupperingsvariabel '), 'inneholder figur og tabell som viser gruppevis fordeling av ulike variabler.'),
         h4(tags$b('Kumulative andeler'), 'viser utvikling av den kumulative andelen av en variabel over tid.'),
-        h4(tags$b('Administrative tabeller '), 'er en samling oversikter over antall registreringer og pasientforløp/unike pasienter.')
+        h4(tags$b('Administrative tabeller '), 'er en samling oversikter over antall registreringer og pasientforløp/unike pasienter.'),
+        h4(tags$b('Datadump '), 'gir mulighet til å laste ned din egen avdelings registreringer i csv-format.')
         ),
         br(),
         br(),
