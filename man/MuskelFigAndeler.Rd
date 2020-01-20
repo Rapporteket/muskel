@@ -4,13 +4,32 @@
 \alias{MuskelFigAndeler}
 \title{Lag søylediagram som viser andeler av ulike variabler}
 \usage{
-MuskelFigAndeler(RegData, valgtVar = "Alder", datoFra = "2000-01-01",
-  datoTil = "2050-01-01", reshID = 0, diagnosegr = -1, minald = 0,
-  maxald = 120, erMann = 99, outfile = "", forlop = 99,
-  egenavd = 0, diagnose = -1, undergr = -1, undergr2 = -1,
-  enhetsUtvalg = 0, preprosess = F, hentData = F, avdod = "",
-  UtredningsaarFra = 1950, UtredningsaarTil = 2050, inkl_tittel = T,
-  debutAlderFra = 0, debutAlderTil = 90)
+MuskelFigAndeler(
+  RegData,
+  valgtVar = "Alder",
+  datoFra = "2000-01-01",
+  datoTil = "2050-01-01",
+  reshID = 0,
+  diagnosegr = -1,
+  minald = 0,
+  maxald = 120,
+  erMann = 99,
+  outfile = "",
+  forlop = 99,
+  egenavd = 0,
+  diagnose = -1,
+  undergr = -1,
+  undergr2 = -1,
+  enhetsUtvalg = 0,
+  preprosess = F,
+  hentData = F,
+  avdod = "",
+  UtredningsaarFra = 1950,
+  UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y")),
+  inkl_tittel = T,
+  debutAlderFra = 0,
+  debutAlderTil = 90
+)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -51,6 +70,12 @@ til systemets default output device (som regel skjerm))}
 2: Diagnostisert ved HF
 3: Bostatt i fylke}
 
+\item{diagnose}{diagnosegrupper}
+
+\item{undergr}{undergruppe av diagnosegruppen}
+
+\item{undergr2}{undergruppe to}
+
 \item{enhetsUtvalg}{Lag figur for
 0: Hele landet (Default)
 1: Egen enhet mot resten av landet
@@ -63,6 +88,18 @@ TRUE: Ja}
 \item{hentData}{Gjør spørring mot database
 FALSE: Nei, RegData gis som input til funksjonen (Default)
 TRUE: Ja}
+
+\item{avdod}{avdød.}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
+
+\item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
+
+\item{debutAlderFra}{debutalder f.o.m}
+
+\item{debutAlderTil}{debutalder t.o.m}
 }
 \value{
 En figur med søylediagram av ønsket variabel

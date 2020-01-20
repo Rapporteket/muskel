@@ -5,6 +5,7 @@
 #' Her kan detaljer skrives
 #'
 #' @inheritParams MuskelFigAndeler
+#' @param incl_N inkluder N. TRUE eller FALSE
 #'
 #' @return PrepData En figur med stabelplot av ønsket variabel
 #'

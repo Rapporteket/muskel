@@ -4,6 +4,7 @@
 #' filtrert på de utvalg som er gjort.
 #'
 #' @inheritParams MuskelFigAndeler
+#' @param diagnoseSatt daignosesatt
 #'
 #' @return Et plot som viser kummulativ andel av valgt variabel
 #'
@@ -55,9 +56,9 @@ MuskelFigCumAndel_flereShus <- function(RegData, valgtVar, datoFra='2000-01-01',
     tittel <- switch(valgtVar,
                      TidDebDiag = 'Tid fra symptomdebut til spesifikk diagnose',
                      TidDebUtred = 'Tid fra symptomdebut til utredningsstart',
-                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'))
+                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som f\u00E5r en spesifikk diagnose )'))
     cexgr <- 0.8
-    subtxt <- 'Antall år'
+    subtxt <- 'Antall \u00E5r'
     aux <- apply(table(RegData$HFdiag, RegData$Variabel, useNA = 'ifany'), 1, cumsum)
     Ngr <- tapply(RegData$Variabel, RegData$HFdiag, length)
     CumAndel <- 100 * aux / t(matrix(Ngr, nrow = dim(aux)[2], ncol = dim(aux)[1]))
@@ -71,7 +72,7 @@ MuskelFigCumAndel_flereShus <- function(RegData, valgtVar, datoFra='2000-01-01',
   par('fig'=c(0, 1, 0, 1-0.02*(NutvTxt-1)))
 
   plot(grtxt, CumAndel[ , 1], type='l', ylim= c(0,110), lwd=2, col=farger[3],
-       xlab = 'Antall år', ylab='Kumulativ andel (%)', frame.plot=FALSE)
+       xlab = 'Antall \u00E5r', ylab='Kumulativ andel (%)', frame.plot=FALSE)
   lines(grtxt, CumAndel[ , 2], type='l', lwd=2, lty=2, col='red')
   lines(grtxt, CumAndel[ , 3], type='l', lwd=2, lty=3, col=farger[1])
   # title(tittel, line=1, font.main=1)

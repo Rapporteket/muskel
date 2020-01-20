@@ -1,8 +1,8 @@
-#' Provide global dataframe for NoRGast
+#' Provide global dataframe for Muskel
 #'
-#' Provides NoRGast data from staging
+#' Provides muskel data from staging
 #'
-#' @inheritParams FigAndeler
+#'
 #'
 #' @return RegData data frame
 #' @export

@@ -4,13 +4,32 @@
 \alias{MuskelFigCumAndel}
 \title{Lag plot med kummulativ andel av valgt variabel}
 \usage{
-MuskelFigCumAndel(RegData, valgtVar, datoFra = "2000-01-01",
-  datoTil = "2050-01-01", reshID, diagnosegr = -1, diagnose = -1,
-  undergr = -1, undergr2 = -1, minald = 0, maxald = 120,
-  erMann = 99, outfile = "", forlop = 99, enhetsUtvalg = 0,
-  egenavd = 0, avdod = "", preprosess = F, hentData = F,
-  debutAlderFra = 0, debutAlderTil = 120, UtredningsaarFra = 1900,
-  UtredningsaarTil = 2100, inkl_tittel = T)
+MuskelFigCumAndel(
+  RegData,
+  valgtVar,
+  datoFra = "2000-01-01",
+  datoTil = "2050-01-01",
+  reshID,
+  diagnosegr = -1,
+  diagnose = -1,
+  undergr = -1,
+  undergr2 = -1,
+  minald = 0,
+  maxald = 120,
+  erMann = 99,
+  outfile = "",
+  forlop = 99,
+  enhetsUtvalg = 0,
+  egenavd = 0,
+  avdod = "",
+  preprosess = F,
+  hentData = F,
+  debutAlderFra = 0,
+  debutAlderTil = 120,
+  UtredningsaarFra = 1900,
+  UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y")),
+  inkl_tittel = T
+)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -28,6 +47,12 @@ hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
 1: Muskelsykdommer
 2: Spinal muskelatrofi
 3: Polynevropati}
+
+\item{diagnose}{diagnosegrupper}
+
+\item{undergr}{undergruppe av diagnosegruppen}
+
+\item{undergr2}{undergruppe to}
 
 \item{minald}{Alder, fra og med (Default: 0)}
 
@@ -56,6 +81,8 @@ til systemets default output device (som regel skjerm))}
 2: Diagnostisert ved HF
 3: Bostatt i fylke}
 
+\item{avdod}{avdød.}
+
 \item{preprosess}{Preprosesser data
 FALSE: Nei (Default)
 TRUE: Ja}
@@ -63,6 +90,16 @@ TRUE: Ja}
 \item{hentData}{Gjør spørring mot database
 FALSE: Nei, RegData gis som input til funksjonen (Default)
 TRUE: Ja}
+
+\item{debutAlderFra}{debutalder f.o.m}
+
+\item{debutAlderTil}{debutalder t.o.m}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
+
+\item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
 }
 \value{
 Et plot som viser kummulativ andel av valgt variabel

@@ -4,8 +4,7 @@
 \alias{MuskelTabeller}
 \title{Tabeller for Muskelregisteret}
 \usage{
-MuskelTabeller(RegData, datoFra, datoTil, minald, maxald, erMann,
-  enhetsUtvalg)
+MuskelTabeller(RegData, datoFra, datoTil, minald, maxald, erMann, enhetsUtvalg)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}

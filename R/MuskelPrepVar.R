@@ -19,7 +19,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
                          header=TRUE, sep=';', stringsAsFactors = F, fileEncoding = 'UTF-8-BOM')
 
   if (valgtVar == 'OppfAar') {
-    tittel <- 'Oppfølginger etter år'
+    tittel <- 'Oppf\u00F8lginger etter \u00E5r'
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- sort(unique(RegData$Aar))
@@ -53,7 +53,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$AlderVreg
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
-    tittel <- 'Alder ved førstegangsregistrering'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Alder ved f\u00F8rstegangsregistrering'
+    #bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
@@ -64,7 +65,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Alder
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
-    tittel <- 'Dagens alder'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Dagens alder'
+    #bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
@@ -75,7 +77,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Alder
     RegData <- RegData[RegData$ForlopsType1Num == 1, ]
     RegData <- RegData[which(RegData$Alder <= 17), ]
-    tittel <- 'Aldersfordeling blant mindreårige pasienter'
+    tittel <- 'Aldersfordeling blant mindre\u00E5rige pasienter'
     gr <- c(0, seq(3, 15, 3), 17)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- levels(RegData$VariabelGr)
@@ -89,7 +91,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
     # RegData <- RegData[RegData$ForlopsType1Num == 1, ]
-    tittel <- 'Alder ved debut'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Alder ved debut'
+    #bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
@@ -102,7 +105,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ] # Tar ut nyeste registrering
     # RegData <- RegData[RegData$ForlopsType1Num == 1, ]
-    tittel <- 'Alder ved diagnose'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Alder ved diagnose'
+    #bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
@@ -111,7 +115,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 
 
   if (valgtVar == 'Fysioterapi') {
-    tittel <- 'Andel som får fysioterapi'
+    tittel <- 'Andel som f\u00E5r fysioterapi'
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
@@ -129,7 +133,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   }
 
   if (valgtVar == 'Fysioterapi_nord') {
-    tittel <- 'Andel som får fysioterapi'
+    tittel <- 'Andel som f\u00E5r fysioterapi'
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData=RegData[which(RegData$Fylke %in% c('TROMS', 'FINNMARK', 'NORDLAND')), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
@@ -149,7 +153,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   }
 
   if (valgtVar == 'Fysioterapi_sor') {
-    tittel <- 'Andel som får fysioterapi'
+    tittel <- 'Andel som f\u00E5r fysioterapi'
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData=RegData[which(RegData$Fylke %in% c('OSLO', 'AKERSHUS')), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
@@ -200,7 +204,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0), labels = c('Ja', 'Nei'))
     RegData$Gr <- RegData$Diagnosegr
     RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Andel pasienter som har fått muskelbiopsi')
+    tittel <- c('Andel pasienter som har f\u00E5tt muskelbiopsi')
   }
 
 
@@ -216,14 +220,14 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1,0), labels = c('Ja', 'Nei'))
     RegData$Gr <- RegData$Diagnosegr
     RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Andel pasienter som har fått DNA-undersøkelse')
+    tittel <- c('Andel pasienter som har f\u00E5tt DNA-unders\u00F8kelse')
 
   }
 
   if (valgtVar == 'Utdanning') {
     # RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
-    grtxt <- c('Grunnskole', 'Videregående skole, \n studieforberedende program','Videregående skole, \n yrkesfaglig program',
-               'Høyskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
+    grtxt <- c('Grunnskole', 'Videreg\u00E5ende skole, \n studieforberedende program','Videreg\u00E5ende skole, \n yrkesfaglig program',
+               'H\u00F8yskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
     RegData$Variabel <- RegData[, valgtVar]
     RegData$Variabel[is.na(RegData$Variabel)] <- 99
     SamletPrPID <- aggregate(RegData$Variabel,
@@ -235,13 +239,13 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1:4, 9, 99), labels = grtxt)
 #     RegData$Gr <- RegData$Diagnosegr
 #     RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Muskelsykdommer', 'Spinal muskelatrofi', 'Polynevropati'))
-    tittel <- c('Utdanningsnivå')
+    tittel <- c('Utdanningsniv\u00E5')
     retn= 'H'
   }
 
 
   if (valgtVar == 'HoyesteUtdanning') {
-    tittel <- c('Høyest oppnådde utdanningsnivå')
+    tittel <- c('H\u00F8yest oppn\u00E5dde utdanningsniv\u00E5')
     # RegData <- RegData[which(RegData$PasientAlder>25), ]
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
@@ -249,7 +253,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData[, "Utdanning"]
     RegData$Variabel[RegData$Variabel==3] <- 2
     gr <- c(1,2,4,9)
-    grtxt <- c('Grunnskole', 'Videregående skole', 'Høyskole eller universitetet', 'Ukjent')
+    grtxt <- c('Grunnskole', 'Videreg\u00E5ende skole', 'H\u00F8yskole eller universitetet', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     RegData$Gr <- NA
@@ -305,7 +309,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     grtxt <- RegData$Gangfunksjon_label[match(gr, RegData$Variabel)]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
     tittel <- c('Gangfunksjon')
-    RegData$Gr <- factor(RegData$Undergruppe, levels = c(4,20), labels=c('Limb−girdle muskeldystrofi', 'Dystrophia myotonica 1'))
+    RegData$Gr <- factor(RegData$Undergruppe, levels = c(4,20), labels=c('Limb-girdle muskeldystrofi', 'Dystrophia myotonica 1'))
   }
 
 
@@ -342,8 +346,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 
 
   if (valgtVar == 'UtdanningDM1') {
-    grtxt <- c('Grunnskole', 'Videregående skole, \n studieforberedende program','Videregående skole, \n yrkesfaglig program',
-               'Høyskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
+    grtxt <- c('Grunnskole', 'Videreg\u00E5ende skole, \n studieforberedende program','Videreg\u00E5ende skole, \n yrkesfaglig program',
+               'H\u00F8yskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
     RegData <- RegData[which(RegData$Undergruppe %in% c(20)), ]
     RegData$Variabel <- RegData[, 'Utdanning']
     RegData$Variabel[is.na(RegData$Variabel)] <- 99
@@ -356,13 +360,13 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1:4, 9, 99), labels = grtxt)
     #     RegData$Gr <- RegData$Diagnosegr
     #     RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Utdanningsnivå Dystrophia myotonica 1')
+    tittel <- c('Utdanningsniv\u00E5 Dystrophia myotonica 1')
     retn= 'H'
   }
 
   if (valgtVar == 'UtdanningLGMD') {
-    grtxt <- c('Grunnskole', 'Videregående skole, \n studieforberedende program','Videregående skole, \n yrkesfaglig program',
-               'Høyskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
+    grtxt <- c('Grunnskole', 'Videreg\u00E5ende skole, \n studieforberedende program','Videreg\u00E5ende skole, \n yrkesfaglig program',
+               'H\u00F8yskole eller \n universitetet', 'Ukjent', 'Ikke registrert')
     RegData <- RegData[which(RegData$Undergruppe==4), ]
     RegData$Variabel <- RegData[, 'Utdanning']
     RegData$Variabel[is.na(RegData$Variabel)] <- 99
@@ -375,18 +379,18 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$VariabelGr, levels = c(1:4, 9, 99), labels = grtxt)
     #     RegData$Gr <- RegData$Diagnosegr
     #     RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = grtxt)
-    tittel <- c('Utdanningsnivå LGMD')
+    tittel <- c('Utdanningsniv\u00E5 LGMD')
     retn= 'H'
   }
 
 
 
   if (valgtVar == 'FysioManglerAarsak') {
-    tittel <- 'Årsak til manglende fysioterapi'
+    tittel <- '\u00C5rsak til manglende fysioterapi'
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
-    grtxt <- c('Står på venteliste', 'Ikke fysiotilbud\n i kommunen', 'Ingen effekt av\n eksisterende tilbud',
+    grtxt <- c('St\u00E5r p\u00E5 venteliste', 'Ikke fysiotilbud\n i kommunen', 'Ingen effekt av\n eksisterende tilbud',
                'For lang reisevei', 'For kostbart', 'Annet', 'Ukjent')
     gr <- c(1:6, 9)
     RegData$Variabel <- RegData[, valgtVar]
@@ -397,7 +401,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   }
 
   if (valgtVar == 'Ergoterapi') {
-    tittel <- 'Andel som får ergoterapi'
+    tittel <- 'Andel som f\u00E5r ergoterapi'
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
@@ -413,7 +417,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   if (valgtVar=='HjerteAffAlder') {
     RegData$Variabel <- RegData[, valgtVar]
     RegData <- RegData[!is.na(RegData$Variabel), ]
-    tittel <- 'Alder ved hjerteaffeksjon'	#bør ha med at alder per rapportdata sys.date...
+    tittel <- 'Alder ved hjerteaffeksjon'
+    #bør ha med at alder per rapportdata sys.date...
     gr <- c(0, seq(10, 80, 10), 120)	#c(0,16,31,46,61,76,200)
     RegData$VariabelGr <- cut(RegData$Variabel, breaks=gr, include.lowest=TRUE, right=FALSE)
     grtxt <- c(levels(RegData$VariabelGr)[1:(length(gr)-2)], '80+')
@@ -435,7 +440,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
                     TidDebDiag = c(0,1,2,3,4,5,levels(RegData$VariabelGr)[7:(length(gr)-2)], '50+'),
                     TidDebUtred = c(0,1,2,3,4,5,levels(RegData$VariabelGr)[7:(length(gr)-2)], '50+'),
                     TidUtredDiag = c(0,levels(RegData$VariabelGr)[2:(length(gr)-2)], '20+'))
-    subtxt <- 'Antall år'
+    subtxt <- 'Antall \u00E5r'
   }
 
   if (valgtVar == 'Diagnosegr') {
@@ -479,7 +484,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     gr <- as.numeric(aux$listeverdier)
     grtxt <- aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Oppfølging hos barnelege/nevrolog'
+    tittel <- 'Oppf\u00F8lging hos barnelege/nevrolog'
   }
 
   if (valgtVar == 'PsykiskHelsetjeneste') {
@@ -507,7 +512,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     gr <- as.numeric(aux$listeverdier)
     grtxt <- aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- c('Hatt/venter opphold på', 'rehabiliteringsinstitusjon')
+    tittel <- c('Hatt/venter opphold p\u00E5', 'rehabiliteringsinstitusjon')
   }
 
   if (valgtVar == 'TilbudKostveiledning') {
@@ -540,7 +545,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Gr[which(RegData$Undergruppe==20)] <- 1
     RegData$Gr[which(RegData$Undergruppe==1)] <- 2
     # RegData <- RegData[which(RegData$Gr %in% 1:3), ]
-    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Duchenne', 'Øvrige'))
+    RegData$Gr <- factor(RegData$Gr, levels = 1:3, labels = c('Dystrophia myotonica 1', 'Duchenne', '\u00D8vrige'))
     stabel <- F
   }
 
@@ -599,7 +604,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     grtxt <- aux$listetekst
     # grtxt <- iconv(aux$listetekst, from = '', to = '') # aux$listetekst
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Uføretrygd'
+    tittel <- 'Uf\u00F8retrygd'
     retn <- 'H'
   }
 
@@ -778,7 +783,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Undergruppe2[is.na(RegData$Undergruppe2)] <- 9999
     RegData$Undergruppe2_label <- as.character(RegData$Undergruppe2_label)
     RegData$Undergruppe2_label[RegData$Undergruppe2==9999] <- 'Ikke registrert'
-    RegData$Undergruppe2_label[RegData$Undergruppe2==7] <- 'LGMD2C (gamma-sarkoglykan)'  ## Ad-hoc løsning til årsrapport
+    RegData$Undergruppe2_label[RegData$Undergruppe2==7] <- 'LGMD2C (gamma-sarkoglykan)'
+    ## Ad-hoc løsning til årsrapport
     aux <- sort(table(RegData$Undergruppe2_label), decreasing = T)
     grtxt <- names(aux)
     RegData$VariabelGr <- factor(RegData$Undergruppe2_label, levels=grtxt)
@@ -789,7 +795,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     retn='H'
   }
 
-  if (valgtVar == 'CMT') {  ### Må avklare behandling av "Usikker undergruppe"
+  if (valgtVar == 'CMT') {
+    ### Må avklare behandling av "Usikker undergruppe"
     RegData <- RegData[RegData$Undergruppe %in% c(100:104, 1100, 2100),]
     RegData$Undergruppe2[which(RegData$Undergruppe == 1100)] <- 1100
     RegData$Undergruppe2[which(RegData$Undergruppe == 2100)] <- 2100
@@ -888,7 +895,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   }
 
   if (valgtVar == 'HyppighetEKG_Holter') {
-    tittel <- c('Hyppighet EKG/Holter', 'blant de med hjerteoppfølging')
+    tittel <- c('Hyppighet EKG/Holter', 'blant de med hjerteoppf\u00F8lging')
     RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
     RegData$HyppighetEKG[is.na(RegData$HyppighetEKG)] <- 4
     RegData$HyppighetRytmereg[is.na(RegData$HyppighetRytmereg)] <- 4
@@ -896,12 +903,12 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- c(1,2,3, 4)
-    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    grtxt <- c('\u00C5rlig', 'Annethvert \u00E5r', 'Sjeldnere', 'Ukjent')
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
   }
 
   if (valgtVar == 'HyppighetEKG') {
-    tittel <- c('Hyppighet EKG', 'blant de med hjerteoppfølging')
+    tittel <- c('Hyppighet EKG', 'blant de med hjerteoppf\u00F8lging')
     RegData$Variabel <- RegData[, "HyppighetEKG"]
     RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
     # RegData <- RegData[!is.na(RegData$Variabel), ]
@@ -909,12 +916,12 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- c(1,2,3, 4)
-    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    grtxt <- c('\u00C5rlig', 'Annethvert \u00E5r', 'Sjeldnere', 'Ukjent')
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
   }
 
   if (valgtVar == 'HyppighetUltralyd') {
-    tittel <- c('Hyppighet ultralyd', 'blant de med hjerteoppfølging')
+    tittel <- c('Hyppighet ultralyd', 'blant de med hjerteoppf\u00F8lging')
     RegData$Variabel <- RegData[, "HyppighetUltralyd"]
     RegData <- RegData[which(RegData$Hjerteoppfoelging==1), ]
     # RegData <- RegData[!is.na(RegData$Variabel), ]
@@ -922,7 +929,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- c(1,2,3,4)
-    grtxt <- c('Årlig', 'Annethvert år', 'Sjeldnere', 'Ukjent')
+    grtxt <- c('\u00C5rlig', 'Annethvert \u00E5r', 'Sjeldnere', 'Ukjent')
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
   }
 
@@ -963,7 +970,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
 
 
   if (valgtVar == 'Hjerteoppf') {
-    tittel <- c('Hjerteoppfølging')
+    tittel <- c('Hjerteoppf\u00F8lging')
     RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData$Variabel <- RegData[ , "Hjerteoppfoelging"]
     gr <- c(0,1,8,9)
@@ -975,7 +982,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     stabel <- 0
   }
   if (valgtVar == 'Hjerteoppf_samlet') {
-    tittel <- c('Hjerteoppfølging')
+    tittel <- c('Hjerteoppf\u00F8lging')
     # RegData <- RegData[RegData$Diagnosegr %in% c(1,2,3), ]
     RegData$Variabel <- RegData[, "Hjerteoppfoelging"]
     RegData$Variabel[is.na(RegData$Variabel)] <- 9
@@ -1009,7 +1016,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   }
 
   if (valgtVar == 'RespStotte') {
-    tittel <- c('Respirasjonsstøtte')
+    tittel <- c('Respirasjonsst\u00F8tte')
     RegData$Variabel <- RegData$RespStotte
     RegData <- RegData[!is.na(RegData$Variabel), ] # Fjerner tomme reg.
     RegData <- RegData[order(RegData$HovedDato, decreasing = TRUE), ]
@@ -1060,10 +1067,10 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Uforetrygd
     RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
     gr <- c(0, 1, 2, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    grtxt <- c('Arbeidsf\u00F8r', 'Helt uf\u00F8r', 'Delvis uf\u00F8r','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Arbeidsuførhet: LGMD2I'
+    tittel <- 'Arbeidsuf\u00F8rhet: LGMD2I'
     stabel <- F
     retn='H'
     N_colwise <- T
@@ -1076,10 +1083,10 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Uforetrygd
     RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
     gr <- c(0, 1, 2, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    grtxt <- c('Arbeidsf\u00F8r', 'Helt uf\u00F8r', 'Delvis uf\u00F8r','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Arbeidsuførhet: Limb−girdle muskeldystrofi'
+    tittel <- 'Arbeidsuf\u00F8rhet: Limb-girdle muskeldystrofi'
     stabel <- F
     retn='H'
     N_colwise <- T
@@ -1093,10 +1100,10 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Uforetrygd
     RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
     gr <- c(0, 1, 2, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    grtxt <- c('Arbeidsf\u00F8r', 'Helt uf\u00F8r', 'Delvis uf\u00F8r','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Arbeidsuførhet: Dystrophia myotonica type 1'
+    tittel <- 'Arbeidsuf\u00F8rhet: Dystrophia myotonica type 1'
     stabel <- F
     retn='H'
     N_colwise <- T
@@ -1109,10 +1116,10 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Uforetrygd
     RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
     gr <- c(0, 1, 2, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    grtxt <- c('Arbeidsf\u00F8r', 'Helt uf\u00F8r', 'Delvis uf\u00F8r','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Arbeidsuførhet: Dystrophia myotonica type2 (PROMM)'
+    tittel <- 'Arbeidsuf\u00F8rhet: Dystrophia myotonica type2 (PROMM)'
     stabel <- F
     retn='H'
     N_colwise <- T
@@ -1125,10 +1132,10 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$Variabel <- RegData$Uforetrygd
     RegData$Variabel[RegData$Variabel %in% 2:6] <- 2
     gr <- c(0, 1, 2, 7, 9)
-    grtxt <- c('Arbeidsfør', 'Helt ufør', 'Delvis ufør','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
+    grtxt <- c('Arbeidsf\u00F8r', 'Helt uf\u00F8r', 'Delvis uf\u00F8r','Langtidssykemelding/\n arbeidsavklaringspenger', 'Ukjent')
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)
-    tittel <- 'Arbeidsuførhet: Charcot Marie Tooth'
+    tittel <- 'Arbeidsuf\u00F8rhet: Charcot Marie Tooth'
     stabel <- F
     retn='H'
     N_colwise <- T
@@ -1242,8 +1249,8 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     N <- dim(SamletPrPID)[1]
     AntVar <- colSums(SamletPrPID[,-1], na.rm = T)
     NVar<-rep(N, length(AntVar))
-    grtxt <- c('Anamnese/klinisk\n undersøkelse', 'EMG/Nevrografi', 'CK', 'DNA-undersøkelse', 'Muskelbiopsi')
-    tittel <- c('Diagnose bygger på')
+    grtxt <- c('Anamnese/klinisk\n unders\u00F8kelse', 'EMG/Nevrografi', 'CK', 'DNA-unders\u00F8kelse', 'Muskelbiopsi')
+    tittel <- c('Diagnose bygger p\u00E5')
     retn='H'
   }
 
@@ -1260,7 +1267,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData$VariabelGr <- factor(RegData$Variabel, levels = c(1,2,3,99), labels = c('Biopsi', 'Gentest', 'Biopsi og gentest',
                                                                                       'Ingen/ukjent'))
     grtxt <- c('Biopsi alene', 'Gentest alene', 'Biopsi og gentest', 'Ingen/annen/ukjent')
-    tittel <- c('DMD/BMD-diagnose bygger på')
+    tittel <- c('DMD/BMD-diagnose bygger p\u00E5')
     retn='H'
   }
 

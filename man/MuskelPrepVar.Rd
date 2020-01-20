@@ -10,6 +10,8 @@ MuskelPrepVar(RegData, valgtVar, inkl_tittel = T)
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
 
 \item{valgtVar}{Hvilken variabel skal plottes}
+
+\item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
 }
 \value{
 PrepData En liste med plotrelevante størrelser

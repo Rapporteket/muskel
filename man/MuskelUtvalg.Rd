@@ -4,11 +4,28 @@
 \alias{MuskelUtvalg}
 \title{Gjør utvalg av dataene}
 \usage{
-MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
-  egenavd = 0, enhetsUtvalg, diagnosegr = -1, forlop,
-  diagnose = "-1", undergr = -1, undergr2 = -1, avdod = "",
-  fargepalett = "BlaaRapp", reshID, UtredningsaarFra = 1950,
-  UtredningsaarTil = 2050, debutAlderFra = 0, debutAlderTil = 90)
+MuskelUtvalg(
+  RegData,
+  datoFra,
+  datoTil,
+  minald,
+  maxald,
+  erMann,
+  egenavd = 0,
+  enhetsUtvalg,
+  diagnosegr = -1,
+  forlop,
+  diagnose = "-1",
+  undergr = -1,
+  undergr2 = -1,
+  avdod = "",
+  fargepalett = "BlaaRapp",
+  reshID,
+  UtredningsaarFra = 1950,
+  UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y")),
+  debutAlderFra = 0,
+  debutAlderTil = 90
+)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
@@ -46,10 +63,26 @@ MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
 2: Oppfølging
 3: Annet}
 
+\item{diagnose}{diagnosegrupper}
+
+\item{undergr}{undergruppe av diagnosegruppen}
+
+\item{undergr2}{undergruppe to}
+
+\item{avdod}{avdød.}
+
 \item{fargepalett}{Hvilken fargepalett skal brukes i figurer (Default: BlaaRapp)}
 
 \item{reshID}{Parameter følger fra innlogging helseregister.no og angir
 hvilken enhet i spesialisthelsetjenesten brukeren tilhører}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
+
+\item{debutAlderFra}{debutalder f.o.m}
+
+\item{debutAlderTil}{debutalder t.o.m}
 }
 \value{
 UtData En liste bestående av det filtrerte datasettet, utvalgstekst for figur og tekststreng som angir fargepalett

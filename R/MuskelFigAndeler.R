@@ -39,6 +39,16 @@
 #'                 1: Følges opp ved HF
 #'                 2: Diagnostisert ved HF
 #'                 3: Bostatt i fylke
+#' @param diagnose diagnosegrupper
+#' @param undergr undergruppe av diagnosegruppen
+#' @param undergr2 undergruppe to
+#' @param avdod avdød.
+#' @param UtredningsaarFra Utredningsår f.o.m
+#' @param UtredningsaarTil Utredningsår t.o.m
+#' @param inkl_tittel inkluder titel. kan være TRUE eller FALSE
+#' @param debutAlderFra debutalder f.o.m
+#' @param debutAlderTil debutalder t.o.m
+#'
 #'
 #' @return En figur med søylediagram av ønsket variabel
 #'
@@ -153,7 +163,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
     plot.new()
     # title(tittel)	#, line=-6)
     legend('topleft',utvalgTxt, bty='n', cex=0.9, text.col=farger[1])
-    text(0.5, 0.6, 'Færre enn 5 registreringer i egen- eller sammenlikningsgruppa', cex=1.2)
+    text(0.5, 0.6, 'F\u00E6rre enn 5 registreringer i egen- eller sammenlikningsgruppa', cex=1.2)
     if ( outfile != '') {dev.off()}
   } else {
     #Plottspesifikke parametre:
@@ -189,7 +199,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
       mtext(at=pos, grtxt2, side=1, las=1, cex=cexgr, adj=0.5, line=1.5)
       if (enhetsUtvalg == 1) {
         points(pos, as.numeric(Andeler$Rest), col=fargeRest,  cex=2, pch=18) #c("p","b","o"),
-        legend('top', c(paste(shtxt, ' (N=', NHoved,')', sep=''), paste('Landet forøvrig (N=', Nrest,')', sep='')),
+        legend('top', c(paste(shtxt, ' (N=', NHoved,')', sep=''), paste('Landet for\u00F8vrig (N=', Nrest,')', sep='')),
                border=c(fargeHoved,NA), col=c(fargeHoved,fargeRest), bty='n', pch=c(15,18), pt.cex=2, lty=c(NA,NA),
                lwd=lwdRest, ncol=1, cex=cexgr)
       } else {
@@ -219,7 +229,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
 
       if (enhetsUtvalg == 1) {
         points(as.numeric(rev(Andeler$Rest)), pos, col=fargeRest,  cex=2, pch=18) #c("p","b","o"),
-        legend('top', c(paste(shtxt, ' (N=', NHoved,')', sep=''), paste('Landet forøvrig (N=', Nrest,')', sep='')),
+        legend('top', c(paste(shtxt, ' (N=', NHoved,')', sep=''), paste('Landet for\u00F8vrig (N=', Nrest,')', sep='')),
                border=c(fargeHoved,NA), col=c(fargeHoved,fargeRest), bty='n', pch=c(15,18), pt.cex=2,
                lwd=lwdRest,	lty=NA, ncol=1, cex=cexgr)
       } else {

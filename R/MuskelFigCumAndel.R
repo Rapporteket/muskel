@@ -47,15 +47,15 @@ MuskelFigCumAndel <- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='
     if (inkl_tittel) {tittel <- switch(valgtVar,
                      TidDebDiag = 'Tid fra symptomdebut til spesifikk diagnose',
                      TidDebUtred = 'Tid fra symptomdebut til utredningsstart',
-                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som får en spesifikk diagnose )'),
+                     TidUtredDiag = c('Tid fra utredningsstart til diagnose', '(for de som f\u00E5r en spesifikk diagnose )'),
                      AlderTapGang = 'Alder ved tap av gangfunksjon',
-                     AlderRespStotte = 'Alder for respirasjonsstøtte',
+                     AlderRespStotte = 'Alder for respirasjonsst\u00F8tte',
                      TrygdFraAlder = 'Alder for mottak av trygd')
     } else {
       tittel <- ''
     }
     cexgr <- 0.8
-    subtxt <- 'Antall år'
+    subtxt <- 'Antall \u00E5r'
     if (valgtVar %in% c('AlderTapGang', 'AlderRespStotte', 'TrygdFraAlder')) {subtxt <- 'Alder'}
     CumAndel <- cumsum(table(RegData$Variabel))/N*100
     grtxt <- as.numeric(names(CumAndel))
