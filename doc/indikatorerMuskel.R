@@ -78,6 +78,9 @@ write.csv2(Ind1_diagnoseinneetaar_Muskel,
 # Hvordan behandle ukjente og tomme verdier? I denne versjonen settes tomme og ukjente til 0, altså ikke genetisk verifisert. Som Aar brukes år for
 # registrering siden aar for påvisning av genetisk årsak har svært mange manglende verdier. ReshId henviser til resh der diagnose ble satt, er dette rett?
 
+##se på resh
+##Se på mulighet for kumulativ andel
+
 RegData$GenetiskAarsakPaavist[is.na(RegData$GenetiskAarsakPaavist)] <- 0
 RegData$GenetiskAarsakPaavist[RegData$GenetiskAarsakPaavist == 9] <- 0
 
@@ -155,6 +158,8 @@ write.csv2(Ind5_oppfolging_Muskel,
 ## 6.	Andel pasienter som får fysioterapi
 # "Hvordan behandle "Ikke relevant" ekskluderes fra nevneren, men hva med "Ukjent" samt tomme registreringer? Hvilket Aar skal brukes?
 # Denne versjonen beholder bare de med ja eller nei som svaralternativer, og registreringsår benyttes som Aar.
+
+### FEIL!!!!! MÅ FIKSES, LAG TO VERSJONER: JA TELLER, NEVNER ALLE. V2: JA TELLER, NEVNER JA + NEI, MEN BEHOV
 
 Ind6_fysioterapi_muskel <- RegData[which(RegData$Fysioterapi %in% 0:1), ] %>%
   group_by(PasientID) %>% summarise(Teller = max(Fysioterapi),
