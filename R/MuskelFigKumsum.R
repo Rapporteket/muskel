@@ -48,7 +48,7 @@ MuskelFigKumsum <- function(RegData, valgtVar='AntReg', datoFra='2000-01-01', da
   cexgr <- 1
   par('fig'=c(0, 1, 0, 1-0.02*(length(utvalgTxt)-1)))
 
-  FigTypUt <- figtype(outfile=outfile, fargepalett='BlaaRapp', pointsizePDF=12)
+  FigTypUt <- rapFigurer::figtype(outfile=outfile, fargepalett='BlaaRapp', pointsizePDF=12)
   farger <- FigTypUt$farger
   ymax <- max(Andeler, na.rm=T)*1.25
   pos <- barplot(as.numeric(Andeler), beside=TRUE, las=1, ylab="Antall",
