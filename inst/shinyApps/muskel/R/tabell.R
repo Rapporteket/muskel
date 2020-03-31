@@ -15,10 +15,13 @@ tabellUI <- function(id){
 
     ns <- shiny::NS(id)
     shiny::sidebarLayout(
-        shiny::sidebarPanel(id = ns("sbpanel"),
+        shiny::sidebarPanel(
+            width = 3,
+            id = ns("sbpanel"),
             shiny::uiOutput(ns("sidebar"))
         ),
         shiny::mainPanel(
+            width = 9,
             tabsetPanel(id = ns("tab"),
                 tabPanel("Antall skjema", value = "antskjema",
                          DTOutput(ns("Tabell_adm1")), downloadButton(ns("lastNedAdm1"), "Last ned tabell")),
@@ -60,11 +63,13 @@ tabell <- function(input, output, session, ss, forltype = forlop){
                 ),
                 shiny::selectInput(
                     ns("tidenh"), "Velg tidsenhet",
-                    choices = c("Måned" = "maaned", "År" = "aar")
+                    choices = c("Måned" = "maaned", "År" = "aar"),
+                    selected = "aar"
                 ),
                 shiny::selectInput(
                     ns("forl"), label = "Forløpstype",
-                    choices = forltype, multiple = TRUE
+                    choices = forltype, multiple = TRUE,
+                    selected = forltype[1]
                 ),
                 shiny::selectInput(
                     ns("avdod"), label = "Inkluder avdøde",
