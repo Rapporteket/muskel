@@ -4,23 +4,10 @@
 \alias{MuskelFigCumAndel_flereShus}
 \title{Lag plot med kummulativ andel av valgt variabel}
 \usage{
-MuskelFigCumAndel_flereShus(
-  RegData,
-  valgtVar,
-  datoFra = "2000-01-01",
-  datoTil = "2050-01-01",
-  reshID,
-  diagnosegr = "",
-  minald = 0,
-  maxald = 120,
-  erMann = 99,
-  outfile = "",
-  diagnoseSatt = 99,
-  forlop = 99,
-  enhetsUtvalg = 1,
-  preprosess = F,
-  hentData = F
-)
+MuskelFigCumAndel_flereShus(RegData, valgtVar, datoFra = "2000-01-01",
+  datoTil = "2050-01-01", reshID, diagnosegr = "", minald = 0,
+  maxald = 120, erMann = 99, outfile = "", diagnoseSatt = 99,
+  forlop = 99, enhetsUtvalg = 1, preprosess = F, hentData = F)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
