@@ -2,6 +2,69 @@ setwd('C:/GIT/muskel/doc/')
 library(muskel)
 rm(list=ls())
 
+########### 21.04.2020 Kompletthet av utvalgte variabler ####################################################################
+library(tidyverse)
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegData <- read.table('I:/muskel/AlleVarNum2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+
+komplettvar <- RegData[ , c("ForlopsID", "PasientID", "DebutAlder", "HjerteAff", "Hjerteoppfoelging",
+                            "AnsvarsgruppeIP", "TilbudGenetiskVeiledning", "GenetiskAarsakPaavist",
+                            "Fysioterapi", "OppholdRehab", "Ergoterapi", "PsykiskHelsetjeneste")]
+ForlopsData <- ForlopsData[, c("ForlopsID", "HovedDato")]
+komplettvar <- merge(komplettvar, ForlopsData, by = "ForlopsID")
+komplettvar$HovedDato <- as.Date(komplettvar$HovedDato)
+komplettvar <- komplettvar[komplettvar$HovedDato >= '2018-01-01' & komplettvar$HovedDato <= '2019-12-31', ]
+komplettvar$Aar <- format(komplettvar$HovedDato, "%Y")
+komplettvar <- komplettvar[, -13]
+
+tmp <- komplettvar[komplettvar$Aar==2018,-c(1,2, 13)] %>%
+  summarise_all(list(ukjent = function(x) sum(x==9, na.rm = T)/n()*100,
+                     missing =function(x) sum(is.na(x))/n()*100)) %>%
+  gather() %>%
+  separate(col="key", into=c("Variabel", "Status"), sep="_") %>%
+  spread(key = Status, value = value)
+
+tmp$N <- dim(komplettvar[komplettvar$Aar==2018,])[1]
+tall2018 <- tmp
+
+tmp <- komplettvar[komplettvar$Aar==2019,-c(1,2, 13)] %>%
+  summarise_all(list(ukjent = function(x) sum(x==9, na.rm = T)/n()*100,
+                     missing =function(x) sum(is.na(x))/n()*100)) %>%
+  gather() %>%
+  separate(col="key", into=c("Variabel", "Status"), sep="_") %>%
+  spread(key = Status, value = value)
+
+tmp$N <- dim(komplettvar[komplettvar$Aar==2019,])[1]
+tall2019 <- tmp
+
+tall2018$missing <- round(tall2018$missing, 1)
+tall2018$ukjent <- round(tall2018$ukjent, 1)
+tall2019$missing <- round(tall2019$missing, 1)
+tall2019$ukjent <- round(tall2019$ukjent, 1)
+
+# length(unique(komplettvar$PasientID))
+# komplettvar %>% summarise(missing_debut = sum(is.na(DebutAlder)),
+#                           missing_hjerteaff = sum(is.na(HjerteAff)),
+#                           ukjent_hjerteaff = sum(HjerteAff==9),
+#                           missing_hjerteoppf = sum(is.na(Hjerteoppfoelging)),
+#                           ukjent_hjerteoppf = sum(Hjerteoppfoelging==9),
+#                           missing_AnsvarsgruppeIP = sum(is.na(AnsvarsgruppeIP)),
+#                           ukjent_AnsvarsgruppeIP = sum(AnsvarsgruppeIP==9),
+#                           missing_TilbudGenetiskVeiledning = sum(is.na(TilbudGenetiskVeiledning)),
+#                           ukjent_TilbudGenetiskVeiledning = sum(TilbudGenetiskVeiledning==9),
+#                           missing_GenetiskAarsakPaavist = sum(is.na(GenetiskAarsakPaavist)),
+#                           ukjent_GenetiskAarsakPaavist = sum(GenetiskAarsakPaavist==9),
+#                           missing_Fysioterapi = sum(is.na(Fysioterapi)),
+#                           ukjent_Fysioterapi = sum(Fysioterapi==9),
+#                           missing_OppholdRehab = sum(is.na(OppholdRehab)),
+#                           ukjent_OppholdRehab = sum(OppholdRehab==9),
+#                           missing_Ergoterapi = sum(is.na(Ergoterapi)),
+#                           ukjent_Ergoterapi = sum(Ergoterapi==9),
+#                           missing_PsykiskHelsetjeneste = sum(is.na(PsykiskHelsetjeneste)),
+#                           ukjent_PsykiskHelsetjeneste = sum(PsykiskHelsetjeneste==9),
+#                           antall_reg = n())
+
 ####### Utlevering 08.11.2019 Fødselnummer, pid og adresse pas under 16 år ###################################################
 ForlopsData <- read.table('I:/muskel/ForlopsOversikt2019-11-08 10-10-17.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegData <- read.table('I:/muskel/AlleVarNum2019-11-08 10-10-14.txt', header=TRUE, sep=';', encoding = 'UTF-8')
