@@ -4,28 +4,12 @@
 \alias{MuskelUtvalg}
 \title{Gjør utvalg av dataene}
 \usage{
-MuskelUtvalg(
-  RegData,
-  datoFra,
-  datoTil,
-  minald,
-  maxald,
-  erMann,
-  egenavd = 0,
-  enhetsUtvalg,
-  diagnosegr = -1,
-  forlop,
-  diagnose = "-1",
-  undergr = -1,
-  undergr2 = -1,
-  avdod = "",
-  fargepalett = "BlaaRapp",
-  reshID,
-  UtredningsaarFra = 1950,
+MuskelUtvalg(RegData, datoFra, datoTil, minald, maxald, erMann,
+  egenavd = 0, enhetsUtvalg, diagnosegr = -1, forlop,
+  diagnose = "-1", undergr = -1, undergr2 = -1, avdod = "",
+  fargepalett = "BlaaRapp", reshID, UtredningsaarFra = 1950,
   UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y")),
-  debutAlderFra = 0,
-  debutAlderTil = 90
-)
+  debutAlderFra = 0, debutAlderTil = 90)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}
