@@ -2,6 +2,39 @@ setwd('C:/GIT/muskel/doc/')
 library(muskel)
 rm(list=ls())
 
+########### Antall SMA og DMD fylkesvis 24.04.2020 #####################
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F,
+                          fileEncoding = 'UTF-8')
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('I:/muskel/AlleVarNum2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F, fileEncoding = 'UTF-8')
+RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "Undergruppe", "Utredningsstart",
+                        "Undergruppe2", "Undergruppe2Spes", "DebutAlder", "DiagnoseAar")] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F,encoding = 'UTF-8')
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "Undergruppe", "Undergruppe2")]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+RegData <- MuskelPreprosess(RegData=RegData)
+
+aux <- RegData[which(RegData$Diagnosegr_label == "Spinal muskelatrofi", RegData$Avdod == 'Nei'), ]
+
+aux <- aux[order(aux$HovedDato, decreasing = TRUE), ]
+aux <- aux[match(unique(aux$PasientID), aux$PasientID), ]
+
+aux$under18 <- NA
+aux$under18[which(aux$Foedselsdato > '2002-03-01')] <- 1
+aux$under18[which(aux$Foedselsdato <= '2002-03-01')] <- 0
+
+icd10_18pluss <- addmargins(table(aux[aux$under18==0, c("Fylke", "DiagICD10")], useNA = 'ifany'))
+undergruppe_18pluss <- addmargins(table(aux[aux$under18==0, c("Fylke", "Undergruppe_label")], useNA = 'ifany'))
+
+write.csv2(icd10_18pluss, paste0('muskel_icd_', Sys.Date(), '.csv'), row.names = T)
+write.csv2(undergruppe_18pluss, paste0('muskel_undergruppe_', Sys.Date(), '.csv'), row.names = T)
+
+
+
 ########### 21.04.2020 Kompletthet av utvalgte variabler ####################################################################
 library(tidyverse)
 ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
