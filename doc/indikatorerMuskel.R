@@ -2,10 +2,10 @@ library(muskel)
 library(tidyverse)
 rm(list = ls())
 
-ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-06-16 10-37-01.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-RegData <- read.table('I:/muskel/AlleVarNum2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegData <- read.table('I:/muskel/AlleVarNum2020-06-16 10-37-01.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
                         "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
                         "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
@@ -19,7 +19,7 @@ RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", 
                         "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
                         "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
 RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-RegDataLabel <- read.table('I:/muskel/AlleVar2020-03-06 14-22-57.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-06-16 10-37-01.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
                                  "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
                                  'Arvegang', 'Gangfunksjon')]
@@ -35,6 +35,11 @@ write.csv2(kobl_resh_shus_muskel, 'Q:/SKDE/Nasjonalt servicemiljø/Resultattjene
 # Skal høyeste eller laveste verdi brukes, eller skal pasientene utelukkes fra utvalget?. Pasienter uten verdi, skal de inkluderes i nevneren?
 # I tillegg er tid for utredningsstart og diagnose oppgitt som årstall og det er dermed ikke mulig å si om pasienter med ett års differanse mellom
 # utredningsstart og diagnose har fastsatt diagnose under ett år fra utredningsstart.
+# Tid fra utredningsstart til diagnose beregnes som differansen mellom diagnoseår og år for utredningsstart. Hvis en pasient har utredningsstart
+# 31. desember og får diagnose 1. januar (dagen etter) så vil TidUtredDiag = 1 selv om det bare skiller en dag. Hvis en pasient har utredningsstart
+# 1. januar og får sin diagnose 31. desember året etter, så vil også TidUtredDiag = 1 selv om det skiller 2 år. Når man setter en terskel på denne
+# variabelen så vil alltid noen pasienter havne i feil gruppe, så alle resultater må ses på med forsikighet.
+
 # Denne versjonen bruker laveste verdi og inkluderer alle unike pasienter som har registrert diagnoseår i nevneren. Telleren utgjøres av de som har
 # ett år eller mindre differanse mellom år for utredningsstart og diagnose, så i praksis kan det være opp til 2 år fra utredningsstart til diagnose.
 # Aar er år diagnosen er satt.
@@ -175,6 +180,9 @@ Ind6_fysioterapi_muskel$AarID <- paste0(Ind6_fysioterapi_muskel$Aar, Ind6_fysiot
 write.csv2(Ind6_fysioterapi_muskel,
            'Q:/SKDE/Nasjonalt servicemiljø/Resultattjenester/Resultatportalen/4. Muskel/Indikator/Ind6_fysioterapi_muskel.csv',
            row.names = F)
+
+
+
 
 
 #####################  Nøkkeltall  ############################

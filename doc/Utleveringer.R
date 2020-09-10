@@ -2,6 +2,67 @@ setwd('C:/GIT/muskel/doc/')
 library(muskel)
 rm(list=ls())
 
+########################################################
+########### SMA og DMD 25.08.2020 ######################
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('I:/muskel/AlleVarNum2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "Undergruppe", "Utredningsstart",
+                        "Undergruppe2", "Undergruppe2Spes", "DebutAlder", "DiagnoseAar")] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "Undergruppe", "Undergruppe2")]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+RegData <- MuskelPreprosess(RegData=RegData)
+RegData$Fylke <- iconv(RegData$Fylke, from = 'UTF-8', to = '')
+
+aux <- RegData[which((RegData$Undergruppe == 20 | RegData$Diagnosegr == 2) & RegData$Avdod == 'Nei'), ]
+
+aux <- aux[order(aux$HovedDato, decreasing = TRUE), ]
+aux <- aux[match(unique(aux$PasientID), aux$PasientID), ]
+
+persondata <- read.table('I:/muskel/PersjonRapport_Muskel_08112019.csv', header=TRUE, sep=';', encoding = 'UTF-8',
+                         colClasses = "character")
+persondata <- persondata[which(persondata$PasientID %in% unique(aux$PasientID)), ]
+persondata <- persondata[match(unique(persondata$PasientID), persondata$PasientID), ]
+
+utlevering <- merge(aux[, c("PasientID", "DiagICD10", "Undergruppe_label")], persondata, by = 'PasientID', all.x = T)
+utlevering <- utlevering[order(utlevering$Postnummer, na.last = T), ]
+
+write.csv2(utlevering, "I:/muskel/utlevering_muskel_26082020.csv", row.names = F, fileEncoding = "Latin1", na = "")
+
+########### LGM, Duchenne, Becker 26.05.2020 #####################
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F,
+                          fileEncoding = 'UTF-8')
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('I:/muskel/AlleVarNum2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F, fileEncoding = 'UTF-8')
+RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "Undergruppe", "Utredningsstart",
+                        "Undergruppe2", "Undergruppe2Spes", "DebutAlder", "DiagnoseAar")] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F,encoding = 'UTF-8')
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "Undergruppe", "Undergruppe2")]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+rm(list=c('ForlopsData', 'RegDataLabel'))
+
+RegData <- MuskelPreprosess(RegData=RegData)
+RegData <- RegData[RegData$HovedDato < '2020-01-01', ]
+
+aux <- RegData[which(((RegData$Undergruppe==4 & RegData$Undergruppe2 != 13) | RegData$Undergruppe %in% 1:2) & RegData$Avdod == 'Nei'), ]
+aux <- aux[order(aux$HovedDato, decreasing = T), ]
+aux <- aux[match(unique(aux$PasientID), aux$PasientID), ]
+
+persondata <- read.table('I:/muskel/PersjonRapport_Muskel_08112019.csv', header=TRUE, sep=';', encoding = 'UTF-8',
+                         colClasses = "character")
+persondata <- persondata[match(unique(persondata$PasientID), persondata$PasientID), ]
+
+utlevering <- merge(aux[, c("PasientID", "Undergruppe_label", "Undergruppe2_label")], persondata, by = 'PasientID', all.x = T)
+
+write.csv2(utlevering, 'I:/muskel/utvalg_muskeldiagnoser_2605020.csv', na = '', row.names = F, fileEncoding = 'Latin1')
+
 ########### Antall SMA og DMD fylkesvis 24.04.2020 #####################
 ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-03-06 14-22-57.txt', header=TRUE, sep=';', stringsAsFactors = F,
                           fileEncoding = 'UTF-8')
