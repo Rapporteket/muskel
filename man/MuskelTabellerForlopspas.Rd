@@ -4,10 +4,18 @@
 \alias{MuskelTabellerForlopspas}
 \title{Unik pasient/pasientforløps  tabeller for Muskelregisteret}
 \usage{
-MuskelTabellerForlopspas(RegDt = RegData, tidFra = "2008-01-01",
-  tidTil = Sys.Date(), aldmin = 0, aldmax = 120, kjoen = 99,
-  tidenh = "aar", frlType = NULL, avd = "Nei",
-  IDType = "PasientID")
+MuskelTabellerForlopspas(
+  RegDt = RegData,
+  tidFra = "2008-01-01",
+  tidTil = Sys.Date(),
+  aldmin = 0,
+  aldmax = 120,
+  kjoen = 99,
+  tidenh = "aar",
+  frlType = NULL,
+  avd = "Nei",
+  IDType = "PasientID"
+)
 }
 \arguments{
 \item{RegDt}{dataramme fra muskelregisteret med variabler som

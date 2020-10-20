@@ -106,9 +106,10 @@ write.csv2(Ind2_genetisk_myopatier_Muskel,
 
 # 3.	Andel pasienter som får genetisk bekreftet diagnose for CMT
 
-Ind3_genetisk_CMT_Muskel <- RegData[which(RegData$DiagICD10 == 'G60.0'), ] %>% group_by(PasientID) %>% summarise(Teller = max(GenetiskAarsakPaavist),
-                                                                                                                   Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
-                                                                                                                   ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
+Ind3_genetisk_CMT_Muskel <- RegData[which(RegData$DiagICD10 == 'G60.0'), ] %>%
+  group_by(PasientID) %>% summarise(Teller = max(GenetiskAarsakPaavist),
+                                    Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
+                                    ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
 
 Ind3_genetisk_CMT_Muskel$Nevner <- 1
 Ind3_genetisk_CMT_Muskel <- Ind3_genetisk_CMT_Muskel[, c(4,3,2,5)]
@@ -124,9 +125,10 @@ write.csv2(Ind3_genetisk_CMT_Muskel,
 
 # 4.	Andel pasienter som får genetisk bekreftet diagnose for SMA type 1-4
 
-Ind4_genetisk_SMA_type1_4_Muskel <- RegData[which(RegData$Undergruppe %in% c(70,81:83)), ] %>% group_by(PasientID) %>% summarise(Teller = max(GenetiskAarsakPaavist),
-                                                                                                                 Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
-                                                                                                                 ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
+Ind4_genetisk_SMA_type1_4_Muskel <- RegData[which(RegData$Undergruppe %in% c(70,81:83)), ] %>%
+  group_by(PasientID) %>% summarise(Teller = max(GenetiskAarsakPaavist),
+                                    Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
+                                    ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
 
 Ind4_genetisk_SMA_type1_4_Muskel$Nevner <- 1
 Ind4_genetisk_SMA_type1_4_Muskel <- Ind4_genetisk_SMA_type1_4_Muskel[, c(4,3,2,5)]
@@ -196,6 +198,39 @@ nokkeltall_muskel <- RegData %>% group_by(Aar) %>% summarise("Antall nyregistrer
 
 write.csv2(nokkeltall_muskel, 'Q:/SKDE/Nasjonalt servicemiljø/Resultattjenester/Resultatportalen/4. Muskel/nokkeltall_muskel.csv', row.names = F)
 
+
+
+names(Ind1_diagnoseinneetaar_Muskel)[3:4] <- c("var", "denominator")
+names(Ind2_genetisk_myopatier_Muskel)[3:4] <- c("var", "denominator")
+names(Ind3_genetisk_CMT_Muskel)[3:4] <- c("var", "denominator")
+names(Ind4_genetisk_SMA_type1_4_Muskel)[3:4] <- c("var", "denominator")
+names(Ind5_oppfolging_Muskel)[3:4] <- c("var", "denominator")
+names(Ind6_fysioterapi_muskel)[3:4] <- c("var", "denominator")
+
+Indikatorer <- bind_rows(Ind1_diagnoseinneetaar_Muskel, Ind2_genetisk_myopatier_Muskel,
+                       Ind3_genetisk_CMT_Muskel, Ind4_genetisk_SMA_type1_4_Muskel,
+                       Ind5_oppfolging_Muskel, Ind6_fysioterapi_muskel)
+
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind1"] <- "muskel_diagnoseinneetaar"
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind2"] <- "muskel_genetisk_myopatier"
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind3"] <- "muskel_genetisk_CMT"
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind4"] <- "muskel_genetisk_SMA_type1-4"
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind5"] <- "muskel_oppfoelging"
+Indikatorer$Indikator[Indikatorer$Indikator == "Ind6"] <- "muskel_fysioterapi"
+
+
+# kobl_resh_orgnr_muskel <- data.frame(resh = c(100065, 100082, 100083, 100084, 100085, 100089,
+#                                               100091, 100092, 100093, 100100, 100132, 100133, 100317,
+#                                               100320, 101051, 101719, 101971, 700272, 960001, 960002,
+#                                               960003, 4001031, 4201115),
+#                                      orgnr = c(983974929))
+
+kobl_resh_orgnr_muskel <- kobl_resh_shus_muskel
+
+SykehusNavnStruktur <- qmongrdata::SykehusNavnStruktur
+SykehusNavnStruktur <- SykehusNavnStruktur[match(unique(SykehusNavnStruktur$OrgNrHF), SykehusNavnStruktur$OrgNrHF), c("OrgNrHF","HF")]
+
+kobl_resh_orgnr_muskel$orgnr <- SykehusNavnStruktur$OrgNrHF[match(kobl_resh_shus_muskel$Sykehus, SykehusNavnStruktur$HF)]
 
 # RegData[RegData$PasientID == 12,
 #         c("TidUtredDiag", "Debut", "Utredningsstart", "DiagnoseAar", "DiagICD10", "DiagnoseStiltAv", "PasientAlder", "DiagnoseAlder",
