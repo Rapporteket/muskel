@@ -105,6 +105,6 @@ MuskelFigAndelGrvar<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil=
   # if (outfile != '') {savePlot(outfile, type=substr(outfile, nchar(outfile)-2, nchar(outfile)))}
   if (outfile != '') {dev.off()}
 
-
+return(Tabell)
 
 }

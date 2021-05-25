@@ -3,15 +3,50 @@ library(muskel)
 rm(list=ls())
 
 ########################################################
+########### Datadump til Kai 18.11.2020 ######################
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-11-18 13-40-46.txt', header=TRUE, sep=';',
+                          stringsAsFactors = F, fileEncoding = "UTF-8")
+ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
+                               "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
+RegData <- read.table('I:/muskel/AlleVarNum2020-11-18 13-40-46.txt', header=TRUE, sep=';',
+                      stringsAsFactors = F, fileEncoding = "UTF-8")
+# RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "Undergruppe", "Utredningsstart",
+#                         "Undergruppe2", "Undergruppe2Spes", "DebutAlder", "DiagnoseAar")] # , "ORG_RESH"
+RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-11-18 13-40-46.txt', header=TRUE, sep=';',
+                           stringsAsFactors = F)
+RegDataLabel <- RegDataLabel[, c("ForlopsID", "Undergruppe", "Undergruppe2","DiagICD10Text",
+                                 "RAND36Dato", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6",
+                                 "Q7" , "Q8", "Q9" , "Q10", "Q11", "Q12" , "Q13", "Q14",
+                                 "Q15", "Q16", "Q17", "Q18", "Q19", "Q120", "Q21", "Q22",
+                                 "Q23", "Q24", "Q25", "Q26", "Q27", "Q28" , "Q29", "Q30",
+                                 "Q31", "Q32", "Q33", "Q34", "Q35", "Q36")]
+RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
+RegData$ForlopsType1 <- iconv(RegData$ForlopsType1, from = 'UTF-8', to = '')
+# rm(list=c('ForlopsData', 'RegDataLabel'))
+
+RegData <- MuskelPreprosess(RegData=RegData)
+
+RegData <- RegData[order(RegData$HovedDato, decreasing = T), ]
+RegData <- RegData[!(RegData$Fylke %in% c("", "ukjent")), ]
+RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
+RegData <- RegData[RegData$Fylke %in% c("FINNMARK", "NORDLAND", "TROMS OG FINNMARK", "TROMS"), ]
+
+write.csv2(RegData, "I:/muskel/muskel_nordnorge_18112020.csv", row.names = F, fileEncoding = "")
+
+########################################################
 ########### SMA og DMD 25.08.2020 ######################
-ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-08-26 09-50-55.txt', header=TRUE, sep=';',
+                          stringsAsFactors = F, fileEncoding = "UTF-8")
 ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-RegData <- read.table('I:/muskel/AlleVarNum2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegData <- read.table('I:/muskel/AlleVarNum2020-08-26 09-50-55.txt', header=TRUE, sep=';',
+                      stringsAsFactors = F, fileEncoding = "UTF-8")
 RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "Undergruppe", "Utredningsstart",
                         "Undergruppe2", "Undergruppe2Spes", "DebutAlder", "DiagnoseAar")] # , "ORG_RESH"
 RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-RegDataLabel <- read.table('I:/muskel/AlleVar2020-08-26 09-50-55.txt', header=TRUE, sep=';', stringsAsFactors = F)
+RegDataLabel <- read.table('I:/muskel/AlleVar2020-08-26 09-50-55.txt', header=TRUE, sep=';',
+                           stringsAsFactors = F)
 RegDataLabel <- RegDataLabel[, c("ForlopsID", "Undergruppe", "Undergruppe2")]
 RegData <- merge(RegData, RegDataLabel, by.x = 'ForlopsID', by.y = 'ForlopsID', suffixes = c("","_label"))
 rm(list=c('ForlopsData', 'RegDataLabel'))
