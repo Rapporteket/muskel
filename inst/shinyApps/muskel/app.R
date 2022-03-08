@@ -232,11 +232,13 @@ server <- function(input, output, session) {
     }
   })
 
-  resh <- if (userRole == "SC") {
+  resh <- reactive({
+    if (userRole == "SC") {
       input$shSelect
     }else{
       reshID
     }
+  })
 
   observe(
     if (is.null(input$diagnosegr) | length(input$diagnosegr) != 1) {
@@ -273,7 +275,7 @@ server <- function(input, output, session) {
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                     reshID = resh, enhetsUtvalg = input$enhetsUtvalg)
+                     reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
 
   tabellReager <- reactive({
@@ -286,7 +288,7 @@ server <- function(input, output, session) {
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                                    undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                                   reshID = resh, enhetsUtvalg = input$enhetsUtvalg)
+                                   reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
@@ -355,7 +357,7 @@ server <- function(input, output, session) {
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                        undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                       reshID = resh, enhetsUtvalg = input$enhetsUtvalg, outfile = file)
+                       reshID = resh(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
 
