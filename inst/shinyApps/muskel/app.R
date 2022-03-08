@@ -148,25 +148,6 @@ server <- function(input, output, session) {
   }
 
   observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
-  # observe(
-  #   if (userRole() != 'SC') {
-  #     shinyjs::hide(id = 'alder')
-  #   }
-  # )
-  # output$Tabell_adm1 = renderDT(
-  #   datatable(dt_test()[-dim(dt_test())[1], ],
-  #             container = htmltools::withTags(table(
-  #               tableHeader(dt_test()[-dim(dt_test())[1], ]),
-  #               tableFooter(c('Sum' , as.numeric(dt_test()[dim(dt_test())[1], 2:dim(dt_test())[2]]))))),
-  #               # tableFooter(as.numeric(dt_test()[dim(dt_test())[1], 2:5])))),
-  #               # tableFooter(sapply(dt_test()[-dim(dt_test())[1], ], function(x) if(is.numeric(x)) sum(x))))),
-  #             rownames = F,
-  #             options = list(pageLength = 25)
-  #             )
-  #
-  #   # options = list(pageLength = 25))
-  # )
-
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
@@ -250,11 +231,6 @@ server <- function(input, output, session) {
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
                      reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
-  # , height = function() {                       # Hvis du ønsker automatisk resizing
-  #   1*session$clientData$output_Figur1_width
-  # }
-  # )
-  # , diagnose = input$icd10_kntr_verdi
 
   tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),

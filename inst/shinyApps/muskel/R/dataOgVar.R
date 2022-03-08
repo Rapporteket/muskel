@@ -2,13 +2,13 @@ context <- Sys.getenv("R_RAP_INSTANCE") #Blir tom hvis jobber lokalt
 onServer <- context == "TEST" | context == "QA" | context == "PRODUCTION" | context =="DEV"
 if (onServer) {
   RegData <- muskel::MuskelHentRegData()
-  SkjemaOversikt <- rapbase::LoadRegData(
+  SkjemaOversikt <- rapbase::loadRegData(
     registryName = "muskel",
     dbType = "mysql",
     query = "SELECT *
              FROM SkjemaOversikt"
   )
-  SkjemaOversikt <- rapbase::LoadRegData(
+  SkjemaOversikt <- rapbase::loadRegData(
     registryName = "muskel",
     dbType = "mysql",
     query = "SELECT *
