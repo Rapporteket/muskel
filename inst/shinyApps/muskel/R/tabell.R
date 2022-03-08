@@ -226,7 +226,7 @@ tabell <- function(input, output, session, ss, forltype = forlop){
     observe({
         cont <- headerFooter(tabellData())
         subS <- dim(tabellData())[1]-1
-        raplog::repLogger(
+        rapbase::repLogger(
             session = ss,
             msg = "Muskel: tabell unikepasienter/pasientforløp"
         )
@@ -267,20 +267,20 @@ tabell <- function(input, output, session, ss, forltype = forlop){
     observe({
         shinyjs::onclick(
             "lastNedTabell",
-            raplog::repLogger(
+            rapbase::repLogger(
                 session = ss,
                 msg = "Muskel: nedlasting tabell unikepasienter/pasientforløp"
             )
         )
         shinyjs::onclick(
             "lastNedAdm1",
-            raplog::repLogger(
+            rapbase::repLogger(
                 session = ss,
                 msg = "Muskel: Nedlasting tabell admin-skjema"
             )
         )
         if ( input$tab == "antskjema"){
-            raplog::repLogger(
+            rapbase::repLogger(
                 session = ss,
                 msg = "Muskel: tabell - admin-skjema"
         )

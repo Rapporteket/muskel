@@ -229,7 +229,7 @@ kumulativAndel <- function(input, output, session, rID, ss){
           input$var
         )
       }
-      raplog::repLogger(
+      rapbase::repLogger(
         session = ss,
         msg = mldKA
       )
@@ -243,14 +243,14 @@ kumulativAndel <- function(input, output, session, rID, ss){
       )
       shinyjs::onclick(
         "lastNedBilde",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = ss,
           msg = mldNLF
         )
       )
       shinyjs::onclick(
         "lastNedTabell",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = ss,
           msg = mldNLT
         )

@@ -144,7 +144,7 @@ server <- function(input, output, session) {
     ifelse(onServer, rapbase::getUserRole(session), 'SC')
   })
   if (onServer){
-    raplog::appLogger(session, msg = "Muskel: shiny app starter")
+    rapbase::appLogger(session, msg = "Muskel: shiny app starter")
   }
 
   observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
@@ -335,7 +335,7 @@ server <- function(input, output, session) {
           input$valgtVar
         )
       }
-      raplog::repLogger(
+      rapbase::repLogger(
         session = session,
         msg = mldandel
       )
@@ -349,14 +349,14 @@ server <- function(input, output, session) {
       )
       shinyjs::onclick(
         "lastNedBilde",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = session,
           msg = mldNLF
         )
       )
       shinyjs::onclick(
         "lastNed",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = session,
           msg = mldNLT
         )
