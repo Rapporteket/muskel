@@ -366,7 +366,7 @@ server <- function(input, output, session) {
 
   ## Stats
   rapbase::statsServer("muskelStats", registryName = "muskel",
-                       eligible = (userRole == "SC"))
+                       eligible = (userRole() == "SC"))
   rapbase::statsGuideServer("muskelStatsGuide", registryName = "muskel")
 
 
