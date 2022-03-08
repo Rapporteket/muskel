@@ -129,6 +129,43 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel(
                   "Datadump", dataDumpUI("dataDumpMuskel")
 
+                ),
+                shiny::navbarMenu("Verktøy",
+                                  # shiny::tabPanel(
+                                  #   "Utsending",
+                                  #   shiny::sidebarLayout(
+                                  #     shiny::sidebarPanel(
+                                  #       rapbase::autoReportOrgInput("norgastDispatch"),
+                                  #       rapbase::autoReportInput("norgastDispatch")
+                                  #     ),
+                                  #     shiny::mainPanel(
+                                  #       rapbase::autoReportUI("norgastDispatch")
+                                  #     )
+                                  #   )
+                                  # ),
+
+                                  shiny::tabPanel(
+                                    "Eksport",
+                                    shiny::sidebarLayout(
+                                      shiny::sidebarPanel(
+                                        rapbase::exportUCInput("muskelExport")
+                                      ),
+                                      shiny::mainPanel(
+                                        rapbase::exportGuideUI("muskelExportGuide")
+                                      )
+                                    )
+                                  ),
+
+                                  shiny::tabPanel(
+                                    "Bruksstatistikk",
+                                    shiny::sidebarLayout(
+                                      shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
+                                      shiny::mainPanel(
+                                        rapbase::statsUI("muskelStats"),
+                                        rapbase::statsGuideUI("muskelStatsGuide")
+                                      )
+                                    )
+                                  )
                 )
 
 )
@@ -320,6 +357,17 @@ server <- function(input, output, session) {
   callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
   callModule(tabell, "muskeltabell", ss = session)
   callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID(),userRole=userRole())
+
+
+  # Eksport  #
+  rapbase::exportUCServer("muskelExport", "muskel")
+  ## veileding
+  rapbase::exportGuideServer("muskelExportGuide", "muskel")
+
+  ## Stats
+  rapbase::statsServer("muskelStats", registryName = "muskel",
+                       eligible = (userRole == "SC"))
+  rapbase::statsGuideServer("muskelStatsGuide", registryName = "muskel")
 
 
   shiny::observe({
