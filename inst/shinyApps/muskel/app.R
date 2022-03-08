@@ -174,15 +174,24 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
 #
 server <- function(input, output, session) {
 
-  reshID <- reactive({
-    ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
-  })
-  userRole <- reactive({
-    ifelse(onServer, rapbase::getUserRole(session), 'SC')
-  })
-  if (onServer){
-    rapbase::appLogger(session, msg = "Muskel: shiny app starter")
+  if (rapbase::isRapContext()) {
+    rapbase::appLogger(session = session, msg = "Muskel: shiny app starter")
+    reshID <- rapbase::getUserReshId(session)
+    userRole <- rapbase::getUserRole(session)
+  } else {
+    reshID <- 101719
+    userRole <- 'SC'
   }
+
+  # reshID <- reactive({
+  #   ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
+  # })
+  # userRole <- reactive({
+  #   ifelse(onServer, rapbase::getUserRole(session), 'SC')
+  # })
+  # if (onServer){
+  #   rapbase::appLogger(session, msg = "Muskel: shiny app starter")
+  # }
 
   observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
 
@@ -217,19 +226,17 @@ server <- function(input, output, session) {
                                                },
                                                multiple = TRUE)})
   output$SC <- renderUI({
-    if (userRole() == "SC"){
+    if (userRole == "SC"){
       selectInput("shSelect", label = "Velg Avdeling",
-                  choices = avdValg, selected = reshID())
+                  choices = avdValg, selected = reshID)
     }
   })
 
-  resh <- reactive({
-    if (userRole() == "SC") {
+  resh <- if (userRole == "SC") {
       input$shSelect
     }else{
-      reshID()
+      reshID
     }
-  })
 
   observe(
     if (is.null(input$diagnosegr) | length(input$diagnosegr) != 1) {
@@ -266,7 +273,7 @@ server <- function(input, output, session) {
                      diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                      undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                     reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
+                     reshID = resh, enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
 
   tabellReager <- reactive({
@@ -279,7 +286,7 @@ server <- function(input, output, session) {
                                    diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                                    undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                                    undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                                   reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
+                                   reshID = resh, enhetsUtvalg = input$enhetsUtvalg)
   })
 
   output$Tabell1 <- function() {
@@ -348,15 +355,15 @@ server <- function(input, output, session) {
                        diagnose = if (!is.null(input$icd10_kntr_verdi)) {input$icd10_kntr_verdi} else {'-1'},
                        undergr = if (!is.null(input$undergruppe1_verdi)) {as.numeric(input$undergruppe1_verdi)} else {-1},
                        undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
-                       reshID = resh(), enhetsUtvalg = input$enhetsUtvalg, outfile = file)
+                       reshID = resh, enhetsUtvalg = input$enhetsUtvalg, outfile = file)
     }
   )
 
 
-  callModule(forGrVar, "forgrvar", rID = reshID(), ss = session)
-  callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
+  callModule(forGrVar, "forgrvar", rID = reshID, ss = session)
+  callModule(kumulativAndel, "kumAnd", rID = reshID, ss = session)
   callModule(tabell, "muskeltabell", ss = session)
-  callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID(),userRole=userRole())
+  callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID,userRole=userRole)
 
 
   # Eksport  #
@@ -366,7 +373,7 @@ server <- function(input, output, session) {
 
   ## Stats
   rapbase::statsServer("muskelStats", registryName = "muskel",
-                       eligible = (userRole() == "SC"))
+                       eligible = (userRole == "SC"))
   rapbase::statsGuideServer("muskelStatsGuide", registryName = "muskel")
 
 
