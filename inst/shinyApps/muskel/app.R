@@ -47,7 +47,7 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+ui <- navbarPage(id = "muskel_app_id",
                 title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
                             regTitle),
                 windowTitle = regTitle,
@@ -183,15 +183,9 @@ server <- function(input, output, session) {
     userRole <- 'SC'
   }
 
-  # reshID <- reactive({
-  #   ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
-  # })
-  # userRole <- reactive({
-  #   ifelse(onServer, rapbase::getUserRole(session), 'SC')
-  # })
-  # if (onServer){
-  #   rapbase::appLogger(session, msg = "Muskel: shiny app starter")
-  # }
+  if (userRole != "SC") {
+    shiny::hideTab("muskel_app_id", target = "Verktøy")
+  }
 
   observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
 
