@@ -1,7 +1,7 @@
 Package: muskel
 Type: Package
 Title: Resultatrapporter for Muskelregisteret
-Version: 1.0
+Version: 2.1
 Date: 2016-01-22
 Author: person(given = "Kevin Otto",
               family = "Thon",
@@ -33,6 +33,6 @@ Suggests:
     covr
 VignetteBuilder: knitr
 Remotes: 
-    Rapporteket/rapbase,
+    Rapporteket/rapbase@*release,
     Rapporteket/rapFigurer,
 Roxygen: list(markdown = TRUE)
