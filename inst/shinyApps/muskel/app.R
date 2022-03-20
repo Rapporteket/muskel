@@ -47,13 +47,12 @@ logoWidget <- tags$script(shiny::HTML(logoCode))
 
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css",
+ui <- navbarPage(id = "muskel_app_id",
                 title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
                             regTitle),
                 windowTitle = regTitle,
                 theme = "rap/bootstrap.css",
                 tabPanel("Startside",
-                         shinyalert::useShinyalert(),
                          rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
                                                       organization = uiOutput("appOrgName"),
                                                       addUserInfo = TRUE),
@@ -129,6 +128,43 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
                 tabPanel(
                   "Datadump", dataDumpUI("dataDumpMuskel")
 
+                ),
+                shiny::navbarMenu("Verktøy",
+                                  # shiny::tabPanel(
+                                  #   "Utsending",
+                                  #   shiny::sidebarLayout(
+                                  #     shiny::sidebarPanel(
+                                  #       rapbase::autoReportOrgInput("norgastDispatch"),
+                                  #       rapbase::autoReportInput("norgastDispatch")
+                                  #     ),
+                                  #     shiny::mainPanel(
+                                  #       rapbase::autoReportUI("norgastDispatch")
+                                  #     )
+                                  #   )
+                                  # ),
+
+                                  shiny::tabPanel(
+                                    "Eksport",
+                                    shiny::sidebarLayout(
+                                      shiny::sidebarPanel(
+                                        rapbase::exportUCInput("muskelExport")
+                                      ),
+                                      shiny::mainPanel(
+                                        rapbase::exportGuideUI("muskelExportGuide")
+                                      )
+                                    )
+                                  ),
+
+                                  shiny::tabPanel(
+                                    "Bruksstatistikk",
+                                    shiny::sidebarLayout(
+                                      shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
+                                      shiny::mainPanel(
+                                        rapbase::statsUI("muskelStats"),
+                                        rapbase::statsGuideUI("muskelStatsGuide")
+                                      )
+                                    )
+                                  )
                 )
 
 )
@@ -137,36 +173,20 @@ ui <- navbarPage(#title = "RAPPORTEKET MUSKELREGISTERET", theme = "bootstrap.css
 #
 server <- function(input, output, session) {
 
-  reshID <- reactive({
-    ifelse(onServer,as.numeric(rapbase::getUserReshId(session)),101719)
-  })
-  userRole <- reactive({
-    ifelse(onServer, rapbase::getUserRole(session), 'SC')
-  })
-  if (onServer){
-    raplog::appLogger(session, msg = "Muskel: shiny app starter")
+  if (rapbase::isRapContext()) {
+    rapbase::appLogger(session = session, msg = "Muskel: shiny app starter")
+    reshID <- rapbase::getUserReshId(session)
+    userRole <- rapbase::getUserRole(session)
+  } else {
+    reshID <- 101719
+    userRole <- 'SC'
+  }
+
+  if (userRole != "SC") {
+    shiny::hideTab("muskel_app_id", target = "Verktøy")
   }
 
   observeEvent(req(input$nullstillFordeling), {shinyjs::reset("sbpFordeling")})
-  # observe(
-  #   if (userRole() != 'SC') {
-  #     shinyjs::hide(id = 'alder')
-  #   }
-  # )
-  # output$Tabell_adm1 = renderDT(
-  #   datatable(dt_test()[-dim(dt_test())[1], ],
-  #             container = htmltools::withTags(table(
-  #               tableHeader(dt_test()[-dim(dt_test())[1], ]),
-  #               tableFooter(c('Sum' , as.numeric(dt_test()[dim(dt_test())[1], 2:dim(dt_test())[2]]))))),
-  #               # tableFooter(as.numeric(dt_test()[dim(dt_test())[1], 2:5])))),
-  #               # tableFooter(sapply(dt_test()[-dim(dt_test())[1], ], function(x) if(is.numeric(x)) sum(x))))),
-  #             rownames = F,
-  #             options = list(pageLength = 25)
-  #             )
-  #
-  #   # options = list(pageLength = 25))
-  # )
-
 
 
   output$icd10_kntr <- renderUI({selectInput(inputId = "icd10_kntr_verdi", label = "Velg diagnosekode(r)",
@@ -199,17 +219,17 @@ server <- function(input, output, session) {
                                                },
                                                multiple = TRUE)})
   output$SC <- renderUI({
-    if (userRole() == "SC"){
+    if (userRole == "SC"){
       selectInput("shSelect", label = "Velg Avdeling",
-                  choices = avdValg, selected = reshID())
+                  choices = avdValg, selected = reshID)
     }
   })
 
   resh <- reactive({
-    if (userRole() == "SC") {
+    if (userRole == "SC") {
       input$shSelect
     }else{
-      reshID()
+      reshID
     }
   })
 
@@ -250,11 +270,6 @@ server <- function(input, output, session) {
                      undergr2 = if (!is.null(input$undergruppe2_verdi)) {as.numeric(input$undergruppe2_verdi)} else {-1},
                      reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
   }, width = 700, height = 700)
-  # , height = function() {                       # Hvis du ønsker automatisk resizing
-  #   1*session$clientData$output_Figur1_width
-  # }
-  # )
-  # , diagnose = input$icd10_kntr_verdi
 
   tabellReager <- reactive({
     TabellData <- MuskelFigAndeler(RegData = RegData, valgtVar = input$valgtVar, minald=as.numeric(input$alder[1]),
@@ -340,10 +355,21 @@ server <- function(input, output, session) {
   )
 
 
-  callModule(forGrVar, "forgrvar", rID = reshID(), ss = session)
-  callModule(kumulativAndel, "kumAnd", rID = reshID(), ss = session)
+  callModule(forGrVar, "forgrvar", rID = reshID, ss = session)
+  callModule(kumulativAndel, "kumAnd", rID = reshID, ss = session)
   callModule(tabell, "muskeltabell", ss = session)
-  callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID(),userRole=userRole())
+  callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID,userRole=userRole)
+
+
+  # Eksport  #
+  rapbase::exportUCServer("muskelExport", "muskel")
+  ## veileding
+  rapbase::exportGuideServer("muskelExportGuide", "muskel")
+
+  ## Stats
+  rapbase::statsServer("muskelStats", registryName = "muskel",
+                       eligible = (userRole == "SC"))
+  rapbase::statsGuideServer("muskelStatsGuide", registryName = "muskel")
 
 
   shiny::observe({
@@ -359,7 +385,7 @@ server <- function(input, output, session) {
           input$valgtVar
         )
       }
-      raplog::repLogger(
+      rapbase::repLogger(
         session = session,
         msg = mldandel
       )
@@ -373,14 +399,14 @@ server <- function(input, output, session) {
       )
       shinyjs::onclick(
         "lastNedBilde",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = session,
           msg = mldNLF
         )
       )
       shinyjs::onclick(
         "lastNed",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = session,
           msg = mldNLT
         )

@@ -56,7 +56,7 @@
 
 MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', datoTil='2050-01-01', reshID=0, diagnosegr=-1,
                              minald=0, maxald=120, erMann=99, outfile='', forlop = 99, egenavd = 0, diagnose=-1,
-                             undergr=-1, undergr2=-1, enhetsUtvalg=0, preprosess=F, hentData=F, avdod='',
+                             undergr=-1, undergr2=-1, enhetsUtvalg=0, preprosess=F, hentData=F, avdod='', gen_aarsak_paavist=-1,
                              UtredningsaarFra=1950, UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), inkl_tittel=T, debutAlderFra=0, debutAlderTil=90)
 {
 
@@ -75,7 +75,7 @@ MuskelFigAndeler <- function(RegData, valgtVar='Alder', datoFra='2000-01-01', da
                                maxald=maxald, erMann=erMann, diagnosegr=diagnosegr, enhetsUtvalg, diagnose=diagnose,
                                undergr=undergr, undergr2=undergr2, avdod=avdod, egenavd=egenavd, reshID=reshID,
                                UtredningsaarFra=UtredningsaarFra, UtredningsaarTil=UtredningsaarTil,
-                               debutAlderFra=debutAlderFra, debutAlderTil=debutAlderTil)
+                               debutAlderFra=debutAlderFra, debutAlderTil=debutAlderTil, gen_aarsak_paavist = gen_aarsak_paavist)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
   shtxt <- MuskelUtvalg$shtxt

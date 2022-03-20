@@ -9,7 +9,7 @@
 \usepackage[a4paper]{geometry}
 
 
-\title{Figurer og tabeller til årsrapport for Muskelregisteret 2019}
+\title{Figurer og tabeller til årsrapport for Muskelregisteret 2020}
 \author{Muskelregisteret}
 
 \renewcommand\thempfootnote{\fnsymbol{mpfootnote}}
@@ -44,10 +44,10 @@ library(tidyverse)
 rm(list = ls())
 hentData <- F
 
-ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-08-26 09-50-55.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+ForlopsData <- read.table('I:/muskel/ForlopsOversikt2021-05-25 10-01-29.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 ForlopsData <- ForlopsData[, c("ForlopsID", "AvdRESH", "HovedDato", "SykehusNavn", "erMann", "BasisRegStatus", "PasientAlder",
                                "PasientID", "ForlopsType1Num", "ForlopsType1", "Fylke", "Fylkenr", "Avdod", "AvdodDato")]
-RegData <- read.table('I:/muskel/AlleVarNum2020-08-26 09-50-55.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegData <- read.table('I:/muskel/AlleVarNum2021-05-25 10-01-29.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", "DiagnoseAar", "Utredningsstart",
                         "Utfyllingsdato", "DiagnoseStiltAv", "Undergruppe", "Undergruppe2",
                         "GenetiskAarsakPaavist", "DiagEndret", "FoelgesOppAvIns", "HjerteAffAlder",
@@ -61,7 +61,7 @@ RegData <- RegData[ , c("ForlopsID", "Foedselsdato", "DiagICD10", "DebutAlder", 
                         "TilbudGenetiskVeiledning", "AnsvarsgruppeIP", "BPA", "Arbeid", "SympFamilie", "TrygdFraAlder", "Kardiomyopati",
                         "Hjertearytmi", "HjerteAffAnnet", "EKG", "HyppighetEKG", "HyppighetRytmereg", "Ultralyd", "HyppighetUltralyd", "AarstallGenAarsak")]
 RegData <- merge(RegData, ForlopsData, by.x = 'ForlopsID', by.y = 'ForlopsID')
-RegDataLabel <- read.table('I:/muskel/AlleVar2020-08-26 09-50-55.txt', header=TRUE, sep=';', encoding = 'UTF-8')
+RegDataLabel <- read.table('I:/muskel/AlleVar2021-05-25 10-01-29.txt', header=TRUE, sep=';', encoding = 'UTF-8')
 RegDataLabel <- RegDataLabel[, c("ForlopsID", "DiagnoseStiltAv",
                                  "Undergruppe", "Undergruppe2", "FoelgesOppAvIns", "Utdanning", "Sivilstatus",
                                  'Arvegang', 'Gangfunksjon', "GenetiskAarsakPaavist")]
@@ -73,9 +73,10 @@ rm(list=c('ForlopsData', 'RegDataLabel'))
 # RegData <- MuskelPreprosess(RegData=RegData)
 #
 reshID <- 101719
+Rapportaar <- 2020
 datoFra='2008-01-01'
-datoTil='2019-12-31'
-Rapportaar <- 2019
+datoTil=paste0(Rapportaar, "-12-31")
+
 # datoTil=as.character(Sys.Date())
 flervalgsliste <- ''
 
@@ -139,7 +140,7 @@ tmp <- Sys.setlocale(category = "LC_ALL", locale = "nb_NO.UTF-8")
 <<'Tab: oppfølginger', results='asis', echo=FALSE>>=
 library(xtable)
 ## Oppfølginger
-BasisReg <- RegData[difftime(as.POSIXlt('2019-12-31'), RegData$HovedDato) > 5*365.25 & RegData$Avdod == 'Nei' &
+BasisReg <- RegData[difftime(as.POSIXlt(datoTil), RegData$HovedDato) > 5*365.25 & RegData$Avdod == 'Nei' &
                      RegData$ForlopsType1Num==1, ] # Registreriner mer enn 5 år tilbake i tid
 Oppfolging <- RegData[RegData$ForlopsType1Num==2 & RegData$PasientID %in% BasisReg$PasientID, ]
 
@@ -355,10 +356,10 @@ write.csv2(kompletthet, 'kompletthet.csv', row.names = F)
 
 <<'Fig:Resten', include=FALSE, echo=FALSE, eval=T, cache=FALSE>>=
 
-## Andel genetisk bekreftet diagnose i perioden 2015-2019 etter de fire helseregionene
+## Andel genetisk bekreftet diagnose i perioden Rapportaar-4-Rapportaar etter de fire helseregionene
 ## Versjon 1, tom og ukjent fjernes
 
-subdata <- RegData[RegData$Aar %in% 2015:2019, ]
+subdata <- RegData[RegData$Aar %in% (Rapportaar-4):2020, ]
 subdata <- subdata[subdata$GenetiskAarsakPaavist %in% 0:1, ]
 subdata <- subdata[order(subdata$HovedDato, decreasing = T), ]
 subdata <- subdata[match(unique(subdata$PasientID), subdata$PasientID), ]
@@ -375,13 +376,13 @@ map_fylke_rhf <- data.frame("RHF" = c(rep("Helse Nord", 4), rep("Helse Midt", 4)
 subdata$rhf <- map_fylke_rhf$RHF[match(subdata$Fylke, map_fylke_rhf$Fylke)]
 
 outfile <- "andel_gen_ver_pr_borhf_v1.pdf"
-MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra='2015-01-01', datoTil='2019-12-31',
+MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
                                diagnosegr=-1, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
-                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='', inkl_tittel=T, decreasing = T,
+                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='Nei', inkl_tittel=T, decreasing = T,
                                gen_aarsak_paavist=-1, xtekst='Andel', graa = '', tittel='Andel genetisk verifisert diagnose')
 
 
-subdata <- RegData[RegData$Aar %in% 2015:2019, ]
+subdata <- RegData[RegData$Aar %in% (Rapportaar-4):Rapportaar, ]
 subdata <- subdata[order(subdata$HovedDato, decreasing = T), ]
 subdata <- subdata[match(unique(subdata$PasientID), subdata$PasientID), ]
 subdata$GenetiskAarsakPaavist[subdata$GenetiskAarsakPaavist == 9 | is.na(subdata$GenetiskAarsakPaavist)] <- 0
@@ -389,36 +390,52 @@ subdata$GenetiskAarsakPaavist[subdata$GenetiskAarsakPaavist == 9 | is.na(subdata
 subdata$rhf <- map_fylke_rhf$RHF[match(subdata$Fylke, map_fylke_rhf$Fylke)]
 
 outfile <- "andel_gen_ver_pr_borhf_v2.pdf"
-MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra='2015-01-01', datoTil='2019-12-31',
+MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
                                diagnosegr=-1, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
-                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='', inkl_tittel=T, decreasing = T,
+                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='Nei', inkl_tittel=T, decreasing = T,
                                gen_aarsak_paavist=-1, xtekst='Andel', graa = '', tittel='Andel genetisk verifisert diagnose')
 
 outfile <- "andel_gen_ver_pr_borhf_muskel.pdf"
-MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra='2015-01-01', datoTil='2019-12-31',
+tabell <- MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
                                diagnosegr=1, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
-                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='', inkl_tittel=T, decreasing = T,
+                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='Nei', inkl_tittel=T, decreasing = T,
                                gen_aarsak_paavist=-1, xtekst='Andel', graa = '', tittel='Andel genetisk verifisert diagnose')
+tabell <- tabell[-6, c(5,2,3,4)]; names(tabell)[1] <- "RHF"
+write.csv2(tabell, "I:/muskel/andel_gen_ver_pr_borhf_muskel.csv", row.names = F, fileEncoding = "Latin1")
 
 outfile <- "andel_gen_ver_pr_borhf_sma.pdf"
-MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra='2015-01-01', datoTil='2019-12-31',
+tabell <- MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
                                diagnosegr=2, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
-                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='', inkl_tittel=T, decreasing = T,
+                               diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='Nei', inkl_tittel=T, decreasing = T,
                                gen_aarsak_paavist=-1, xtekst='Andel', graa = '', tittel='Andel genetisk verifisert diagnose')
+tabell <- tabell[-6, c(5,2,3,4)]; names(tabell)[1] <- "RHF"
+write.csv2(tabell, "I:/muskel/andel_gen_ver_pr_borhf_sma.csv", row.names = F, fileEncoding = "Latin1")
+
+outfile <- "andel_gen_ver_pr_borhf_ploynevropati.pdf"
+tabell <- MuskelFigAndelGrvar(RegData=subdata, valgtVar= "GenetiskAarsakPaavist", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
+                               diagnosegr = 3, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
+                               undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='Nei', inkl_tittel=T, decreasing = T,
+                               gen_aarsak_paavist=-1, xtekst='Andel', graa = '', tittel='Andel genetisk verifisert diagnose')
+tabell <- tabell[-6, c(5,2,3,4)]; names(tabell)[1] <- "RHF"
+write.csv2(tabell, "I:/muskel/andel_gen_ver_pr_borhf_ploynevropati.csv", row.names = F, fileEncoding = "Latin1")
+
+
+
+# diagnosegr=1, diagnose = 'G71.9''G71.9'
 
 ## tid fra utredning til diagnose
 
-subdata <- RegData[which(RegData$Utredningsstart >= 2015 & RegData$Utredningsstart <= 2019), ]
+subdata <- RegData[which(RegData$Utredningsstart >= (Rapportaar-4) & RegData$Utredningsstart <= Rapportaar), ]
 subdata <- subdata[!is.na(subdata$TidUtredDiag), ]
 subdata <- subdata[order(subdata$HovedDato, decreasing = T), ]
 subdata <- subdata[match(unique(subdata$PasientID), subdata$PasientID), ]
 subdata$rhf <- map_fylke_rhf$RHF[match(subdata$Fylke, map_fylke_rhf$Fylke)]
 
 outfile <- "tid_utred_diagnose_gjsn.pdf"
-MuskelFigGjsnGrvar(RegData=subdata, valgtVar= "TidUtredDiag", datoFra='2015-01-01', datoTil='2019-12-31',
+MuskelFigGjsnGrvar(RegData=subdata, valgtVar= "TidUtredDiag", datoFra=paste0(Rapportaar-4, "-01-01"), datoTil=datoTil,
                                diagnosegr=-1, grvar="rhf", minald=0, maxald=120, erMann=99, outfile=outfile, forlop = 99,
                                diagnose=-1, undergr=-1, skriftstr = 1.0, undergr2=-1, avdod='', inkl_tittel=T, decreasing = T,
-                               gen_aarsak_paavist=-1, xtekst='Gjennomsnitt', graa = '', tittel=c('Gj.snittlig tid fra utredning til diagnose', 'av de med diagnoseår registrert'), UtredningsaarFra=2015, UtredningsaarTil=2019)
+                               gen_aarsak_paavist=-1, xtekst='Gjennomsnitt', graa = '', tittel=c('Gj.snittlig tid fra utredning til diagnose', 'av de med diagnoseår registrert'), UtredningsaarFra=Rapportaar-4, UtredningsaarTil=Rapportaar)
 
 
 
@@ -738,5 +755,38 @@ MuskelFigAndeler(RegData=RegData, valgtVar='RespStotte', datoFra=datoFra, datoTi
 \includegraphics[width=\Sexpr{figstr}\textwidth]{RespStotte.pdf}
 \caption{Respirasjonsstøtte}
 \end{figure}
+
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{andel_gen_ver_pr_borhf_v1.pdf}
+\caption{andel\_gen\_ver\_pr\_borhf\_v1.pdf}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{andel_gen_ver_pr_borhf_v2.pdf}
+\caption{andel\_gen\_ver\_pr\_borhf\_v2.pdf}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{andel_gen_ver_pr_borhf_muskel.pdf}
+\caption{andel\_gen\_ver\_pr\_borhf\_muskel.pdf}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{andel_gen_ver_pr_borhf_sma.pdf}
+\caption{andel\_gen\_ver\_pr\_borhf\_sma.pdf}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\Sexpr{figstr}\textwidth]{andel_gen_ver_pr_borhf_ploynevropati.pdf}
+\caption{andel\_gen\_ver\_pr\_borhf\_ploynevropati.pdf}
+\end{figure}
+
 
 \end{document}

@@ -1145,7 +1145,7 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
   if (valgtVar == 'AndelGenVerifisert') { # per pasient
     grtxt <- c('Ja', 'Nei', 'Ukjent', 'Ikke registrert')
     RegData <- RegData[which(RegData$Diagnosegr %in% c(1,2,3)), ]
-    # SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],   ####### KOMMENTER INN HVIS MAN DET HOLDER AT GENETISK VERIFISERING
+    # SamletPrPID <- aggregate(RegData[, c("GenetiskAarsakPaavist")],   ####### KOMMENTER INN HVIS DET HOLDER AT GENETISK VERIFISERING
     #                          by=list(RegData$PasientID), function(x){if (1 %in% x) {y <- 1} else  ####### NOEN GANG ER REGISTRERT
     #                          {if (0 %in% x) {y <- 0} else {if (9 %in% x) {y <- 9} else {y <- 99}}}})
     # names(SamletPrPID)[names(SamletPrPID)=='x'] <- 'VariabelGr'

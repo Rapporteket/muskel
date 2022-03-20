@@ -139,7 +139,7 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
       paste0(input$ddselect,"Muskel",Sys.Date(),".csv")
     },
     content = function(file){
-      dataDump <- rapbase::LoadRegData(
+      dataDump <- rapbase::loadRegData(
         registryName = "muskel",
         query = qry(),
         dbType = "mysql"
@@ -157,7 +157,7 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
   )
   shinyjs::onclick(
     "dataDumpNedLasting",
-    raplog::repLogger(
+    rapbase::repLogger(
       session = mainSession,
       msg = paste0(
         "Muskel: datadump ", input$ddselect, " ",

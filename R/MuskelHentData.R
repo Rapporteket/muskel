@@ -98,7 +98,7 @@ MuskelHentRegData <- function() {
                   ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID
                   INNER JOIN AlleVar ON AlleVarNum.ForlopsID = AlleVar.ForlopsID")
 
-  RegData <- rapbase::LoadRegData(registryName, query, dbType)
+  RegData <- rapbase::loadRegData(registryName, query, dbType)
 
   return(RegData)
 }

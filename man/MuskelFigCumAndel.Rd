@@ -4,14 +4,32 @@
 \alias{MuskelFigCumAndel}
 \title{Lag plot med kummulativ andel av valgt variabel}
 \usage{
-MuskelFigCumAndel(RegData, valgtVar, datoFra = "2000-01-01",
-  datoTil = "2050-01-01", reshID, diagnosegr = -1, diagnose = -1,
-  undergr = -1, undergr2 = -1, minald = 0, maxald = 120,
-  erMann = 99, outfile = "", forlop = 99, enhetsUtvalg = 0,
-  egenavd = 0, avdod = "", preprosess = F, hentData = F,
-  debutAlderFra = 0, debutAlderTil = 120, UtredningsaarFra = 1900,
+MuskelFigCumAndel(
+  RegData,
+  valgtVar,
+  datoFra = "2000-01-01",
+  datoTil = "2050-01-01",
+  reshID,
+  diagnosegr = -1,
+  diagnose = -1,
+  undergr = -1,
+  undergr2 = -1,
+  minald = 0,
+  maxald = 120,
+  erMann = 99,
+  outfile = "",
+  forlop = 99,
+  enhetsUtvalg = 0,
+  egenavd = 0,
+  avdod = "",
+  preprosess = F,
+  hentData = F,
+  debutAlderFra = 0,
+  debutAlderTil = 120,
+  UtredningsaarFra = 1900,
   UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y")),
-  inkl_tittel = T)
+  inkl_tittel = T
+)
 }
 \arguments{
 \item{RegData}{En dataramme med alle nødvendige variabler fra registeret}

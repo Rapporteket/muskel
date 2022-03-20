@@ -127,7 +127,7 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
           input$var
         )
       }
-      raplog::repLogger(
+      rapbase::repLogger(
         session = ss,
         msg = mldandel
       )
@@ -141,14 +141,14 @@ forGrVar <- function(input, output, session, rID = reshID() , ss){
       )
       shinyjs::onclick(
         "lastNedBilde",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = ss,
           msg = mldNLF
         )
       )
       shinyjs::onclick(
         "lastNedTabell",
-        raplog::repLogger(
+        rapbase::repLogger(
           session = ss,
           msg = mldNLT
         )

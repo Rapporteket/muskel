@@ -12,7 +12,7 @@
 
 MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
                          diagnose='-1', undergr=-1, undergr2=-1, avdod='', fargepalett='BlaaRapp', reshID, UtredningsaarFra=1950,
-                         UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), debutAlderFra=0, debutAlderTil=90)
+                         UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")), debutAlderFra=0, debutAlderTil=90, gen_aarsak_paavist=-1)
 {
   # Definerer intersect-operator
   "%i%" <- intersect
@@ -76,8 +76,10 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
   indForlop <- if (forlop %in% c(1:3)) {which(RegData$ForlopsType1Num == forlop)} else {indForlop <- 1:Ninn}
   indDebutAlder <- if (debutAlderFra != 0 | debutAlderTil != 90) {
     which(RegData$DebutAlder >= debutAlderFra & RegData$DebutAlder <= debutAlderTil)} else {indDebutAlder <- 1:Ninn}
+  Ind_gen_aarsak_paavist <- if (gen_aarsak_paavist != -1) {which(RegData$GenetiskAarsakPaavist %in% as.numeric(gen_aarsak_paavist))} else {1:Ninn}
 
-  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i% indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar %i% indDebutAlder
+  indMed <- indVarMed %i% indAld %i% indDato %i% indKj %i% indDiagnosegr %i% indForlop %i% indUndergr %i%
+    indUndergr2 %i% indDiagnose %i% indAvdod %i% indUtredningAar %i% indDebutAlder %i% Ind_gen_aarsak_paavist
   RegData <- RegData[indMed,]
 
   if (dim(RegData)[1] > 0){
@@ -99,6 +101,7 @@ MuskelUtvalg <- function(RegData, datoFra, datoTil, minald, maxald, erMann, egen
                  if (undergr2[1] != -1){paste0('Undergruppe(r) niv\u00E5 2: ', paste(na.omit(RegData$Undergruppe2_label[match(undergr2, RegData$Undergruppe2)]),
                                                                                 collapse=', '))},
                  if (forlop %in% c(1:3)) {paste0('Forl\370pstype: ', RegData$ForlopsType1[match(forlop, RegData$ForlopsType1Num)])},
+                 if (gen_aarsak_paavist != -1) {paste0("Genetisk årsak påvist: ", RegData$GenetiskAarsakPaavist_label[match(gen_aarsak_paavist, RegData$GenetiskAarsakPaavist)])},
                  if (debutAlderFra != 0 | debutAlderTil != 90) {paste0('Debutalder fra ', min(RegData$DebutAlder, na.rm=T), ' til ', max(RegData$DebutAlder, na.rm=T), ' \u00E5r')}
   )
   } else {
