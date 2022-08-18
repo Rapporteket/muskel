@@ -2,7 +2,6 @@ Package: muskel
 Type: Package
 Title: Resultatrapporter for Muskelregisteret
 Version: 2.1
-Date: 2016-01-22
 Author: person(given = "Kevin Otto",
               family = "Thon",
               role = c("aut","cre"),
@@ -27,7 +26,7 @@ Imports:
     shinyalert,
     tidyr,
     dplyr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Suggests: 
     knitr,
     covr
