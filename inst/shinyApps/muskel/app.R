@@ -158,10 +158,12 @@ ui <- navbarPage(id = "muskel_app_id",
                                   shiny::tabPanel(
                                     "Bruksstatistikk",
                                     shiny::sidebarLayout(
-                                      shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
-                                      shiny::mainPanel(
-                                        rapbase::statsUI("muskelStats"),
+                                      shiny::sidebarPanel(
+                                        rapbase::statsInput("muskelStats"),
                                         rapbase::statsGuideUI("muskelStatsGuide")
+                                      ),
+                                      shiny::mainPanel(
+                                        rapbase::statsUI("muskelStats")
                                       )
                                     )
                                   )
