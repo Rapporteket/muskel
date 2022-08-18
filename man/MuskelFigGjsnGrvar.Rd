@@ -27,7 +27,9 @@ MuskelFigGjsnGrvar(
   graa = "",
   tittel = "",
   terskel = 10,
-  decreasing = T
+  decreasing = T,
+  UtredningsaarFra = 1950,
+  UtredningsaarTil = as.numeric(format(Sys.Date(), "\%Y"))
 )
 }
 \arguments{
@@ -70,6 +72,10 @@ til systemets default output device (som regel skjerm))}
 \item{avdod}{avdød.}
 
 \item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
+
+\item{UtredningsaarFra}{Utredningsår f.o.m}
+
+\item{UtredningsaarTil}{Utredningsår t.o.m}
 }
 \value{
 PrepData En figur med ønsket plot
