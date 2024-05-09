@@ -14,6 +14,12 @@ if (onServer) {
     query = "SELECT *
              FROM SkjemaOversikt"
   )
+  SMAoversikt <- rapbase::loadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT *
+             FROM SMAoversikt"
+  )
 
 } #else if (context = "") {
 #   # rm(list = ls())

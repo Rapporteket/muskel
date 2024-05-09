@@ -5,16 +5,20 @@ services:
     image: mysql:5.7
     command: --innodb-log-file-size=500M --innodb_strict_mode=0
     restart: "no"
+    volumes:
+      - ~/softlinks/mysql_db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
 
   dev:
     depends_on:
       - db
-    image: rapporteket/muskel-dev:nightly
+    image: rapporteket/muskel-dev:main
     volumes:
       - ~/.ssh:/home/rstudio/.ssh
       - ~/.gitconfig:/home/rstudio/.gitconfig
+      - ~/GIT/muskel:/home/rstudio/muskel
+      - ~/softlinks/mydata:/home/rstudio/mydata
     ports:
       - "8787:8787"
       - "3838:3838"

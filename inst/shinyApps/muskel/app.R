@@ -357,7 +357,7 @@ server <- function(input, output, session) {
 
   callModule(forGrVar, "forgrvar", rID = reshID, ss = session)
   callModule(kumulativAndel, "kumAnd", rID = reshID, ss = session)
-  callModule(tabell, "muskeltabell", ss = session)
+  callModule(tabell, "muskeltabell", ss = session, userRole=userRole)
   callModule(dataDump, "dataDumpMuskel", mainSession = session, reshID = reshID,userRole=userRole)
 
 
