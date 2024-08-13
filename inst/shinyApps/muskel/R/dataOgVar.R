@@ -8,11 +8,23 @@ if (onServer) {
     query = "SELECT *
              FROM SkjemaOversikt"
   )
-  SkjemaOversikt <- rapbase::loadRegData(
+  AlleVarNum <- rapbase::loadRegData(
     registryName = "muskel",
     dbType = "mysql",
     query = "SELECT *
-             FROM SkjemaOversikt"
+             FROM AlleVarNum"
+  )
+  AlleVar <- rapbase::loadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT *
+             FROM AlleVar"
+  )
+  ForlopsOversikt <- rapbase::loadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT *
+             FROM ForlopsOversikt"
   )
   SMAoversikt <- rapbase::loadRegData(
     registryName = "muskel",

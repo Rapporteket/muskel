@@ -104,7 +104,8 @@ tabell <- function(input, output, session, ss, forltype = forlop, userRole){
                   dateInput(inputId = ns('datoTil2'), value = Sys.Date(), min = '2012-01-01',
                             label = "T.o.m. dato", language="nb"),
                   selectInput(inputId = ns("regstatus"), label = "Skjemastatus",
-                              choices = c('Ferdigstilt'=1, 'Kladd'=0))),
+                              choices = c('Ferdigstilt'=1, 'Kladd'=0, 'Opprettet' = -1),
+                              multiple = TRUE, selected = 1)),
               shiny::actionLink(inputId=ns("nullstillSkj"),
                                 style="color:black" ,
                                 label = "Nullstill Valg")
@@ -116,7 +117,7 @@ tabell <- function(input, output, session, ss, forltype = forlop, userRole){
   observeEvent(req(input$nullstillPas), {shinyjs::reset("sbPas")})
 
   antskjema <- function() {
-    aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus == as.numeric(req(input$regstatus)) &
+    aux <- as.data.frame.matrix(addmargins(table(SkjemaOversikt[SkjemaOversikt$SkjemaStatus %in% as.numeric(req(input$regstatus)) &
                                                                   SkjemaOversikt$HovedDato >= req(input$datoFra2) &
                                                                   SkjemaOversikt$HovedDato <= req(input$datoTil2),
                                                                 c("Sykehusnavn", "Skjemanavn")], useNA = 'ifany')))
@@ -152,6 +153,10 @@ tabell <- function(input, output, session, ss, forltype = forlop, userRole){
   tabell_shusinnkjop <- function() {
     tabell_sma <- SMAoversikt %>%
       dplyr::mutate(ASSESSMENT_DATE = as.Date(ASSESSMENT_DATE)) %>%
+      dplyr::filter(ASSESSMENT_DATE >= req(input$datoFra2),
+                    ASSESSMENT_DATE <= req(input$datoTil2),
+                    STATUS %in% as.numeric(req(input$regstatus)),
+                    BEHANDLNG_SPINRAZA ==1) %>%
       dplyr::arrange(ASSESSMENT_DATE) %>%
       dplyr::summarise(
         ASSESSMENT_DATE_baseline = first(ASSESSMENT_DATE),
@@ -175,18 +180,20 @@ tabell <- function(input, output, session, ss, forltype = forlop, userRole){
         FUNKSJONSSTATUS_latest = ifelse(last(ASSESSMENT_DATE)==first(ASSESSMENT_DATE),
                                         NA, last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
         Tidsdiff_dager = difftime(ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
+        FUNKSJONSSTATUS_all = paste0(BEHANDLNG_FUNKSJONSSTATUS, collapse = ","),
+        BEHANDLING_all = paste0(BEHANDLNG_BEHANDLING, collapse = ","),
         .by = PATIENT_ID) %>%
       dplyr::filter(Tidsdiff_dager != 0)
   }
 
   output$TabellSykehusinnkjop <- function() {
     tabell_sma <- tabell_shusinnkjop()
-    names(tabell_sma) <- c("PATIENT_ID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "FUNKSJONSSTATUS",
-                           "ASSESSMENT_DATE ", "HFMSE ", "RULM ", "6MWT ", "ATEND ", "BIPAP ", "FUNKSJONSSTATUS ",
-                           "Tidsdiff_dager")
+    names(tabell_sma) <- c("PATIENT_ID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
+                           "ASSESSMENT_DATE ", "HFMSE ", "RULM ", "6MWT ", "ATEND ", "BIPAP ", "KLINISK FUNKSJONSSTATUS ",
+                           "Tidsdiff_dager", "FUNKSJONSSTATUS ALLE", "BEHANDLING ALLE")
     tabell_sma %>% knitr::kable("html", row.names = F) %>%
       kableExtra::kable_styling("hover", full_width = F) %>%
-      kableExtra::add_header_above(c(" ", "Baseline" = 7, "Siste måling" = 7, " "))
+      kableExtra::add_header_above(c(" ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
   }
 
   output$lastNedSykehusinnkjop <- shiny::downloadHandler(
