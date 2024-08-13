@@ -108,7 +108,8 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
 
   qry <-   reactive({
     if (input$ddselect %in% c("SMAoversikt", "TilSykehusinnkjøp")) {
-      "SELECT * FROM SMAoversikt"
+      if (userRole ==  "SC") {"SELECT * FROM SMAoversikt"}
+      else {paste0("SELECT * FROM SMAoversikt WHERE CENTREID = ", reshID)}
     } else {
       if (userRole ==  "SC") {
         paste0(
