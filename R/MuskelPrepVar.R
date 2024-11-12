@@ -24,12 +24,6 @@ MuskelPrepVar <- function(RegData, valgtVar, inkl_tittel=T)
     RegData <- RegData[match(unique(RegData$PasientID), RegData$PasientID), ]
     gr <- sort(unique(RegData$Aar))
     grtxt <- as.character(gr)
-    # aux <- Klokebok[Klokebok$navn_i_rapporteket == valgtVar, c("listeverdier", "listetekst")]
-    # aux <- aux[order(as.numeric(aux$listeverdier)), ]
-    # gr <- as.numeric(aux$listeverdier)
-    # grtxt <- aux$listetekst
-    # gr <- c(0:2, 9)
-    # gr <- sort(as.numeric(Klokebok$listeverdier[Klokebok$navn_i_rapporteket == valgtVar]))
     RegData$Variabel <- RegData[, 'Aar']
     RegData <- RegData[which(RegData$Variabel %in% gr), ]
     RegData$VariabelGr <- factor(RegData$Variabel, levels = gr, labels = grtxt)

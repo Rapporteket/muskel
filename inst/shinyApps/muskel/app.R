@@ -122,9 +122,7 @@ ui <- navbarPage(id = "muskel_app_id",
                 ),
                 tabPanel("Administrative tabeller",
                          tabellUI("muskeltabell")
-
-
-                ),
+                         ),
                 tabPanel(
                   "Datadump", dataDumpUI("dataDumpMuskel")
 

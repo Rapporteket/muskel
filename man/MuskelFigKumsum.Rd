@@ -64,14 +64,6 @@ til systemets default output device (som regel skjerm))}
 1: Egen enhet mot resten av landet
 2: Egen enhet}
 
-\item{preprosess}{Preprosesser data
-FALSE: Nei (Default)
-TRUE: Ja}
-
-\item{hentData}{Gjør spørring mot database
-FALSE: Nei, RegData gis som input til funksjonen (Default)
-TRUE: Ja}
-
 \item{inkl_tittel}{inkluder titel. kan være TRUE eller FALSE}
 }
 \value{

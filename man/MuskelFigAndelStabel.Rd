@@ -79,14 +79,6 @@ til systemets default output device (som regel skjerm))}
 2: Diagnostisert ved HF
 3: Bostatt i fylke}
 
-\item{preprosess}{Preprosesser data
-FALSE: Nei (Default)
-TRUE: Ja}
-
-\item{hentData}{Gjør spørring mot database
-FALSE: Nei, RegData gis som input til funksjonen (Default)
-TRUE: Ja}
-
 \item{incl_N}{inkluder N. TRUE eller FALSE}
 
 \item{avdod}{avdød.}

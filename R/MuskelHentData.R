@@ -53,7 +53,6 @@ MuskelHentRegData <- function() {
                   AlleVarNum.Duplikasjon,
                   AlleVarNum.Arvegang,
                   AlleVarNum.Steroider,
-                  AlleVarNum.PsykiskHelsetjeneste,
                   AlleVarNum.Smertestillende,
                   AlleVarNum.Kardiomyopati,
                   AlleVarNum.Hjertearytmi,
@@ -73,14 +72,6 @@ MuskelHentRegData <- function() {
                   AlleVarNum.TilbudGenetiskVeiledning,
                   AlleVarNum.AnsvarsgruppeIP,
                   AlleVarNum.BPA,
-                  AlleVar.DiagnoseStiltAv AS DiagnoseStiltAv_label,
-                  AlleVar.Undergruppe AS Undergruppe_label,
-                  AlleVar.Undergruppe2 AS Undergruppe2_label,
-                  AlleVar.FoelgesOppAvIns AS FoelgesOppAvIns_label,
-                  AlleVar.Utdanning AS Utdanning_label,
-                  AlleVar.Sivilstatus AS Sivilstatus_label,
-                  AlleVar.Arvegang AS Arvegang_label,
-                  AlleVar.Gangfunksjon AS Gangfunksjon_label,
                   ForlopsOversikt.AvdRESH,
                   ForlopsOversikt.HovedDato,
                   ForlopsOversikt.SykehusNavn,
@@ -95,8 +86,7 @@ MuskelHentRegData <- function() {
                   ForlopsOversikt.Avdod,
                   ForlopsOversikt.AvdodDato
                   FROM AlleVarNum INNER JOIN ForlopsOversikt
-                  ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID
-                  INNER JOIN AlleVar ON AlleVarNum.ForlopsID = AlleVar.ForlopsID")
+                  ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID")
 
   RegData <- rapbase::loadRegData(registryName, query, dbType)
 
