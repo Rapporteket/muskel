@@ -1,0 +1,92 @@
+---
+title: "SMA-rapport"
+author: "NORNMD"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+SMAoversikt <- rapbase::loadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT *
+             FROM SMAoversikt"
+  )
+shus <- rapbase::loadRegData(
+    registryName = "muskel",
+    dbType = "mysql",
+    query = "SELECT DISTINCT AvdRESH, SykehusNavn
+             FROM AlleVarNum"
+  )
+
+SMAoversikt <- dplyr::left_join(SMAoversikt, shus, 
+                                by = dplyr::join_by(CENTREID == AvdRESH))
+
+datoTil <- Sys.Date() |>  as.Date()  |> 
+  lubridate::floor_date(unit = 'quarter') - lubridate::days(1)
+datoFra <- (datoTil + lubridate::days(1)) %m-% months(3)
+
+# if (rapbase::isRapContext()){
+#   reshID <- rapbase::getUserReshId()
+# } else {
+  reshID <- 4001031
+# }
+
+
+```
+
+## Registreringer ved din avdeling
+
+```{r}
+#| echo: false
+
+tabell_reg_alle <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID))
+  )
+
+tabell_reg_kvart <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE >= datoFra,
+                ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID)),
+  ) 
+
+tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
+                               tabell_reg_kvart) |> 
+  dplyr::mutate(var = c("Alle tider", "Siste kvartal")) |> 
+  dplyr::relocate(var) |> 
+  muskel::tr_summarize_output()
+
+
+
+```
+
+### gdgfgdffg
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
