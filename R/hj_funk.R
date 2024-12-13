@@ -140,8 +140,8 @@ MuskelTabellerForlopspas <- function(
 tr_summarize_output <- function(x, kolnavn1 = ""){
 
   rekkefolge <- names(x)[-1]
-  y <- x %>% gather(names(x)[-1], key=nokkel, value = verdi) %>%
-    spread(key=names(x)[1], value = verdi)
+  y <- x %>% tidyr::gather(names(x)[-1], key=nokkel, value = verdi) %>%
+    tidyr::spread(key=names(x)[1], value = verdi)
   y <- y[match(rekkefolge, y$nokkel), ]
   names(y)[1] <- kolnavn1
 
