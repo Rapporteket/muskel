@@ -165,7 +165,7 @@ kumulativAndel_server <- function(id, RegData, reshID, ss){
           diagnosegr = convNull(input$diagnosegr), diagnose = convNull(input$icd10),
           undergr = convNull(input$undergruppe1), undergr2 = convNull(input$undergruppe2),
           egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
-          avdod = input$avdod ,reshID = reshID, outfile = "" )
+          avdod = input$avdod ,reshID = reshID(), outfile = "" )
       })
 
       #figure
@@ -179,7 +179,7 @@ kumulativAndel_server <- function(id, RegData, reshID, ss){
             diagnosegr = convNull(input$diagnosegr), diagnose = convNull(input$icd10),
             undergr = convNull(input$undergruppe1), undergr2 = convNull(input$undergruppe2),
             egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
-            avdod = input$avdod ,reshID = reshID, outfile = "" )
+            avdod = input$avdod ,reshID = reshID(), outfile = "" )
         },
         width = 700, height = 700)
       # })
@@ -199,7 +199,7 @@ kumulativAndel_server <- function(id, RegData, reshID, ss){
             diagnosegr = convNull(input$diagnosegr), diagnose = convNull(input$icd10),
             undergr = convNull(input$undergruppe1), undergr2 = convNull(input$undergruppe2),
             egenavd = as.numeric(input$psgr), enhetsUtvalg = as.numeric(input$enh) ,
-            avdod = input$avdod ,reshID = reshID, outfile = file )
+            avdod = input$avdod ,reshID = reshID(), outfile = file )
         }
       )
       #Tabeller

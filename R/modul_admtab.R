@@ -16,7 +16,7 @@ admtab_ui <- function(id){
       tabsetPanel(
         id = ns("tab"),
         tabPanel("Antall skjema", value = "antskjema",
-                 DTOutput(ns("Tabell_adm1")),
+                 DT::DTOutput(ns("Tabell_adm1")),
                  downloadButton(ns("lastNedAdm1"), "Last ned tabell")),
         tabPanel("Antall unike Pasienter/pasientforløp", value = "pasforl",
                  shiny::h3(textOutput(ns("txt1")),
@@ -58,9 +58,15 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         return(sketch)
       }
 
-      if (userRole != "SC") {
-        shiny::hideTab("tab", target = "sykehusinnkjop")
-      }
+      shiny::observeEvent(userRole(), {
+        if (userRole() != "SC") {
+          shiny::hideTab("tab", target = "sykehusinnkjop")
+        }
+        if (userRole() == "SC") {
+          shiny::showTab("tab", target = "sykehusinnkjop")
+        }
+      })
+
 
 
       output$sidebar <- renderUI({

@@ -9,7 +9,7 @@
 
 MuskelHentRegData <- function() {
 
-  registryName <- "muskel"
+  registryName <- "data"
   dbType <- "mysql"
 
   query <- paste0("SELECT

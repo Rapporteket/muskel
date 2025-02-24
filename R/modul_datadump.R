@@ -116,10 +116,10 @@ datadump_server <- function(id, userRole, reshID, mainSession){
 
       qry <-   reactive({
         if (input$ddselect %in% c("SMAoversikt", "TilSykehusinnkjøp")) {
-          if (userRole ==  "SC") {"SELECT * FROM SMAoversikt"}
-          else {paste0("SELECT * FROM SMAoversikt WHERE CENTREID = ", reshID)}
+          if (userRole() ==  "SC") {"SELECT * FROM SMAoversikt"}
+          else {paste0("SELECT * FROM SMAoversikt WHERE CENTREID = ", reshID())}
         } else {
-          if (userRole ==  "SC") {
+          if (userRole() ==  "SC") {
             paste0(
               "SELECT ", input$ddselect, ".* ", AddHovedDatoVariabels(),
               " FROM ", input$ddselect, " ", AddHovedDatoJoin())
@@ -127,7 +127,7 @@ datadump_server <- function(id, userRole, reshID, mainSession){
             paste0(
               "SELECT ",input$ddselect, ".* ", AddHovedDatoVariabels(),
               " FROM ", input$ddselect, " ", AddHovedDatoJoin(), " WHERE ",
-              input$ddselect, ".AvdRESH = ", reshID
+              input$ddselect, ".AvdRESH = ", reshID()
             )
           }
         }

@@ -81,7 +81,7 @@ fordeling_grvar_server <- function(id, RegData, reshID, ss){
         tabData <- muskel::MuskelFigAndelStabel(
           RegData = RegData, valgtVar = req(input$var), datoFra = input$dato[1],
           datoTil =   input$dato[2], minald = input$ald[1], maxald = input$ald[2] ,
-          erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = reshID,
+          erMann = as.numeric(input$kjo), avdod = input$avdod ,reshID = reshID(),
           outfile = "" )
       })
 
@@ -92,7 +92,7 @@ fordeling_grvar_server <- function(id, RegData, reshID, ss){
           datoTil =   max(req(input$dato)),
           minald = input$ald[1], maxald = input$ald[2] ,
           erMann = as.numeric(input$kjo), avdod = input$avdod,
-          reshID = reshID, outfile = "" )
+          reshID = reshID(), outfile = "" )
       },
       width = 700, height = 700)
 
@@ -106,7 +106,7 @@ fordeling_grvar_server <- function(id, RegData, reshID, ss){
             datoTil =   max(input$dato), minald = input$ald[1],
             maxald = input$ald[2],
             erMann = as.numeric(input$kjo), avdod = input$avdod,
-            reshID = reshID, outfile = file )
+            reshID = reshID(), outfile = file )
         }
       )
       observeEvent(req(input$nullstill), {shinyjs::reset("sbPanel")})

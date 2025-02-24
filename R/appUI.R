@@ -22,7 +22,7 @@ appUi <- function() {
 
     shiny::tabPanel(
       "Startside",
-      rapbase::navbarWidgetInput("navbar-widget"),
+      rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
 
       muskel::startside_ui()
     ),
@@ -51,11 +51,11 @@ appUi <- function() {
       #   "Utsending",
       #   shiny::sidebarLayout(
       #     shiny::sidebarPanel(
-      #       rapbase::autoReportOrgInput("norgastDispatch"),
-      #       rapbase::autoReportInput("norgastDispatch")
+      #       rapbase::autoReportOrgInput("muskelDispatch"),
+      #       rapbase::autoReportInput("muskelDispatch")
       #     ),
       #     shiny::mainPanel(
-      #       rapbase::autoReportUI("norgastDispatch")
+      #       rapbase::autoReportUI("muskelDispatch")
       #     )
       #   )
       # ),

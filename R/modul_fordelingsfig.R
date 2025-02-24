@@ -90,7 +90,7 @@ fordelingsfig_server <- function(id, RegData, reshID) {
       observeEvent(req(input$nullstillFordeling), {
         shinyjs::reset("sbpFordeling")})
 
-      resh <- reactive({reshID})
+      # resh <- reactive({reshID})
 
       output$valgtVar_ui <-
         renderUI({
@@ -190,7 +190,7 @@ fordelingsfig_server <- function(id, RegData, reshID) {
             as.numeric(input$undergruppe1_verdi)} else {-1},
           undergr2 = if (!is.null(input$undergruppe2_verdi)) {
             as.numeric(input$undergruppe2_verdi)} else {-1},
-          reshID = resh(), enhetsUtvalg = input$enhetsUtvalg)
+          reshID = reshID(), enhetsUtvalg = input$enhetsUtvalg)
       })
 
       output$Figur1 <- renderPlot({
@@ -208,16 +208,16 @@ fordelingsfig_server <- function(id, RegData, reshID) {
         TabellData <- data
         if (enhetsUtvalg == 1) {
           Tabell1 <- TabellData$Antall %>%
-            mutate(Kategori = rownames(.)) %>%
-            select(Kategori, everything()) %>%
-            mutate(AndelHoved = 100*AntHoved/NHoved) %>%
-            mutate(AndelRest= 100*AntRest/Nrest)
+            dplyr::mutate(Kategori = rownames(.)) %>%
+            dplyr::select(Kategori, everything()) %>%
+            dplyr::mutate(AndelHoved = 100*AntHoved/NHoved) %>%
+            dplyr::mutate(AndelRest= 100*AntRest/Nrest)
           Tabell1 <- Tabell1[, c(1,2,4,6,3,5,7)]
         } else {
           Tabell1 <- TabellData$Antall %>%
-            mutate(Kategori = rownames(.)) %>%
-            select(Kategori, everything()) %>%
-            mutate(AndelHoved = 100*AntHoved/NHoved)
+            dplyr::mutate(Kategori = rownames(.)) %>%
+            dplyr::select(Kategori, everything()) %>%
+            dplyr::mutate(AndelHoved = 100*AntHoved/NHoved)
         }
       }
 
@@ -228,13 +228,13 @@ fordelingsfig_server <- function(id, RegData, reshID) {
                               'Antall', 'N', 'Andel')
           Tabell1 %>% knitr::kable("html", digits = c(0,0,0,1,0,0,1),
                                    row.names = FALSE) %>%
-            kable_styling("hover", full_width = F) %>%
-            add_header_above(c(" ", "Din avdeling" = 3, "Landet forøvrig" = 3))
+            kableExtra::kable_styling("hover", full_width = F) %>%
+            kableExtra::add_header_above(c(" ", "Din avdeling" = 3, "Landet forøvrig" = 3))
         } else {
           names(Tabell1) <- c('Kategori', 'Antall', 'N', 'Andel')
           Tabell1 %>%
             knitr::kable("html", digits = c(0,0,0,1)) %>%
-            kable_styling("hover", full_width = F)
+            kableExtra::kable_styling("hover", full_width = F)
         }
       }
 
