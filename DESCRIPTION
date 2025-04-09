@@ -1,7 +1,7 @@
 Package: muskel
 Type: Package
 Title: Resultatrapporter for Muskelregisteret
-Version: 3.0.0
+Version: 3.0.2
 Date: 2016-01-22
 Author: person(given = "Kevin Otto",
               family = "Thon",
@@ -27,11 +27,11 @@ Imports:
     shinyalert,
     tidyr,
     dplyr,
-    janitor,
+    janitor
+RoxygenNote: 7.3.2
+Suggests: 
     knitr,
     covr
-RoxygenNote: 7.3.2
-VignetteBuilder: knitr
 Remotes: 
     Rapporteket/rapbase@main,
     Rapporteket/rapFigurer,
