@@ -53,8 +53,8 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         hr <-  c("", names(data))
         fr <-  c("sum", data[dataStr[1],1:dataStr[2]])
         sketch <- htmltools::tags$table(
-          tableHeader(names = hr) ,
-          tableFooter(names = fr ) )
+          DT::tableHeader(names = hr) ,
+          DT::tableFooter(names = fr ) )
         return(sketch)
       }
 
@@ -143,8 +143,8 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         aux$Avdeling <- row.names(aux)
         ant_skjema <- aux[, c(dim(aux)[2], 1:(dim(aux)[2]-1))]
         sketch <- htmltools::withTags(table(
-          tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
-          tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1],
+          DT::tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
+          DT::tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1],
                                                       2:dim(ant_skjema)[2]])))))
         list(ant_skjema=ant_skjema, sketch=sketch)
       }

@@ -25,13 +25,11 @@ appServer <- function(input, output, session) {
   )
   map_avdeling <- data.frame(
     UnitId = unique(RegData$AvdRESH),
-    orgname = RegData$SykehusNavn[match(unique(RegData$AvdRESH), RegData$AvdRESH)])
+    orgname = RegData$SykehusNavn[
+      match(unique(RegData$AvdRESH), RegData$AvdRESH)]
+    )
 
   rapbase::appLogger(session = session, msg = "Muskel: shiny app starter")
-  # reshID <- rapbase::getUserReshId(session)
-  # userRole <- rapbase::getUserRole(session)
-
-  # rapbase::navbarWidgetServer("navbar-widget", "NORNMD")
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
