@@ -27,11 +27,10 @@ Imports:
     shinyalert,
     tidyr,
     dplyr,
-    janitor
-RoxygenNote: 7.3.2
-Suggests: 
+    janitor,
     knitr,
     covr
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Remotes: 
     Rapporteket/rapbase@main,
