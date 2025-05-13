@@ -15,7 +15,7 @@ appServer <- function(input, output, session) {
     registryName = "data",
     dbType = "mysql",
     query = "SELECT *
-             FROM SkjemaOversikt"
+             FROM skjemaoversikt"
   )
   SMAoversikt <- rapbase::loadRegData(
     registryName = "data",
