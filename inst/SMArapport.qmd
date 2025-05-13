@@ -12,21 +12,22 @@ library(muskel)
 library(lubridate)
 
 SMAoversikt <- rapbase::loadRegData(
-  registryName = "muskel",
-  dbType = "mysql",
-  query = "SELECT *
-             FROM SMAoversikt"
-) |> 
+    registryName = "data",
+    dbType = "mysql",
+    query = "SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
+  ) |> dplyr::relocate(PATIENT_ID) |> 
   dplyr::filter(BEHANDLNG_BEHANDLING == 1)
 shus <- rapbase::loadRegData(
-  registryName = "muskel",
+  registryName = "data",
   dbType = "mysql",
   query = "SELECT DISTINCT AvdRESH, SykehusNavn
-             FROM AlleVarNum"
+             FROM allevarnum"
 )
 
-SMAoversikt <- dplyr::left_join(SMAoversikt, shus, 
-                                by = dplyr::join_by(CENTREID == AvdRESH))
+SMAoversikt <- dplyr::left_join(
+  SMAoversikt, shus, 
+  by = dplyr::join_by(CENTREID == AvdRESH))
 
 datoTil <- Sys.Date() |>  as.Date()  |> 
   lubridate::floor_date(unit = 'quarter') - lubridate::days(1)
@@ -45,7 +46,6 @@ shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
 Her kan Anders skrive en forbløffende og tankevekkende tekst.
 
 ## Registreringer ved din avdeling
-
 
 ```{r}
 #| echo: false
@@ -85,6 +85,7 @@ knitr::kable(tabell_reg, row.names = FALSE,
 ```
 
 ### Avsluttede behandlinger
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -108,7 +109,6 @@ knitr::kable(tabell_avsluttede, row.names = FALSE,
 
 
 ```
-
 
 ## Registreringer siste år
 
@@ -134,10 +134,10 @@ plotdata <- SMAoversikt |>
 
 
 plotdata |> ggplot(aes(
-    x = kvartal2,
-    y = ind,
-    colour = Avdeling)) +
-stat_summary(fun = "sum", geom = "line",
+  x = kvartal2,
+  y = ind,
+  colour = Avdeling)) +
+  stat_summary(fun = "sum", geom = "line",
                aes(colour = Avdeling)) +
   scale_x_yearqtr(format = "%Y-Q%q") +
   theme_classic() + 

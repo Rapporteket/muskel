@@ -319,7 +319,7 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           msg = "Muskel: tabell unikepasienter/pasientforløp"
         )
 
-        output$Tabell <-  renderDT(
+        output$Tabell <-  DT::renderDT(
           as.data.frame.matrix(tabellData())[1:subS, ] %>%
             DT::datatable(
               container = cont,

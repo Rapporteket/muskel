@@ -11,9 +11,9 @@ datadump_ui <- function(id) {
         ns("ddselect"),
         "Valg datadump:",
         choices =
-          list("AlleVarNum","ForlopsOversikt","SkjemaOversikt",
-               "SMAoversikt", "TilSykehusinnkjøp"),
-        selected = "AlleVarNum"
+          list("allevarnum","forlopsoversikt","skjemaoversikt",
+               "smafollowup", "TilSykehusinnkjøp"),
+        selected = "allevarnum"
       ),
       shiny::dateRangeInput(
         ns("ddDateRange"),
@@ -66,15 +66,15 @@ datadump_ui <- function(id) {
           shiny::tags$div(
             class = "container",
             shiny::tags$h5(
-              shiny::tags$b('AlleVarNum '),
+              shiny::tags$b('allevarnum '),
               'inneholder alle kliniske variabler i registeret og benytter
             tallkodene til kategoriske variabler.'
             ),
             shiny::tags$h5(
-              shiny::tags$b('ForlopsOversikt '),
+              shiny::tags$b('forlopsoversikt '),
               'inneholder en del administrative data relevant for forløpene.'),
             shiny::tags$h5(
-              shiny::tags$b('SkjemaOversikt '), '
+              shiny::tags$b('skjemaoversikt '), '
             er en oversikt over status til alle registreringer i registreret,
             også uferdige.')
           )
@@ -96,28 +96,28 @@ datadump_server <- function(id, userRole, reshID, mainSession){
       AddHovedDatoVariabels <-   reactive({
         switch (
           input$ddselect,
-          "AlleVarNum" = ", ForlopsOversikt.HovedDato ",
-          "ForlopsOversikt" = "",
-          "SkjemaOversikt" = "",
-          "SMAoversikt" = "",
+          "allevarnum" = ", forlopsoversikt.HovedDato ",
+          "forlopsoversikt" = "",
+          "skjemaoversikt" = "",
+          "smafollowup" = "",
           "TilSykehusinnkjøp" = ""
         )
       })
       AddHovedDatoJoin <-   reactive({
         switch (input$ddselect,
-                "AlleVarNum" = "INNER JOIN ForlopsOversikt
-            ON AlleVarNum.ForlopsID = ForlopsOversikt.ForlopsID ",
-                "ForlopsOversikt" = "",
-                "SkjemaOversikt" = "",
-                "SMAoversikt" = "",
+                "allevarnum" = "INNER JOIN forlopsoversikt
+            ON allevarnum.ForlopsID = forlopsoversikt.ForlopsID ",
+                "forlopsoversikt" = "",
+                "skjemaoversikt" = "",
+                "smafollowup" = "",
                 "TilSykehusinnkjøp" = ""
         )
       })
 
       qry <-   reactive({
-        if (input$ddselect %in% c("SMAoversikt", "TilSykehusinnkjøp")) {
-          if (userRole() ==  "SC") {"SELECT * FROM SMAoversikt"}
-          else {paste0("SELECT * FROM SMAoversikt WHERE CENTREID = ", reshID())}
+        if (input$ddselect %in% c("smafollowup", "TilSykehusinnkjøp")) {
+          if (userRole() ==  "SC") {"SELECT * FROM smafollowup"}
+          else {paste0("SELECT * FROM smafollowup WHERE CENTREID = ", reshID())}
         } else {
           if (userRole() ==  "SC") {
             paste0(
@@ -147,7 +147,7 @@ datadump_server <- function(id, userRole, reshID, mainSession){
         shiny::updateDateRangeInput(
           session,
           inputId = "ddDateRange",
-          start = valgtDato %m-% years(5),
+          start = valgtDato %m-% lubridate::years(5),
         )
       })
       observeEvent(input$nullstill, {shinyjs::reset("sidebarDataDump")})
@@ -162,7 +162,7 @@ datadump_server <- function(id, userRole, reshID, mainSession){
             query = qry(),
             dbType = "mysql"
           )
-          if (input$ddselect %in% c("SMAoversikt", "TilSykehusinnkjøp")) {
+          if (input$ddselect %in% c("smafollowup", "TilSykehusinnkjøp")) {
             dataDump <- dataDump %>%
               dplyr::filter(
                 as.Date(ASSESSMENT_DATE) %>%

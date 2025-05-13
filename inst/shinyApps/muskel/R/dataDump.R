@@ -104,8 +104,11 @@ dataDump <- function(input, output, session, userRole, reshID, mainSession){
 
   qry <-   reactive({
     if (input$ddselect %in% c("SMAoversikt", "TilSykehusinnkjøp")) {
-      if (userRole ==  "SC") {"SELECT * FROM SMAoversikt"}
-      else {paste0("SELECT * FROM SMAoversikt WHERE CENTREID = ", reshID)}
+      if (userRole ==  "SC") {"SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"}
+      else {paste0("SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID
+                   WHERE sma.CENTREID = ", reshID)}
     } else {
       if (userRole ==  "SC") {
         paste0(

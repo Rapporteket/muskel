@@ -20,9 +20,10 @@ appServer <- function(input, output, session) {
   SMAoversikt <- rapbase::loadRegData(
     registryName = "data",
     dbType = "mysql",
-    query = "SELECT *
-             FROM SMAoversikt"
-  )
+    query = "SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
+  ) |> dplyr::relocate(PATIENT_ID)
+
   map_avdeling <- data.frame(
     UnitId = unique(RegData$AvdRESH),
     orgname = RegData$SykehusNavn[
