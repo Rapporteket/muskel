@@ -2,6 +2,54 @@ setwd('C:/GIT/muskel/doc/')
 library(muskel)
 rm(list=ls())
 
+######### SMA-tabell Anders 17.12.2024 ########################################
+library(dplyr)
+RegData <- MuskelHentRegData() %>%
+  MuskelPreprosess() %>%
+  dplyr::filter(Avdod == "Nei",
+                !is.na(DiagICD10),
+                Diagnosegr == 2,
+                Undergruppe %in% c(70,81,82)) %>%
+  dplyr::mutate(SMA = as.factor(as.character(Undergruppe_label))) %>%
+  dplyr::filter(HovedDato == dplyr::last(HovedDato, order_by = HovedDato),
+                .by = PasientID) %>%
+  dplyr::filter(ForlopsID == dplyr::last(ForlopsID),
+                .by = PasientID)
+
+SMAoversikt <- rapbase::loadRegData(
+  registryName = "muskel",
+  dbType = "mysql",
+  query = "SELECT *
+             FROM SMAoversikt"
+) %>%
+  dplyr::mutate(ASSESSMENT_DATE = as.Date(ASSESSMENT_DATE)) %>%
+  dplyr::filter(
+    ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE, order_by = ASSESSMENT_DATE),
+    .by = PATIENT_ID) %>%
+  dplyr::filter(MCEID == dplyr::last(MCEID),
+                .by = PATIENT_ID) %>%
+  dplyr::filter(BEHANDLING_ONGOING==1,
+                !is.na(BEHANDLNG_BEHANDLING)) %>%
+  dplyr::mutate(Behandling = factor(BEHANDLNG_BEHANDLING, levels = 1:2,
+                                    labels = c("Spinraza", "Evrysdi")))
+
+RegData <- merge(RegData, SMAoversikt,
+             by.x = "PasientID", by.y = "PATIENT_ID",
+             all.x = TRUE)
+
+
+RegData %>% dplyr::summarise(
+  "Frekvens barn" = sum(Alder < 18),
+  "Frekvens voksne" = sum(Alder >= 18),
+  "Frekvens total" = n(),
+  "Antall MGB" = sum(GenetiskAarsakPaavist == 1),
+  "Under behandling Spinraza" = sum(BEHANDLNG_BEHANDLING == 1, na.rm = TRUE),
+  "Under behandling Evrysdi" = sum(BEHANDLNG_BEHANDLING == 2, na.rm = TRUE),
+  .by = SMA
+) %>%
+  janitor::adorn_totals() %>%
+  write.csv2("~/mydata/smatall_anders.csv", row.names = FALSE)
+
 ########################################################
 ########### Datadump til Kai 18.11.2020 ######################
 ForlopsData <- read.table('I:/muskel/ForlopsOversikt2020-11-18 13-40-46.txt', header=TRUE, sep=';',

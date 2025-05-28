@@ -83,14 +83,6 @@ til systemets default output device (som regel skjerm))}
 
 \item{avdod}{avdød.}
 
-\item{preprosess}{Preprosesser data
-FALSE: Nei (Default)
-TRUE: Ja}
-
-\item{hentData}{Gjør spørring mot database
-FALSE: Nei, RegData gis som input til funksjonen (Default)
-TRUE: Ja}
-
 \item{debutAlderFra}{debutalder f.o.m}
 
 \item{debutAlderTil}{debutalder t.o.m}

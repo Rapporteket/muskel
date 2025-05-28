@@ -1,0 +1,149 @@
+---
+title: "SMA-rapport"
+author: "NORNMD"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| warning: false
+library(muskel)
+library(lubridate)
+
+SMAoversikt <- rapbase::loadRegData(
+    registryName = "data",
+    dbType = "mysql",
+    query = "SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
+  ) |> dplyr::relocate(PATIENT_ID) |> 
+  dplyr::filter(BEHANDLNG_BEHANDLING == 1)
+shus <- rapbase::loadRegData(
+  registryName = "data",
+  dbType = "mysql",
+  query = "SELECT DISTINCT AvdRESH, SykehusNavn
+             FROM allevarnum"
+)
+
+SMAoversikt <- dplyr::left_join(
+  SMAoversikt, shus, 
+  by = dplyr::join_by(CENTREID == AvdRESH))
+
+datoTil <- Sys.Date() |>  as.Date()  |> 
+  lubridate::floor_date(unit = 'quarter') - lubridate::days(1)
+datoFra <- (datoTil + lubridate::days(1)) %m-% months(3)
+
+# if (rapbase::isRapContext()){
+#   reshID <- rapbase::getUserReshId()
+# } else {
+reshID <- 4001031
+shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
+# }
+
+
+```
+
+Her kan Anders skrive en forbløffende og tankevekkende tekst.
+
+## Registreringer ved din avdeling
+
+```{r}
+#| echo: false
+#| warning: false
+
+tabell_reg_alle <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID))
+  )
+
+tabell_reg_kvart <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE >= datoFra,
+                ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID)),
+  ) 
+
+tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
+                               tabell_reg_kvart) |> 
+  dplyr::mutate(var = c("Alle tider", "Siste kvartal")) |> 
+  dplyr::relocate(var) |> 
+  muskel::tr_summarize_output()
+
+knitr::kable(tabell_reg, row.names = FALSE, 
+             caption = paste0("Registreringsaktivitet ved ", shusnavn))
+
+
+```
+
+### Avsluttede behandlinger
+
+```{r}
+#| echo: false
+#| warning: false
+
+
+
+tabell_avsluttede <- SMAoversikt |>  
+  dplyr::mutate(
+    Avdeling = 
+      ifelse(CENTREID == reshID, shusnavn, "Resten av landet")) |> 
+  dplyr::summarise(
+    "Alternativ 1" = sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = T),
+    "Alternativ 2" = sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = T),
+    "Alternativ 3" = sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = T),
+    .by = Avdeling
+  )
+
+knitr::kable(tabell_avsluttede, row.names = FALSE, 
+             caption = "BEHANDLNG_FUNKSJONSSTATUS")
+
+
+
+```
+
+## Registreringer siste år
+
+```{r}
+#| echo: false
+#| warning: false
+
+library(ggplot2)
+library(zoo)
+
+plotdata <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoTil - years(1)) |> 
+  dplyr::mutate(
+    kvartal = quarter(ASSESSMENT_DATE, with_year = TRUE),
+    kvartal2 = zoo::as.yearqtr(ASSESSMENT_DATE, format = "%Y-Q%q"),
+    Avdeling = 
+      ifelse(CENTREID == reshID, shusnavn, "Resten av landet"),
+    ind=1)
+# |> 
+#   dplyr::summarise(n = n(),
+#                    .by = c(kvartal, Avdeling))
+
+
+plotdata |> ggplot(aes(
+  x = kvartal2,
+  y = ind,
+  colour = Avdeling)) +
+  stat_summary(fun = "sum", geom = "line",
+               aes(colour = Avdeling)) +
+  scale_x_yearqtr(format = "%Y-Q%q") +
+  theme_classic() + 
+  xlab("Kvartal") +
+  ylab("Antall registreringer") +
+  ylim(c(0, NA))
+
+
+```

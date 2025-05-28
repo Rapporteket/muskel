@@ -11,9 +11,13 @@
 #'
 #' @export
 #'
-MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01', reshID, diagnosegr=-1,
-                                minald=0, maxald=120, erMann=99, outfile='', forlop = 99, diagnose=-1, undergr=-1, gen_aarsak_paavist=-1,
-                                undergr2=-1, enhetsUtvalg=0, egenavd=0, preprosess=F, hentData=F, incl_N=F, avdod='', inkl_tittel=T)
+MuskelFigAndelStabel<- function(
+    RegData, valgtVar, datoFra='2000-01-01', datoTil='2050-01-01',
+    reshID, diagnosegr=-1,
+    minald=0, maxald=120, erMann=99, outfile='',
+    forlop = 99, diagnose=-1, undergr=-1, gen_aarsak_paavist=-1,
+    undergr2=-1, enhetsUtvalg=0, egenavd=0, preprosess=F,
+    hentData=F, incl_N=F, avdod='', inkl_tittel=T)
 {
 
   ## Hvis spørring skjer fra R på server. ######################
@@ -27,13 +31,18 @@ MuskelFigAndelStabel<- function(RegData, valgtVar, datoFra='2000-01-01', datoTil
   }
 
   ## Gjør utvalg basert på brukervalg (LibUtvalg)
-  MuskelUtvalg <- MuskelUtvalg(RegData=RegData, datoFra=datoFra, datoTil=datoTil, minald=minald, forlop = forlop,
-                               diagnose=diagnose, undergr=undergr, undergr2=undergr2, maxald=maxald, erMann=erMann, gen_aarsak_paavist=gen_aarsak_paavist,
-                               diagnosegr=diagnosegr, reshID=reshID, enhetsUtvalg=enhetsUtvalg, egenavd = egenavd, avdod=avdod)
+  MuskelUtvalg <- MuskelUtvalg(
+    RegData=RegData, datoFra=datoFra, datoTil=datoTil,
+    minald=minald, forlop = forlop,
+    diagnose=diagnose, undergr=undergr, undergr2=undergr2,
+    maxald=maxald, erMann=erMann, gen_aarsak_paavist=gen_aarsak_paavist,
+    diagnosegr=diagnosegr, reshID=reshID, enhetsUtvalg=enhetsUtvalg,
+    egenavd = egenavd, avdod=avdod)
   RegData <- MuskelUtvalg$RegData
   utvalgTxt <- MuskelUtvalg$utvalgTxt
 
-  PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar, inkl_tittel=inkl_tittel)
+  PlotParams <- MuskelPrepVar(RegData=RegData, valgtVar=valgtVar,
+                              inkl_tittel=inkl_tittel)
   RegData <- PlotParams$RegData
   PlotParams$RegData <- NA
 

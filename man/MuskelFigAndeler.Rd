@@ -21,8 +21,6 @@ MuskelFigAndeler(
   undergr = -1,
   undergr2 = -1,
   enhetsUtvalg = 0,
-  preprosess = F,
-  hentData = F,
   avdod = "",
   gen_aarsak_paavist = -1,
   UtredningsaarFra = 1950,
@@ -81,14 +79,6 @@ til systemets default output device (som regel skjerm))}
 0: Hele landet (Default)
 1: Egen enhet mot resten av landet
 2: Egen enhet}
-
-\item{preprosess}{Preprosesser data
-FALSE: Nei (Default)
-TRUE: Ja}
-
-\item{hentData}{Gjør spørring mot database
-FALSE: Nei, RegData gis som input til funksjonen (Default)
-TRUE: Ja}
 
 \item{avdod}{avdød.}
 
