@@ -11,9 +11,9 @@ RegData <- MuskelHentRegData() %>%
                 Diagnosegr == 2,
                 Undergruppe %in% c(70,81,82)) %>%
   dplyr::mutate(SMA = as.factor(as.character(Undergruppe_label))) %>%
-  dplyr::filter(HovedDato == last(HovedDato, order_by = HovedDato),
+  dplyr::filter(HovedDato == dplyr::last(HovedDato, order_by = HovedDato),
                 .by = PasientID) %>%
-  dplyr::filter(ForlopsID == last(ForlopsID),
+  dplyr::filter(ForlopsID == dplyr::last(ForlopsID),
                 .by = PasientID)
 
 SMAoversikt <- rapbase::loadRegData(
@@ -24,9 +24,9 @@ SMAoversikt <- rapbase::loadRegData(
 ) %>%
   dplyr::mutate(ASSESSMENT_DATE = as.Date(ASSESSMENT_DATE)) %>%
   dplyr::filter(
-    ASSESSMENT_DATE == last(ASSESSMENT_DATE, order_by = ASSESSMENT_DATE),
+    ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE, order_by = ASSESSMENT_DATE),
     .by = PATIENT_ID) %>%
-  dplyr::filter(MCEID == last(MCEID),
+  dplyr::filter(MCEID == dplyr::last(MCEID),
                 .by = PATIENT_ID) %>%
   dplyr::filter(BEHANDLING_ONGOING==1,
                 !is.na(BEHANDLNG_BEHANDLING)) %>%
