@@ -63,6 +63,7 @@ appServer <- function(input, output, session) {
   ## Stats
   shiny::observe(
     rapbase::statsServer("muskelStats", registryName = "muskel",
+                         app_id = Sys.getenv("FALK_APP_ID"),
                          eligible = (user$role() == "SC"))
   )
   rapbase::statsGuideServer("muskelStatsGuide", registryName = "muskel")
