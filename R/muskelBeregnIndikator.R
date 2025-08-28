@@ -16,30 +16,30 @@
 muskelBeregnIndikator <- function(RegData, ind_id) {
 
   kobl_resh_orgnr <- tibble::tribble(
-    ~ReshID, ~Sykehus, ~orgnr,
-    100065,          "Helgelandssykehuset", 983974929,
-    100082,                 "Helse Bergen", 983974724,
-    100083,              "Helse Stavanger", 983974678,
-    100084,                  "Helse Fonna", 983974694,
-    100085,                  "Helse Førde", 983974732,
-    100089, "Ahus", 983971636,
-    100091,          "Sykehuset Innlandet", 983971709,
-    100092,            "Sykehuset Østfold", 983971768,
-    100093,              "Sunnaas sykehus", 883971752,
-    100100,         "Sykehuset i Vestfold", 983975259,
-    100132,           "Sykehuset Telemark", 983975267,
-    100133,            "Sørlandet sykehus", 983975240,
-    100317,         "Helse Nord-Trøndelag", 983974791,
-    100320,           "St. Olavs Hospital", 883974832,
-    101051,           "Nordlandssykehuset", 983974910,
-    101719,                          "UNN", 983974899,
-    101971,           "Finnmarkssykehuset", 983974880,
-    4001031,     "OUS", 993467049,
-    4201115,        "Helse Møre og Romsdal", 997005562,
-    700272,                 "Vestre Viken", 894166762,
-    960001,         "Privat spesialistsenter", 888888,
-    960002,                      "Legekontor", 999999,
-    960003,           "Rehabiliteringssenter", 333333333
+    ~ReshID, ~Sykehus, ~orgnr, ~RHF,
+    100065,          "Helgelandssykehuset", 983974929, "Helse Nord",
+    100082,                 "Helse Bergen", 983974724, "Helse Vest",
+    100083,              "Helse Stavanger", 983974678, "Helse Vest",
+    100084,                  "Helse Fonna", 983974694, "Helse Vest",
+    100085,                  "Helse Førde", 983974732, "Helse Vest",
+    100089,                         "Ahus", 983971636, "Helse Sør-Øst",
+    100091,          "Sykehuset Innlandet", 983971709, "Helse Sør-Øst",
+    100092,            "Sykehuset Østfold", 983971768, "Helse Sør-Øst",
+    100093,              "Sunnaas sykehus", 883971752, "Helse Sør-Øst",
+    100100,         "Sykehuset i Vestfold", 983975259, "Helse Sør-Øst",
+    100132,           "Sykehuset Telemark", 983975267, "Helse Sør-Øst",
+    100133,            "Sørlandet sykehus", 983975240, "Helse Sør-Øst",
+    100317,         "Helse Nord-Trøndelag", 983974791, "Helse Midt",
+    100320,           "St. Olavs Hospital", 883974832, "Helse Midt",
+    101051,           "Nordlandssykehuset", 983974910, "Helse Nord",
+    101719,                          "UNN", 983974899, "Helse Nord",
+    101971,           "Finnmarkssykehuset", 983974880, "Helse Nord",
+    4001031,                         "OUS", 993467049, "Helse Sør-Øst",
+    4201115,       "Helse Møre og Romsdal", 997005562, "Helse Midt",
+    700272,                 "Vestre Viken", 894166762, "Helse Sør-Øst",
+    960001,      "Privat spesialistsenter", 888888, "Annet/privat",
+    960002,                   "Legekontor", 999999, "Annet/privat",
+    960003,        "Rehabiliteringssenter", 333333333, "Annet/privat"
   )
 
   terskel <- 5
@@ -48,8 +48,8 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
   skriftStr <- 1.0
   pktStr <- 1
   legPlass <- "top"
-  minstekravTxt <- "Akseptabelt"
-  maalTxt <- "Mål"
+  minstekravTxt <- "God"
+  maalTxt <- "Meget god"
   maalretn <- 'hoy'
   decreasing <- F
   width <- 800
@@ -123,7 +123,8 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
       #                          GenetiskAarsakPaavist == 9, 0,
       #                        GenetiskAarsakPaavist)
       # ) |>
-      dplyr::filter(Diagnosegr == 2) |>
+      dplyr::filter(Diagnosegr == 2,
+                    GenetiskAarsakPaavist %in% 0:1) |>
       dplyr::filter(GenetiskAarsakPaavist == max(GenetiskAarsakPaavist),
                     .by = PasientID) |>
       dplyr::filter(Aar == min(Aar), .by = PasientID) |>
@@ -145,12 +146,13 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
 
   if (ind_id == "muskel_genetisk_bekreftet_polynevropati") {
     indikator <- RegData |>
-      dplyr::mutate(GenetiskAarsakPaavist =
-                      ifelse(is.na(GenetiskAarsakPaavist) |
-                               GenetiskAarsakPaavist == 9, 0,
-                             GenetiskAarsakPaavist)
-      ) |>
-      dplyr::filter(Diagnosegr == 3) |>
+      # dplyr::mutate(GenetiskAarsakPaavist =
+      #                 ifelse(is.na(GenetiskAarsakPaavist) |
+      #                          GenetiskAarsakPaavist == 9, 0,
+      #                        GenetiskAarsakPaavist)
+      # ) |>
+      dplyr::filter(Diagnosegr == 3,
+                    GenetiskAarsakPaavist %in% 0:1) |>
       dplyr::filter(GenetiskAarsakPaavist == max(GenetiskAarsakPaavist),
                     .by = PasientID) |>
       dplyr::filter(Aar == min(Aar), .by = PasientID) |>
@@ -172,11 +174,12 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
 
   if (ind_id == "muskel_genetisk_veiledning") {
     indikator <- RegData |>
-      dplyr::filter(OppfolgBarnelegeNevrolog %in% 0:1) |>
-      dplyr::filter(OppfolgBarnelegeNevrolog == max(OppfolgBarnelegeNevrolog),
+      dplyr::filter(TilbudGenetiskVeiledning %in% 0:1,
+                    GenetiskAarsakPaavist == 1) |>
+      dplyr::filter(TilbudGenetiskVeiledning == max(TilbudGenetiskVeiledning),
                     .by = PasientID) |>
       dplyr::filter(ForlopsID == min(ForlopsID), .by = PasientID) |>
-      dplyr::mutate(var = OppfolgBarnelegeNevrolog,
+      dplyr::mutate(var = TilbudGenetiskVeiledning,
                     denominator = 1,
                     year = Aar,
                     FoelgesOppAvIns = ifelse(FoelgesOppAvIns %in% c("97", "98"),
@@ -187,7 +190,7 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
                       match(FoelgesOppAvIns, kobl_resh_orgnr$ReshID)],
                     context = "caregiver") |>
       dplyr::select(orgnr, year, var, denominator, context, Sykehus)
-      tittel <- "Andel pasienter med genetisk veiledning"
+      tittel <- c("Andel pasienter med tilbud om", "genetisk veiledning")
       minstekrav <- 65
       maal <- 90
   }
@@ -215,6 +218,10 @@ muskelBeregnIndikator <- function(RegData, ind_id) {
 
   if (ind_id == "muskel_oppf_hjerteoppf") {
     indikator <- RegData |>
+      dplyr::filter(Undergruppe_label %in% c("Duchenne muskeldystrofi",
+                                             "Becker muskeldystrofi",
+                                             "Dystrophia myotonica type 1") |
+                      Undergruppe2_label == "LGMD2I  (Fkrp)") |>
       dplyr::filter(Hjerteoppfoelging %in% 0:1) |>
       dplyr::filter(Hjerteoppfoelging == max(Hjerteoppfoelging),
                     .by = PasientID) |>
@@ -401,17 +408,23 @@ muskelPlotIndikator <- function(indikatordata,
   fargerMaalNiva <-  c('aquamarine3','#fbf850', 'red')
 
   if (maal > minstekrav & !is.na(maal) & !is.na(minstekrav)) {
-    rect(xleft=minstekrav, ybottom=1, xright=maal, ytop=max(ypos)-1.6, col = fargerMaalNiva[2], border = NA)
-    rect(xleft=maal, ybottom=1, xright=min(xmax, 100), ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
+    rect(xleft=minstekrav, ybottom=1, xright=maal,
+         ytop=max(ypos)-1.6, col = fargerMaalNiva[2], border = NA)
+    rect(xleft=maal, ybottom=1, xright=min(xmax, 100),
+         ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
   if (maal < minstekrav & !is.na(maal) & !is.na(minstekrav)) {
-    rect(xleft=maal, ybottom=1, xright=minstekrav, ytop=max(ypos)-1.6, col = fargerMaalNiva[2], border = NA)
-    rect(xleft=0, ybottom=1, xright=maal, ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
+    rect(xleft=maal, ybottom=1, xright=minstekrav,
+         ytop=max(ypos)-1.6, col = fargerMaalNiva[2], border = NA)
+    rect(xleft=0, ybottom=1, xright=maal, ytop=max(ypos)-1.6,
+         col = fargerMaalNiva[1], border = NA)}
   if (!is.na(maal) & is.na(minstekrav) & maalretn=='lav') {
     # rect(xleft=maal, ybottom=0, xright=minstekrav, ytop=max(ypos)+0.4, col = fargerMaalNiva[2], border = NA)
-    rect(xleft=0, ybottom=1, xright=maal, ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
+    rect(xleft=0, ybottom=1, xright=maal, ytop=max(ypos)-1.6,
+         col = fargerMaalNiva[1], border = NA)}
   if (!is.na(maal) & is.na(minstekrav) & maalretn=='hoy') {
     # rect(xleft=maal, ybottom=0, xright=minstekrav, ytop=max(ypos)+0.4, col = fargerMaalNiva[2], border = NA)
-    rect(xleft=maal, ybottom=1, xright=min(xmax, 100), ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
+    rect(xleft=maal, ybottom=1, xright=min(xmax, 100),
+         ytop=max(ypos)-1.6, col = fargerMaalNiva[1], border = NA)}
 
 
   barplot( t(andeler[,dim(andeler)[2]]), beside=T, las=1,
@@ -425,8 +438,10 @@ muskelPlotIndikator <- function(indikatordata,
   if (!is.na(minstekrav)) {
     lines(x=rep(minstekrav, 2), y=c(-1, yposOver), col=fargerMaalNiva[2], lwd=2)
     par(xpd=TRUE)
+    # text(x=minstekrav, y=yposOver, labels = minstekravTxt,
+    #      pos = 4, cex=cexgr*0.65, srt = 90)
     text(x=minstekrav, y=yposOver, labels = minstekravTxt,
-         pos = 4, cex=cexgr*0.65, srt = 90)
+         pos = 4, cex=cexgr*0.65)
     par(xpd=FALSE)
   }
   if (!is.na(maal)) {
@@ -436,7 +451,9 @@ muskelPlotIndikator <- function(indikatordata,
              horiz=T, axes=F, space=c(0,0.3),
              col=soyleFarger, border=NA, xlab = 'Andel (%)', add=TRUE)
     par(xpd=TRUE)
-    text(x=maal, y=yposOver, labels = maalTxt, pos = 4, cex=cexgr*0.65, srt = 90) #paste0(maalTxt,maal,'%')
+    # text(x=maal, y=yposOver, labels = maalTxt, pos = 4, cex=cexgr*0.65,
+    #      srt = 90)
+    text(x=maal, y=yposOver, labels = maalTxt, pos = 4, cex=cexgr*0.65)
     par(xpd=FALSE)
   }
 
