@@ -205,12 +205,14 @@ plotobjekt_sma <- plot_long_sma |>
              colour = CENTREID,
              linetype = Enhet,
              group = interaction(CENTREID,Enhet))) +
-  geom_line() +
+  geom_line(position=position_jitter(w=0, h=0.3)) +
   theme_classic() +
   labs(title = "Antall pasienter/registreringer SMA")
 
 ggsave(filename = "sma_reg.svg",
-       plot = plotobjekt_sma)
+       plot = plotobjekt_sma,
+       width = 5,
+       height = 4)
 
 write.csv2(tabell_sma_antall_reg, "tabell_sma_antall_reg.csv", row.names = F,
            fileEncoding = "Latin1", na = "")
