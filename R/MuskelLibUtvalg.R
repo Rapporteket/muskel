@@ -11,10 +11,15 @@
 #' @export
 
 MuskelUtvalg <- function(
-    RegData, datoFra, datoTil, minald, maxald,
-    erMann, egenavd = 0, enhetsUtvalg, diagnosegr=-1, forlop,
+    RegData,
+    datoFra = "2000-01-01",
+    datoTil = "2100-01-01",
+    minald = 0,
+    maxald = 120,
+    erMann = 99, egenavd = 0, enhetsUtvalg = 0, diagnosegr=-1,
+    forlop = 99,
     diagnose='-1', undergr=-1, undergr2=-1, avdod='',
-    fargepalett='BlaaRapp', reshID, UtredningsaarFra=1950,
+    fargepalett='BlaaRapp', reshID = 0, UtredningsaarFra=1950,
     UtredningsaarTil=as.numeric(format(Sys.Date(),"%Y")),
     debutAlderFra=0, debutAlderTil=90, gen_aarsak_paavist=-1)
 {

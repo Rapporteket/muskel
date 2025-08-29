@@ -30,21 +30,58 @@ RegData <- MuskelPreprosess(RegData=RegData)
 # RegData <- RegData[RegData$Aar <= rap_aar, ]
 
 kobl_resh_shus_muskel <- data.frame(ReshID=sort(unique(RegData$AvdRESH)), Sykehus=RegData$SykehusNavn[match(sort(unique(RegData$AvdRESH)), RegData$AvdRESH)])
+SykehusNavnStruktur <- read.csv2("~/regdata/hf.csv")
+kobl_resh_orgnr_muskel <- tibble::tribble(
+  ~ReshID, ~Sykehus, ~orgnr,
+  100065,          "Helgelandssykehuset HF", 983974929,
+  100082,                 "Helse Bergen HF", 983974724,
+  100083,              "Helse Stavanger HF", 983974678,
+  100084,                  "Helse Fonna HF", 983974694,
+  100085,                  "Helse Førde HF", 983974732,
+  100089, "Akershus universitetssykehus HF", 983971636,
+  100091,          "Sykehuset Innlandet HF", 983971709,
+  100092,            "Sykehuset Østfold HF", 983971768,
+  100093,              "Sunnaas sykehus HF", 883971752,
+  100100,         "Sykehuset i Vestfold HF", 983975259,
+  100132,           "Sykehuset Telemark HF", 983975267,
+  100133,            "Sørlandet sykehus HF", 983975240,
+  100317,         "Helse Nord-Trøndelag HF", 983974791,
+  100320,           "St. Olavs Hospital HF", 883974832,
+  101051,           "Nordlandssykehuset HF", 983974910,
+  101719,                          "UNN HF", 983974899,
+  101971,           "Finnmarkssykehuset HF", 983974880,
+  4001031,     "Oslo universitetssykehus HF", 993467049,
+  4201115,        "Helse Møre og Romsdal HF", 997005562,
+  700272,                 "Vestre Viken HF", 894166762,
+  960001,         "Privat spesialistsenter", 888888,
+  960002,                      "Legekontor", 999999,
+  960003,           "Rehabiliteringssenter", 333333333
+)
+
 
 # write.csv2(kobl_resh_shus_muskel, 'Q:/SKDE/Nasjonalt servicemiljø/Resultattjenester/Resultatportalen/4. Muskel/kobl_resh_shus_muskel.csv', row.names = F)
 
-### 1.	Andel pasienter med fastsatt diagnose under ett (to) år etter utredningsstart
-# Det finnes pasienter med flere og avvikende verdier på Tid fra utredning til diagnose, og det finnes pasienter som ikke har registrert verdi.
-# Skal høyeste eller laveste verdi brukes, eller skal pasientene utelukkes fra utvalget?. Pasienter uten verdi, skal de inkluderes i nevneren?
-# I tillegg er tid for utredningsstart og diagnose oppgitt som årstall og det er dermed ikke mulig å si om pasienter med ett års differanse mellom
-# utredningsstart og diagnose har fastsatt diagnose under ett år fra utredningsstart.
-# Tid fra utredningsstart til diagnose beregnes som differansen mellom diagnoseår og år for utredningsstart. Hvis en pasient har utredningsstart
-# 31. desember og får diagnose 1. januar (dagen etter) så vil TidUtredDiag = 1 selv om det bare skiller en dag. Hvis en pasient har utredningsstart
-# 1. januar og får sin diagnose 31. desember året etter, så vil også TidUtredDiag = 1 selv om det skiller 2 år. Når man setter en terskel på denne
-# variabelen så vil alltid noen pasienter havne i feil gruppe, så alle resultater må ses på med forsikighet.
+### 1.	Andel pasienter med fastsatt diagnose under ett (to) år etter
+###     utredningsstart
+# Det finnes pasienter med flere og avvikende verdier på Tid fra utredning til
+# diagnose, og det finnes pasienter som ikke har registrert verdi. Skal høyeste
+# eller laveste verdi brukes, eller skal pasientene utelukkes fra utvalget?
+# Pasienter uten verdi, skal de inkluderes i nevneren? I tillegg er tid for
+# utredningsstart og diagnose oppgitt som årstall og det er dermed ikke mulig å
+# si om pasienter med ett års differanse mellom utredningsstart og diagnose har
+# fastsatt diagnose under ett år fra utredningsstart. Tid fra utredningsstart til
+# diagnose beregnes som differansen mellom diagnoseår og år for utredningsstart.
+# Hvis en pasient har utredningsstart 31. desember og får diagnose 1. januar
+# (dagen etter) så vil TidUtredDiag = 1 selv om det bare skiller en dag. Hvis en
+# pasient har utredningsstart 1. januar og får sin diagnose 31. desember året
+# etter, så vil også TidUtredDiag = 1 selv om det skiller 2 år. Når man setter en
+# terskel på denne variabelen så vil alltid noen pasienter havne i feil gruppe,
+# så alle resultater må ses på med forsikighet.
 
-# Denne versjonen bruker laveste verdi og inkluderer alle unike pasienter som har registrert diagnoseår i nevneren. Telleren utgjøres av de som har
-# ett år eller mindre differanse mellom år for utredningsstart og diagnose, så i praksis kan det være opp til 2 år fra utredningsstart til diagnose.
+# Denne versjonen bruker laveste verdi og inkluderer alle unike pasienter som
+# har registrert diagnoseår i nevneren. Telleren utgjøres av de som har ett år
+# eller mindre differanse mellom år for utredningsstart og diagnose, så i praksis
+# kan det være opp til 2 år fra utredningsstart til diagnose.
 # Aar er år diagnosen er satt.
 
 
@@ -92,10 +129,12 @@ Ind1_diagnoseinneetaar_Muskel$AarID <- paste0(Ind1_diagnoseinneetaar_Muskel$Aar,
 RegData$GenetiskAarsakPaavist[is.na(RegData$GenetiskAarsakPaavist)] <- 0
 RegData$GenetiskAarsakPaavist[RegData$GenetiskAarsakPaavist == 9] <- 0
 
-Ind2_genetisk_myopatier_Muskel <- RegData[which(RegData$Undergruppe == 4), ] %>% group_by(PasientID) %>% summarise(Teller = max(GenetiskAarsakPaavist),
-                                                                                Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
-                                                                                # Aar = min(AarstallGenAarsak[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T),
-                                                                                ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
+Ind2_genetisk_myopatier_Muskel <- RegData[which(RegData$Undergruppe == 4), ] %>%
+  group_by(PasientID) %>%
+  summarise(Teller = max(GenetiskAarsakPaavist),
+            Aar = Aar[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)][1],
+            # Aar = min(AarstallGenAarsak[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T),
+            ReshId = min(DiagnoseStiltAv[GenetiskAarsakPaavist==max(GenetiskAarsakPaavist)], na.rm = T))
 
 Ind2_genetisk_myopatier_Muskel$Nevner <- 1
 Ind2_genetisk_myopatier_Muskel <- Ind2_genetisk_myopatier_Muskel[, c(4,3,2,5)]
@@ -193,11 +232,11 @@ Ind6_fysioterapi_muskel$AarID <- paste0(Ind6_fysioterapi_muskel$Aar, Ind6_fysiot
 #####################  Nøkkeltall  ############################
 
 nokkeltall_muskel <- RegData %>% group_by(Aar) %>% summarise("Antall nyregistrerte" = sum(ForlopsType1Num==1),
-                                        "Antall 5-års oppfølginger" = sum(ForlopsType1Num==2),
-                                        "Antall ad-hoc oppfølginger" = sum(ForlopsType1Num==3),
-                                        "Gj.sn. alder nyreg." = mean(AlderVreg[ForlopsType1Num==1]),
-                                        "Andel kvinner blant nyreg." = mean(erMann[ForlopsType1Num==1]==0)*100,
-                                        "Antall registrerende enheter" = length(unique(AvdRESH)))
+                                                             "Antall 5-års oppfølginger" = sum(ForlopsType1Num==2),
+                                                             "Antall ad-hoc oppfølginger" = sum(ForlopsType1Num==3),
+                                                             "Gj.sn. alder nyreg." = mean(AlderVreg[ForlopsType1Num==1]),
+                                                             "Andel kvinner blant nyreg." = mean(erMann[ForlopsType1Num==1]==0)*100,
+                                                             "Antall registrerende enheter" = length(unique(AvdRESH)))
 
 # write.csv2(nokkeltall_muskel, 'Q:/SKDE/Nasjonalt servicemiljø/Resultattjenester/Resultatportalen/4. Muskel/nokkeltall_muskel.csv', row.names = F)
 
@@ -211,8 +250,8 @@ names(Ind5_oppfolging_Muskel)[3:4] <- c("var", "denominator")
 names(Ind6_fysioterapi_muskel)[3:4] <- c("var", "denominator")
 
 Indikatorer <- bind_rows(Ind1_diagnoseinneetaar_Muskel, Ind2_genetisk_myopatier_Muskel,
-                       Ind3_genetisk_CMT_Muskel, Ind4_genetisk_SMA_type1_4_Muskel,
-                       Ind5_oppfolging_Muskel, Ind6_fysioterapi_muskel)
+                         Ind3_genetisk_CMT_Muskel, Ind4_genetisk_SMA_type1_4_Muskel,
+                         Ind5_oppfolging_Muskel, Ind6_fysioterapi_muskel)
 
 Indikatorer$Indikator[Indikatorer$Indikator == "Ind1"] <- "muskel_diagnoseinneetaar"
 Indikatorer$Indikator[Indikatorer$Indikator == "Ind2"] <- "muskel_genetisk_myopatier"
@@ -250,7 +289,7 @@ write.csv2(Indikatorer[, c("orgnr", "year", "var", "denominator", "ind_id", "con
 
 
 
- # length(unique(tmp$PasientID))
+# length(unique(tmp$PasientID))
 #
 # tmp$diff <- abs(tmp$max_TidUtredDiag - tmp$min_TidUtredDiag)
 # tmp$diff[tmp$diff == Inf] <- NA
