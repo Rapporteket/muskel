@@ -145,7 +145,7 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         sketch <- htmltools::withTags(table(
           DT::tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
           DT::tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1],
-                                                      2:dim(ant_skjema)[2]])))))
+                                                          2:dim(ant_skjema)[2]])))))
         list(ant_skjema=ant_skjema, sketch=sketch)
       }
 
@@ -180,26 +180,39 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           dplyr::arrange(ASSESSMENT_DATE) %>%
           dplyr::summarise(
             ASSESSMENT_DATE_baseline = dplyr::first(ASSESSMENT_DATE),
-            HFMSE_baseline = dplyr::first(KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
-            RULM_baseline = dplyr::first(KLINISK_RULM, order_by = ASSESSMENT_DATE),
-            x6MWT_baseline = dplyr::first(KLINISK_6MWT, order_by = ASSESSMENT_DATE),
-            ATEND_baseline = dplyr::first(KLINISK_ATEND, order_by = ASSESSMENT_DATE),
-            BIPAP_baseline = dplyr::first(KLINISK_BIPAP, order_by = ASSESSMENT_DATE),
-            FUNKSJONSSTATUS_baseline = dplyr::first(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE),
+            HFMSE_baseline = dplyr::first(
+              KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
+            RULM_baseline = dplyr::first(
+              KLINISK_RULM, order_by = ASSESSMENT_DATE),
+            x6MWT_baseline = dplyr::first(
+              KLINISK_6MWT, order_by = ASSESSMENT_DATE),
+            ATEND_baseline = dplyr::first(
+              KLINISK_ATEND, order_by = ASSESSMENT_DATE),
+            BIPAP_baseline = dplyr::first(
+              KLINISK_BIPAP, order_by = ASSESSMENT_DATE),
+            FUNKSJONSSTATUS_baseline = dplyr::first(
+              KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE),
             ASSESSMENT_DATE_latest = dplyr::last(ASSESSMENT_DATE),
-            HFMSE_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_HFMSE, order_by = ASSESSMENT_DATE)),
-            RULM_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                 NA, dplyr::last(KLINISK_RULM, order_by = ASSESSMENT_DATE)),
-            x6MWT_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_6MWT, order_by = ASSESSMENT_DATE)),
-            ATEND_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_ATEND, order_by = ASSESSMENT_DATE)),
-            BIPAP_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_BIPAP, order_by = ASSESSMENT_DATE)),
-            FUNKSJONSSTATUS_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                            NA, dplyr::last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
-            Tidsdiff_dager = difftime(ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
+            HFMSE_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_HFMSE, order_by = ASSESSMENT_DATE)),
+            RULM_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_RULM, order_by = ASSESSMENT_DATE)),
+            x6MWT_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_6MWT, order_by = ASSESSMENT_DATE)),
+            ATEND_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_ATEND, order_by = ASSESSMENT_DATE)),
+            BIPAP_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_BIPAP, order_by = ASSESSMENT_DATE)),
+            FUNKSJONSSTATUS_latest = ifelse(
+              dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
+            Tidsdiff_dager = difftime(
+              ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
             FUNKSJONSSTATUS_all = paste0(BEHANDLNG_FUNKSJONSSTATUS, collapse = ","),
             BEHANDLING_all = paste0(BEHANDLNG_BEHANDLING, collapse = ","),
             .by = PATIENT_ID) %>%

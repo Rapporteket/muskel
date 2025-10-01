@@ -22,7 +22,12 @@ appServer <- function(input, output, session) {
     dbType = "mysql",
     query = "SELECT sma.*, m.PATIENT_ID
              FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
-  ) |> dplyr::relocate(PATIENT_ID)
+  ) |> dplyr::relocate(PATIENT_ID) |>
+    merge(RegData |>
+            dplyr::filter(ForlopsID == min(ForlopsID), .by = PasientID) |>
+            dplyr::select(PasientID, Foedselsdato),
+          by.x = "PATIENT_ID", by.y = "PasientID", all.x = TRUE) |>
+    dplyr::mutate(alder_v_reg = muskel::age(Foedselsdato, ASSESSMENT_DATE))
 
   map_avdeling <- data.frame(
     UnitId = unique(RegData$AvdRESH),
