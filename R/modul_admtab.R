@@ -176,9 +176,10 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           dplyr::filter(ASSESSMENT_DATE >= req(input$datoFra2),
                         ASSESSMENT_DATE <= req(input$datoTil2),
                         STATUS %in% as.numeric(req(input$regstatus)),
-                        BEHANDLNG_SPINRAZA ==1) %>%
+                        BEHANDLNG_SPINRAZA == 1) %>%
           dplyr::arrange(ASSESSMENT_DATE) %>%
           dplyr::summarise(
+            CENTREID = paste0(unique(CENTREID), collapse = ","),
             ASSESSMENT_DATE_baseline = dplyr::first(ASSESSMENT_DATE),
             HFMSE_baseline = dplyr::first(
               KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
@@ -221,12 +222,12 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
 
       output$TabellSykehusinnkjop <- function() {
         tabell_sma <- tabell_shusinnkjop()
-        names(tabell_sma) <- c("PATIENT_ID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
+        names(tabell_sma) <- c("PATIENT_ID", "CENTREID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
                                "ASSESSMENT_DATE ", "HFMSE ", "RULM ", "6MWT ", "ATEND ", "BIPAP ", "KLINISK FUNKSJONSSTATUS ",
                                "Tidsdiff_dager", "FUNKSJONSSTATUS ALLE", "BEHANDLING ALLE")
         tabell_sma %>% knitr::kable("html", row.names = F) %>%
           kableExtra::kable_styling("hover", full_width = F) %>%
-          kableExtra::add_header_above(c(" ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
+          kableExtra::add_header_above(c(" ", " ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
       }
 
       output$lastNedSykehusinnkjop <- shiny::downloadHandler(
