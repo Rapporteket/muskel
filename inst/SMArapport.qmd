@@ -43,48 +43,11 @@ shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
 
 ```
 
-Her kan Anders skrive en forbløffende og tankevekkende tekst.
-
-## Registreringer ved din avdeling
-
-```{r}
-#| echo: false
-#| warning: false
-
-tabell_reg_alle <- SMAoversikt |> 
-  dplyr::filter(ASSESSMENT_DATE <= datoTil,
-                CENTREID == reshID) |> 
-  dplyr::summarise(
-    "Antall registratorer" = length(unique(REGNAME)),
-    "Antall behandlere" = length(unique(ASSESSBY)),
-    "Antall pasienter" = length(unique(PATIENT_ID)),
-    "Antall skjema" = length(unique(MCEID))
-  )
-
-tabell_reg_kvart <- SMAoversikt |> 
-  dplyr::filter(ASSESSMENT_DATE >= datoFra,
-                ASSESSMENT_DATE <= datoTil,
-                CENTREID == reshID) |> 
-  dplyr::summarise(
-    "Antall registratorer" = length(unique(REGNAME)),
-    "Antall behandlere" = length(unique(ASSESSBY)),
-    "Antall pasienter" = length(unique(PATIENT_ID)),
-    "Antall skjema" = length(unique(MCEID)),
-  ) 
-
-tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
-                               tabell_reg_kvart) |> 
-  dplyr::mutate(var = c("Alle tider", "Siste kvartal")) |> 
-  dplyr::relocate(var) |> 
-  muskel::tr_summarize_output()
-
-knitr::kable(tabell_reg, row.names = FALSE, 
-             caption = paste0("Registreringsaktivitet ved ", shusnavn))
+Dette er en rapport fra Norsk register for nevromuskulære diagnoser (NORNMD) som sendes ut til din enhet kvartalsvis. Kvartalsrapporten gir et øyeblikksbilde av SMA-registreringer og -behandlinger ved deres enhet sammenlignet med landet som helhet.
 
 
-```
 
-### Avsluttede behandlinger
+### Avsluttede behandlinger siste kvartal
 
 ```{r}
 #| echo: false
@@ -92,14 +55,31 @@ knitr::kable(tabell_reg, row.names = FALSE,
 
 
 
-tabell_avsluttede <- SMAoversikt |>  
+tabell_avsluttede_2aar <- SMAoversikt |>  
   dplyr::mutate(
     Avdeling = 
       ifelse(CENTREID == reshID, shusnavn, "Resten av landet")) |> 
+  dplyr::filter(ASSESSMENT_DATE == last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoTil - years(2)) |> 
   dplyr::summarise(
-    "Alternativ 1" = sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = T),
-    "Alternativ 2" = sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = T),
-    "Alternativ 3" = sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = T),
+    "Fortsatt under behandling" = sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = T),
+    "Avsluttet på grunn av bivirkninger" = sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = T),
+    "Avsluttet på grunn av manglende effekt" = sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = T),
+    .by = Avdeling
+  )
+
+tabell_avsluttede_kvartal <- SMAoversikt |>  
+  dplyr::mutate(
+    Avdeling = 
+      ifelse(CENTREID == reshID, shusnavn, "Resten av landet")) |> 
+  dplyr::filter(ASSESSMENT_DATE == last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoFra) |> 
+  dplyr::summarise(
+    "Fortsatt under behandling" = sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = T),
+    "Avsluttet på grunn av bivirkninger" = sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = T),
+    "Avsluttet på grunn av manglende effekt" = sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = T),
     .by = Avdeling
   )
 
@@ -121,7 +101,7 @@ library(zoo)
 
 plotdata <- SMAoversikt |> 
   dplyr::filter(ASSESSMENT_DATE <= datoTil,
-                ASSESSMENT_DATE > datoTil - years(1)) |> 
+                ASSESSMENT_DATE > datoTil - years(2)) |> 
   dplyr::mutate(
     kvartal = quarter(ASSESSMENT_DATE, with_year = TRUE),
     kvartal2 = zoo::as.yearqtr(ASSESSMENT_DATE, format = "%Y-Q%q"),
@@ -143,7 +123,65 @@ plotdata |> ggplot(aes(
   theme_classic() + 
   xlab("Kvartal") +
   ylab("Antall registreringer") +
-  ylim(c(0, NA))
+  ylim(c(0, NA)) + 
+  theme(legend.position = "top")
 
 
 ```
+
+
+
+## Registeraktivitet ved din avdeling
+
+```{r}
+#| echo: false
+#| warning: false
+
+tabell_reg_alle <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoTil - years(2),
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID))
+  )
+
+tabell_reg_kvart <- SMAoversikt |> 
+  dplyr::filter(ASSESSMENT_DATE >= datoFra,
+                ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |> 
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID)),
+  ) 
+
+tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
+                               tabell_reg_kvart) |> 
+  dplyr::mutate(var = c("Siste to år", "Siste kvartal")) |> 
+  dplyr::relocate(var) |> 
+  muskel::tr_summarize_output(kolnavn1 = "Var")
+
+forste_reg = SMAoversikt |> 
+  dplyr::filter(MCEID == first(MCEID), .by = PATIENT_ID) |> 
+  dplyr::filter(CENTREID == reshID) |> 
+  dplyr::summarise(to_aar = sum(ASSESSMENT_DATE > datoTil - years(2) &
+                           ASSESSMENT_DATE <= datoTil),
+            sist_kvartal = sum(ASSESSMENT_DATE > datoFra &
+                           ASSESSMENT_DATE <= datoTil))
+
+tmp <- data.frame("rad1" = "Antall nye pasienter", 
+                  "rad2" = forste_reg$sist_kvartal, 
+                  "rad3" = forste_reg$to_aar)
+names(tmp) <- names(tabell_reg)
+tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
+
+knitr::kable(tabell_reg, row.names = FALSE, 
+             caption = paste0("Registreringsaktivitet ved ", shusnavn))
+
+
+```
+
