@@ -59,7 +59,7 @@ tabell_avsluttede_2aar <- SMAoversikt |>
   dplyr::mutate(
     Avdeling = 
       ifelse(CENTREID == reshID, shusnavn, "Resten av landet")) |> 
-  dplyr::filter(ASSESSMENT_DATE == last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+  dplyr::filter(ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
   dplyr::filter(ASSESSMENT_DATE <= datoTil,
                 ASSESSMENT_DATE > datoTil - years(2)) |> 
   dplyr::summarise(
@@ -73,7 +73,7 @@ tabell_avsluttede_kvartal <- SMAoversikt |>
   dplyr::mutate(
     Avdeling = 
       ifelse(CENTREID == reshID, shusnavn, "Resten av landet")) |> 
-  dplyr::filter(ASSESSMENT_DATE == last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+  dplyr::filter(ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
   dplyr::filter(ASSESSMENT_DATE <= datoTil,
                 ASSESSMENT_DATE > datoFra) |> 
   dplyr::summarise(
@@ -82,6 +82,12 @@ tabell_avsluttede_kvartal <- SMAoversikt |>
     "Avsluttet på grunn av manglende effekt" = sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = T),
     .by = Avdeling
   )
+
+tabell_avsluttede <- dplyr::bind_rows(tabell_avsluttede_2aar,
+                                      tabell_avsluttede_kvartal) |> 
+  dplyr::mutate(Periode = c("Siste 2 år", "", "Siste kvartal", "")) |> 
+  dplyr::relocate(Periode)
+
 
 knitr::kable(tabell_avsluttede, row.names = FALSE, 
              caption = "BEHANDLNG_FUNKSJONSSTATUS")
@@ -122,12 +128,14 @@ plotdata |> ggplot(aes(
   scale_x_yearqtr(format = "%Y-Q%q") +
   theme_classic() + 
   xlab("Kvartal") +
-  ylab("Antall registreringer") +
+  ylab("Antall registrerte skjema") +
   ylim(c(0, NA)) + 
   theme(legend.position = "top")
 
 
 ```
+
+
 
 
 
@@ -166,7 +174,7 @@ tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
   muskel::tr_summarize_output(kolnavn1 = "Var")
 
 forste_reg = SMAoversikt |> 
-  dplyr::filter(MCEID == first(MCEID), .by = PATIENT_ID) |> 
+  dplyr::filter(MCEID == dplyr::first(MCEID), .by = PATIENT_ID) |> 
   dplyr::filter(CENTREID == reshID) |> 
   dplyr::summarise(to_aar = sum(ASSESSMENT_DATE > datoTil - years(2) &
                            ASSESSMENT_DATE <= datoTil),
@@ -185,3 +193,10 @@ knitr::kable(tabell_reg, row.names = FALSE,
 
 ```
 
+
+
+Hvis du mistenker feil eller har spørsmål, kontakt registeret på nornmd@unn.no. 
+
+
+
+Takk for den gode jobben dere gjør!
