@@ -47,18 +47,18 @@ appUi <- function() {
 
     shiny::navbarMenu(
       "Verktøy",
-      # shiny::tabPanel(
-      #   "Utsending",
-      #   shiny::sidebarLayout(
-      #     shiny::sidebarPanel(
-      #       rapbase::autoReportOrgInput("muskelDispatch"),
-      #       rapbase::autoReportInput("muskelDispatch")
-      #     ),
-      #     shiny::mainPanel(
-      #       rapbase::autoReportUI("muskelDispatch")
-      #     )
-      #   )
-      # ),
+      shiny::tabPanel(
+        "Utsending",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::autoReportOrgInput("muskelDispatch"),
+            rapbase::autoReportInput("muskelDispatch")
+          ),
+          shiny::mainPanel(
+            rapbase::autoReportUI("muskelDispatch")
+          )
+        )
+      ),
 
       shiny::tabPanel(
         "Eksport",

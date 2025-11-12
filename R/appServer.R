@@ -33,14 +33,14 @@ appServer <- function(input, output, session) {
     UnitId = unique(RegData$AvdRESH),
     orgname = RegData$SykehusNavn[
       match(unique(RegData$AvdRESH), RegData$AvdRESH)]
-    )
+  )
 
   rapbase::appLogger(session = session, msg = "Muskel: shiny app starter")
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
     orgName = "NORNMD",
-    caller = "NORNMD",
+    caller = "muskel",
     map_orgname = shiny::req(map_avdeling)
   )
 
@@ -60,6 +60,94 @@ appServer <- function(input, output, session) {
   muskel::datadump_server("dataDumpMuskel", userRole=user$role,
                           reshID = user$org, mainSession = session)
 
+
+  ##############################################################################
+  ################ Subscription, Dispatchment and Stats ########################
+
+  ## Objects currently shared among subscription and dispathcment
+  # orgs <- as.list(BrValg$sykehus)
+  # org <- rapbase::autoReportOrgServer("norgastDispatch", orgs)
+  orgs <- as.list(setNames(
+    as.numeric(unique(RegData$AvdRESH)),
+    RegData$SykehusNavn[match(unique(RegData$AvdRESH), RegData$AvdRESH)]))
+  org <- rapbase::autoReportOrgServer("muskelDispatch", orgs)
+
+  subParamNames <- shiny::reactive(c("reshID"))
+  subParamValues <- shiny::reactive(user$org())
+
+  ## Subscription
+
+  rapbase::autoReportServer(
+    id = "muskelSubscription",
+    registryName = "muskel",
+    type = "subscription",
+    paramNames = subParamNames,
+    paramValues = subParamValues,
+    reports = list(
+      "SMA-rapport" = list(
+        synopsis = "NORNMD: SMA-rapport",
+        fun = "lag_SMArapport",
+        paramNames = c("baseName", "reshID"),
+        paramValues = c("SMArapport", 999999)
+      )
+    ),
+    orgs = orgs,
+    freq = "quarter",
+    user = user
+  )
+
+  ## Dispatchment
+
+
+  vis_rapp <- reactiveVal(FALSE)
+  observeEvent(user$role(), {
+    vis_rapp(user$role() == "SC")
+  })
+  disParamNames <- shiny::reactive(c("reshID"))
+  disParamValues <- shiny::reactive(c(org$value()))
+
+  rapbase::autoReportServer(
+    id = "muskelDispatch",
+    registryName = "muskel",
+    type = "dispatchment",
+    org = org$value,
+    paramNames = disParamNames,
+    paramValues = disParamValues,
+    reports = list(
+      "SMA-rapport" = list(
+        synopsis = "NORNMD: SMA-rapport",
+        fun = "lag_SMArapport",
+        paramNames = c("baseName", "reshID"),
+        paramValues = c("SMArapport", 999999)
+      )
+    ),
+    orgs = orgs,
+    eligible = vis_rapp,
+    freq = "quarter",
+    user = user
+  )
+
+  ## Metadata
+  meta <- shiny::reactive({
+    rapbase::describeRegistryDb("data")
+  })
+
+  output$metaControl <- shiny::renderUI({
+    tabs <- names(meta())
+    selectInput("metaTab", "Velg tabell:", tabs)
+  })
+
+
+  output$metaDataTable <- DT::renderDataTable(
+    meta()[[input$metaTab]], rownames = FALSE,
+    options = list(lengthMenu=c(25, 50, 100, 200, 400))
+  )
+
+  output$metaData <- shiny::renderUI({
+    DT::dataTableOutput("metaDataTable")
+  })
+
+  ##############################################################################
   # Eksport  #
   rapbase::exportUCServer("muskelExport", "muskel")
   ## veileding
