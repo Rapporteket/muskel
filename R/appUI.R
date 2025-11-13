@@ -44,6 +44,27 @@ appUi <- function() {
     tabPanel("Datadump",
              muskel::datadump_ui("dataDumpMuskel")
     ),
+    tabPanel("Rapporter",
+             fluidPage(
+               numericInput("reshID", "Resh ID", value = 4001031),
+               dateInput("datoFra", "Fra dato", value = Sys.Date() - 90),
+               actionButton("refresh", "Oppdater rapport"),
+               uiOutput("report")
+             )
+    ),
+
+    shiny::tabPanel(
+      shiny::span("Abonnement",
+                  title="Bestill tilsending av rapporter på e-post"),
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          rapbase::autoReportInput("muskelSubscription")
+        ),
+        shiny::mainPanel(
+          rapbase::autoReportUI("muskelSubscription")
+        )
+      )
+    ),
 
     shiny::navbarMenu(
       "Verktøy",

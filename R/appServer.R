@@ -61,6 +61,21 @@ appServer <- function(input, output, session) {
                           reshID = user$org, mainSession = session)
 
 
+
+  observeEvent(input$refresh, {
+    quarto::quarto_render(
+      input = system.file("SMArapport_abo.qmd", package = "muskel"),
+      output_file = "www/SMArapport_abo.html",  # Shiny's www folder
+      execute_params = list(
+        reshID = input$reshID
+      )
+    )
+    output$report <- renderUI({
+      includeHTML("www/SMArapport_abo.html")
+    })
+  })
+
+
   ##############################################################################
   ################ Subscription, Dispatchment and Stats ########################
 

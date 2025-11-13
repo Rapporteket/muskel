@@ -13,10 +13,12 @@ lag_SMArapport <- function(baseName, reshID=0) {
   on.exit(setwd(owd))
   file.copy(src, tmpFile, overwrite = TRUE)
 
-  quarto::quarto_render(tmpFile, output_format = "pdf")
+  quarto::quarto_render(tmpFile,
+                        execute_params = list(reshID = reshID),
+                        output_format = "pdf")
   utfil <- paste0(substr(tmpFile, 1, nchar(tmpFile)-3), 'pdf')
 
-  # rapbase::subLogger(author = brukernavn, registryName = 'NORGAST',
+  # rapbase::subLogger(author = brukernavn, registryName = 'NORNMD',
   #                   reshId = reshID[[1]], msg = paste("Sendt: ", utfil))
 
   return(utfil)

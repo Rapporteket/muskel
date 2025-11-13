@@ -3,6 +3,9 @@ title: "SMA-rapport"
 author: "NORNMD"
 format: html
 editor: visual
+params:
+  reshID: 4001031
+  datoTil: !expr Sys.Date() |> as.Date() |> lubridate::floor_date(unit = 'quarter') - lubridate::days(1)
 ---
 
 ```{r}
@@ -12,11 +15,11 @@ library(muskel)
 library(lubridate)
 
 SMAoversikt <- rapbase::loadRegData(
-    registryName = "data",
-    dbType = "mysql",
-    query = "SELECT sma.*, m.PATIENT_ID
+  registryName = "data",
+  dbType = "mysql",
+  query = "SELECT sma.*, m.PATIENT_ID
              FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
-  ) |> dplyr::relocate(PATIENT_ID) |> 
+) |> dplyr::relocate(PATIENT_ID) |> 
   dplyr::filter(BEHANDLNG_BEHANDLING == 1)
 shus <- rapbase::loadRegData(
   registryName = "data",
@@ -29,17 +32,11 @@ SMAoversikt <- dplyr::left_join(
   SMAoversikt, shus, 
   by = dplyr::join_by(CENTREID == AvdRESH))
 
-datoTil <- Sys.Date() |>  as.Date()  |> 
-  lubridate::floor_date(unit = 'quarter') - lubridate::days(1)
+reshID <- params$reshID
+datoTil <- params$datoTil
 datoFra <- (datoTil + lubridate::days(1)) %m-% months(3)
 
-# if (rapbase::isRapContext()){
-#   reshID <- rapbase::getUserReshId()
-# } else {
-# reshID <- 4001031
 shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
-# }
-
 
 ```
 
@@ -177,9 +174,9 @@ forste_reg = SMAoversikt |>
   dplyr::filter(MCEID == dplyr::first(MCEID), .by = PATIENT_ID) |> 
   dplyr::filter(CENTREID == reshID) |> 
   dplyr::summarise(to_aar = sum(ASSESSMENT_DATE > datoTil - years(2) &
-                           ASSESSMENT_DATE <= datoTil),
-            sist_kvartal = sum(ASSESSMENT_DATE > datoFra &
-                           ASSESSMENT_DATE <= datoTil))
+                                  ASSESSMENT_DATE <= datoTil),
+                   sist_kvartal = sum(ASSESSMENT_DATE > datoFra &
+                                        ASSESSMENT_DATE <= datoTil))
 
 tmp <- data.frame("rad1" = "Antall nye pasienter", 
                   "rad2" = forste_reg$sist_kvartal, 

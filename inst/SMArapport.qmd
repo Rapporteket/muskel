@@ -45,8 +45,6 @@ shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
 
 Dette er en rapport fra Norsk register for nevromuskulære diagnoser (NORNMD) som sendes ut til din enhet kvartalsvis. Kvartalsrapporten gir et øyeblikksbilde av SMA-registreringer og -behandlinger ved deres enhet sammenlignet med landet som helhet.
 
-
-
 ### Avsluttede behandlinger siste kvartal
 
 ```{r}
@@ -135,10 +133,6 @@ plotdata |> ggplot(aes(
 
 ```
 
-
-
-
-
 ## Registeraktivitet ved din avdeling
 
 ```{r}
@@ -193,10 +187,6 @@ knitr::kable(tabell_reg, row.names = FALSE,
 
 ```
 
-
-
-Hvis du mistenker feil eller har spørsmål, kontakt registeret på nornmd@unn.no. 
-
-
+Hvis du mistenker feil eller har spørsmål, kontakt registeret på nornmd\@unn.no.
 
 Takk for den gode jobben dere gjør!
