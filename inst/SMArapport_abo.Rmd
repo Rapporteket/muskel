@@ -88,10 +88,10 @@ tabell_avsluttede <- dplyr::bind_rows(tabell_avsluttede_2aar,
   dplyr::relocate(Periode)
 
 
-# knitr::kable(tabell_avsluttede, row.names = FALSE, 
-#              caption = "BEHANDLNG_FUNKSJONSSTATUS")
-rapbase::mst(tabell_avsluttede, type = params$tableFormat,
-             cap = "BEHANDLNG_FUNKSJONSSTATUS")
+knitr::kable(tabell_avsluttede, row.names = FALSE,
+             caption = "BEHANDLNG_FUNKSJONSSTATUS")
+# rapbase::mst(tabell_avsluttede, type = params$tableFormat,
+#              cap = "BEHANDLNG_FUNKSJONSSTATUS")
 
 
 ```
@@ -127,8 +127,8 @@ plotdata |> ggplot(aes(
   theme_classic() + 
   xlab("Kvartal") +
   ylab("Antall registrerte skjema") +
-  ylim(c(0, NA)) #+ 
-  #theme(legend.position = "top")
+  ylim(c(0, NA)) + 
+  theme(legend.position = "top")
 
 
 ```
