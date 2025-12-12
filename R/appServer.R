@@ -52,6 +52,20 @@ appServer <- function(input, output, session) {
   muskel::kumulativAndel_server("kumAnd", RegData=RegData,
                                 reshID = user$org, ss = session)
 
+  reportParams <- shiny::reactive(
+    list(
+      reshID = user$org(),
+      userRole = user$role(),
+      shinySession = session
+    )
+  )
+
+  muskel::defaultReportServer(
+    id = "smarapp",
+    reportFileName = reactiveVal("SMArapport_abo.Rmd"),
+    reportParams = reportParams
+  )
+
   muskel::admtab_server("muskeltabell", RegData=RegData,
                         SkjemaOversikt=SkjemaOversikt,
                         SMAoversikt=SMAoversikt, ss = session,

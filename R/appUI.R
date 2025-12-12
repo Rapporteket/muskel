@@ -38,6 +38,17 @@ appUi <- function() {
     tabPanel("Kumulative andeler",
              muskel::kumulativAndel_ui(id = "kumAnd")
     ),
+    shiny::tabPanel(
+      "SMA-rapport",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          muskel::defaultReportInput("smarapp")
+        ),
+        shiny::mainPanel(
+          muskel::defaultReportUI("smarapp")
+        )
+      )
+    ),
     tabPanel("Administrative tabeller",
              muskel::admtab_ui("muskeltabell")
     ),
