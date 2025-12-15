@@ -45,14 +45,13 @@ shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
 
 ```
 
-Dette er en rapport fra Norsk register for nevromuskulære diagnoser (NORNMD) som sendes ut til din enhet kvartalsvis. Kvartalsrapporten gir et øyeblikksbilde av SMA-registreringer og -behandlinger ved deres enhet sammenlignet med landet som helhet.
+Dette er en rapport fra Norsk register for arvelige nevromuskulære diagnoser (NORNMD) som sendes ut til din enhet kvartalsvis. Kvartalsrapporten gir et øyeblikksbilde av SMA-registreringer og -behandlinger ved deres enhet sammenlignet med landet som helhet.
 
 
 
 ### Avsluttede behandlinger siste kvartal
 
 ```{r, echo=FALSE, warning=FALSE}
-# print(dim(SMAoversikt))
 
 tabell_avsluttede_2aar <- SMAoversikt |>  
   dplyr::mutate(
@@ -88,11 +87,18 @@ tabell_avsluttede <- dplyr::bind_rows(tabell_avsluttede_2aar,
   dplyr::relocate(Periode)
 
 
-knitr::kable(tabell_avsluttede, row.names = FALSE,
-             caption = "BEHANDLNG_FUNKSJONSSTATUS")
+# knitr::kable(tabell_avsluttede, row.names = FALSE,
+#              caption = "BEHANDLNG_FUNKSJONSSTATUS")
 # rapbase::mst(tabell_avsluttede, type = params$tableFormat,
-#              cap = "BEHANDLNG_FUNKSJONSSTATUS")
+#              cap = "BEHANDLNG FUNKSJONSSTATUS")
 
+if (knitr::is_html_output()) {
+  kableExtra::kable(tabell_avsluttede, format = "html") |>
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else if (knitr::is_latex_output()) {
+   kableExtra::kable(tabell_avsluttede, format = "latex", booktabs = TRUE, longtable = TRUE) |>
+    kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+}
 
 ```
 
@@ -112,23 +118,26 @@ plotdata <- SMAoversikt |>
     Avdeling = 
       ifelse(CENTREID == reshID, shusnavn, "Resten av landet"),
     ind=1)
-# |> 
-#   dplyr::summarise(n = n(),
-#                    .by = c(kvartal, Avdeling))
 
-
-plotdata |> ggplot(aes(
-  x = kvartal2,
-  y = ind,
-  colour = Avdeling)) +
-  stat_summary(fun = "sum", geom = "line",
-               aes(colour = Avdeling)) +
+plotdata |>
+  ggplot(aes(
+    x = kvartal2,
+    y = ind,
+    colour = Avdeling,
+    group = Avdeling
+  )) +
+  stat_summary(fun = sum, geom = "line") +
   scale_x_yearqtr(format = "%Y-Q%q") +
-  theme_classic() + 
-  xlab("Kvartal") +
-  ylab("Antall registrerte skjema") +
-  ylim(c(0, NA)) + 
-  theme(legend.position = "top")
+  ggplot2::theme_classic() +
+  labs(
+    x = "Kvartal",
+    y = "Antall registrerte skjema",
+    colour = "Avdeling"
+  ) +
+  # Prefer coord_cartesian to keep data and just limit the visible range
+  coord_cartesian(ylim = c(0, NA)) +
+  ggplot2::theme(legend.position = "top")
+
 
 
 ```
@@ -185,8 +194,19 @@ tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
 
 # knitr::kable(tabell_reg, row.names = FALSE, 
 #              caption = paste0("Registreringsaktivitet ved ", shusnavn))
-rapbase::mst(tabell_reg, type = params$tableFormat,
-             cap = paste0("Registreringsaktivitet ved ", shusnavn))
+# rapbase::mst(tabell_reg, type = params$tableFormat,
+#              cap = paste0("Registreringsaktivitet ved ", shusnavn))
+
+
+if (knitr::is_html_output()) {
+  kableExtra::kable(tabell_reg, format = "html") |>
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else if (knitr::is_latex_output()) {
+   kableExtra::kable(tabell_reg, format = "latex", booktabs = TRUE, longtable = TRUE) |>
+    kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+}
+
+
 
 ```
 
