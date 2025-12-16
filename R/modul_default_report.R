@@ -36,7 +36,7 @@ defaultReportInput <- function(
                           separator = "-"),
     shiny::radioButtons(shiny::NS(id, "format"),
                         "Format for nedlasting",
-                        list(PDF = "pdf", HTML = "html"),
+                        list(PDF = "pdf_document", HTML = "html_document"),
                         inline = FALSE),
     shiny::downloadButton(shiny::NS(id, "downloadReport"), "Last ned!")
   )
@@ -62,7 +62,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
       reportParams_list <- reportParams()
       reportParams_list$startDate <- input$dateRange[1]
       reportParams_list$endDate <- input$dateRange[2]
-      rapbase::renderRmd(
+      muskel::muskelRenderRmd(
         sourceFile = system.file(reportFileName(), package = "muskel"),
         outputType = "html_fragment",
         params = reportParams_list
@@ -84,7 +84,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
         reportParams_list$startDate <- input$dateRange[1]
         reportParams_list$endDate <- input$dateRange[2]
         reportParams_list$tableFormat <- input$format
-        fn <- rapbase::renderRmd(
+        fn <- muskel::muskelRenderRmd(
           sourceFile = system.file(reportFileName(), package = "muskel"),
           outputType = input$format,
           params = reportParams_list

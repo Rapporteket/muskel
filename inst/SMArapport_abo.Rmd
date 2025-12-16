@@ -16,7 +16,7 @@ params:
 library(muskel)
 library(lubridate)
 library(kableExtra)
-options(knitr.table.format = params$tableFormat)
+# options(knitr.table.format = params$tableFormat)
 
 SMAoversikt <- rapbase::loadRegData(
   registryName = "muskel",
@@ -93,11 +93,14 @@ tabell_avsluttede <- dplyr::bind_rows(tabell_avsluttede_2aar,
 #              cap = "BEHANDLNG FUNKSJONSSTATUS")
 
 if (knitr::is_html_output()) {
-  kableExtra::kable(tabell_avsluttede, format = "html") |>
+  kableExtra::kable(tabell_avsluttede) |>
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
 } else if (knitr::is_latex_output()) {
-   kableExtra::kable(tabell_avsluttede, format = "latex", booktabs = TRUE, longtable = TRUE) |>
-    kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+   # kableExtra::kable(tabell_avsluttede, format = "latex") |>
+   #  kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+  kableExtra::kable(tabell_avsluttede, format = "latex", booktabs = TRUE, 
+      align = c("l", rep("p{2cm}", dim(tabell_avsluttede)[1]-1))) |> 
+    kableExtra::kable_styling(latex_options = c("striped"))
 }
 
 ```
@@ -198,13 +201,13 @@ tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
 #              cap = paste0("Registreringsaktivitet ved ", shusnavn))
 
 
-if (knitr::is_html_output()) {
-  kableExtra::kable(tabell_reg, format = "html") |>
+# if (knitr::is_html_output()) {
+  kableExtra::kable(tabell_reg) |>
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
-} else if (knitr::is_latex_output()) {
-   kableExtra::kable(tabell_reg, format = "latex", booktabs = TRUE, longtable = TRUE) |>
-    kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
-}
+# } else if (knitr::is_latex_output()) {
+#    kableExtra::kable(tabell_reg, format = "latex", booktabs = TRUE, longtable = TRUE) |>
+#     kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
+# }
 
 
 
