@@ -62,7 +62,7 @@ appServer <- function(input, output, session) {
 
   muskel::defaultReportServer(
     id = "smarapp",
-    reportFileName = reactiveVal("SMArapport_abo.Rmd"),
+    reportFileName = reactiveVal("SMArapport_abo_v2.Rmd"),
     reportParams = reportParams
   )
 

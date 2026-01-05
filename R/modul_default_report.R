@@ -62,7 +62,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
       reportParams_list <- reportParams()
       reportParams_list$startDate <- input$dateRange[1]
       reportParams_list$endDate <- input$dateRange[2]
-      muskel::muskelRenderRmd(
+      muskel::muskelRenderRmd2(
         sourceFile = system.file(reportFileName(), package = "muskel"),
         outputType = "html_fragment",
         params = reportParams_list
@@ -75,7 +75,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
           tempfile(
             pattern = sub(pattern = "(.*?)\\..*$", replacement = "\\1",
                           basename(reportFileName())),
-            fileext = paste0(".", input$format)
+            fileext = paste0(".", sub("_.*", "", input$format))
           )
         )
       },
@@ -84,7 +84,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
         reportParams_list$startDate <- input$dateRange[1]
         reportParams_list$endDate <- input$dateRange[2]
         reportParams_list$tableFormat <- input$format
-        fn <- muskel::muskelRenderRmd(
+        fn <- muskel::muskelRenderRmd2(
           sourceFile = system.file(reportFileName(), package = "muskel"),
           outputType = input$format,
           params = reportParams_list

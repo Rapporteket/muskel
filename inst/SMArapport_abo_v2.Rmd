@@ -1,0 +1,340 @@
+---
+title: "SMA-rapport"
+author: "NORNMD"
+date: "`r paste0(lubridate::day(Sys.Date()), '. ', format(Sys.Date(), '%B %Y'))`"
+
+output:
+  html_document:
+    toc: false
+    toc_depth: 3
+    number_sections: false
+    df_print: kable
+    theme: cosmo
+    highlight: tango
+
+  pdf_document:
+    latex_engine: pdflatex
+    toc: false
+    number_sections: false
+    df_print: kable
+    keep_tex: true
+    extra_dependencies:
+      inputenc: ["utf8"]
+      fontenc:  ["T1"]
+      lmodern: null
+      babel:   ["norwegian"]
+      microtype: null
+
+      array: null
+      booktabs: null
+      xcolor: ["table","dvipsnames"]
+      colortbl: null
+      longtable: null       # <-- add this line
+      makecell: null        # optional (useful for line breaks in header cells)
+      ragged2e: null        # optional (used by some column specs)
+      graphicx: null
+      # tabularx: null
+
+geometry: margin=25mm
+
+params:
+  reshID: 4001031
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r as.Date(cut(Sys.Date() + 1, "quarter")) - 1
+  userRole: "MyRole"
+  tableFormat: "auto"
+  shinySession: list()
+---
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(muskel)
+library(lubridate)
+library(kableExtra)
+library(dplyr)
+# options(knitr.table.format = params$tableFormat)
+# knitr::opts_knit$set(kable.force.latex = TRUE)
+
+SMAoversikt <- rapbase::loadRegData(
+  registryName = "muskel",
+  dbType = "mysql",
+  query = "SELECT sma.*, m.PATIENT_ID
+             FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
+) |> dplyr::relocate(PATIENT_ID) |> 
+  dplyr::filter(BEHANDLNG_BEHANDLING == 1)
+shus <- rapbase::loadRegData(
+  registryName = "muskel",
+  dbType = "mysql",
+  query = "SELECT DISTINCT AvdRESH, SykehusNavn
+             FROM allevarnum"
+)
+
+SMAoversikt <- dplyr::left_join(
+  SMAoversikt, shus, 
+  by = dplyr::join_by(CENTREID == AvdRESH))
+
+reshID <- params$reshID
+datoTil <- params$endDate
+datoTil <- as.Date(cut(datoTil + 1, "quarter")) - 1
+datoFra <- (datoTil + lubridate::days(1)) %m-% months(3)
+
+shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]
+
+```
+
+Dette er en rapport fra Norsk register for arvelige nevromuskulære diagnoser (NORNMD) som sendes ut til din enhet kvartalsvis. Kvartalsrapporten gir et øyeblikksbilde av SMA-registreringer og -behandlinger ved deres enhet sammenlignet med landet som helhet.
+
+
+
+### Avsluttede behandlinger siste kvartal
+
+
+```{r table-avsluttede, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+# Kolonnenavn med linjeskift (LaTeX/HTML) via kableExtra::linebreak
+colnames_common_wrapped <- c(
+  kableExtra::linebreak("Fortsatt under behandling", align = "c"),
+  kableExtra::linebreak("Avsluttet på grunn av\nbivirkninger", align = "c"),
+  kableExtra::linebreak("Avsluttet på grunn av\nmanglende effekt", align = "c")
+)
+
+# Funksjon som lager sammendrag for en gitt datoperiode
+make_summary <- function(df, from_date, to_date, reshID, shusnavn) {
+  df |>
+    mutate(
+      Avdeling = ifelse(CENTREID == reshID, shusnavn, "Resten av landet")
+    ) |>
+    # siste registrering per pasient
+    filter(ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+    # filtrering på periode
+    filter(ASSESSMENT_DATE <= to_date, ASSESSMENT_DATE > from_date) |>
+    summarise(
+      "Fortsatt under behandling" = 
+        sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = TRUE),
+      "Avsluttet på grunn av bivirkninger" = 
+        sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = TRUE),
+      "Avsluttet på grunn av manglende effekt" = 
+        sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = TRUE),
+      .by = Avdeling
+    )
+}
+
+# Bygg tabeller for 'siste 2 år' og 'siste kvartal'
+tabell_2aar <- make_summary(
+  SMAoversikt,
+  from_date = datoTil - lubridate::years(2),
+  to_date = datoTil,
+  reshID = reshID,
+  shusnavn = shusnavn
+)
+
+tabell_kvartal <- make_summary(
+  SMAoversikt,
+  from_date = datoFra,
+  to_date = datoTil,
+  reshID = reshID,
+  shusnavn = shusnavn
+)
+
+# Robust periodekolonne
+add_period_col <- function(tbl, period_label) {
+  if (nrow(tbl) == 0) {
+    tibble::tibble(
+      Periode = period_label,
+      Avdeling = c(shusnavn, "Resten av landet"),
+      "Fortsatt under behandling" = 0L,
+      "Avsluttet på grunn av bivirkninger" = 0L,
+      "Avsluttet på grunn av manglende effekt" = 0L
+    )
+  } else {
+    tibble::add_column(tbl, Periode = period_label, .before = 1)
+  }
+}
+
+tabell_2aar <- add_period_col(tabell_2aar, "Siste 2 år")
+tabell_kvartal <- add_period_col(tabell_kvartal, "Siste kvartal")
+
+tabell_avsluttede <- dplyr::bind_rows(tabell_2aar, tabell_kvartal) |>
+  select(
+    Periode, Avdeling,
+    "Fortsatt under behandling",
+    "Avsluttet på grunn av bivirkninger",
+    "Avsluttet på grunn av manglende effekt"
+  )
+
+if (knitr::is_html_output()) {
+  kableExtra::kable(tabell_avsluttede) |>
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else if (knitr::is_latex_output()) {
+  # Løsning A (anbefalt): Skaler tabellen ned til å passe \textwidth
+  kableExtra::kbl(
+    tabell_avsluttede,
+    format = "latex",
+    booktabs = TRUE,
+    align = c("l", "l", "r", "r", "r"),
+    col.names = c("Periode", "Avdeling", colnames_common_wrapped),
+    escape = FALSE
+  ) |>
+    kableExtra::kable_styling(
+      latex_options = c("striped", "hold_position", "scale_down"),
+      stripe_color = "gray!15"
+    ) |>
+    kableExtra::collapse_rows(columns = 1, valign = "top")
+  
+  # --- Løsning B (alternativ): Faste kolonnebredder og linjebryting i stedet for skalering ---
+  # Fjern kommentartegnene under og kommenter bort Løsning A dersom du heller vil bruke faste bredder.
+  # kableExtra::kbl(
+  #   tabell_avsluttede,
+  #   format = "latex",
+  #   booktabs = TRUE,
+  #   align = c("l", "l", "r", "r", "r"),
+  #   col.names = c("Periode", "Avdeling", colnames_common_wrapped),
+  #   escape = FALSE
+  # ) |>
+  #   kableExtra::kable_styling(
+  #     latex_options = c("striped", "hold_position"),
+  #     stripe_color = "gray!15"
+  #   ) |>
+  #   # Sett fornuftige bredder; justér etter behov (måleenhet = "em"/"cm"/"in")
+  #   kableExtra::column_spec(1, width = "8em") |>
+  #   kableExtra::column_spec(2, width = "14em") |>
+  #   kableExtra::column_spec(3, width = "10em") |>
+  #   kableExtra::column_spec(4, width = "12em") |>
+  #   kableExtra::column_spec(5, width = "12em") |>
+  #   kableExtra::collapse_rows(columns = 1, valign = "top")
+}
+
+```
+
+## Registreringer siste år
+
+```{r figur registreringer, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(ggplot2)
+library(zoo)
+
+plotdata <- SMAoversikt |>
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoTil - years(2)) |>
+  dplyr::mutate(
+    kvartal = quarter(ASSESSMENT_DATE, with_year = TRUE),
+    kvartal2 = zoo::as.yearqtr(ASSESSMENT_DATE, format = "%Y-Q%q"),
+    Avdeling =
+      ifelse(CENTREID == reshID, shusnavn, "Resten av landet"),
+    ind=1)
+
+plotdata |>
+  ggplot(aes(
+    x = kvartal2,
+    y = ind,
+    colour = Avdeling,
+    group = Avdeling
+  )) +
+  stat_summary(fun = sum, geom = "line") +
+  scale_x_yearqtr(format = "%Y-Q%q") +
+  ggplot2::theme_classic() +
+  labs(
+    x = "Kvartal",
+    y = "Antall registrerte skjema",
+    colour = "Avdeling"
+  ) +
+  # Prefer coord_cartesian to keep data and just limit the visible range
+  coord_cartesian(ylim = c(0, NA)) +
+  ggplot2::theme(legend.position = "top")
+
+
+
+```
+
+
+## Registeraktivitet ved din avdeling
+
+```{r, echo=FALSE, warning=FALSE}
+
+tabell_reg_alle <- SMAoversikt |>
+  dplyr::filter(ASSESSMENT_DATE <= datoTil,
+                ASSESSMENT_DATE > datoTil - years(2),
+                CENTREID == reshID) |>
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID))
+  )
+
+tabell_reg_kvart <- SMAoversikt |>
+  dplyr::filter(ASSESSMENT_DATE >= datoFra,
+                ASSESSMENT_DATE <= datoTil,
+                CENTREID == reshID) |>
+  dplyr::summarise(
+    "Antall registratorer" = length(unique(REGNAME)),
+    "Antall behandlere" = length(unique(ASSESSBY)),
+    "Antall pasienter" = length(unique(PATIENT_ID)),
+    "Antall skjema" = length(unique(MCEID)),
+  )
+
+tabell_reg <- dplyr::bind_rows(tabell_reg_alle,
+                               tabell_reg_kvart) |>
+  dplyr::mutate(var = c("Siste to år", "Siste kvartal")) |>
+  dplyr::relocate(var) |>
+  muskel::tr_summarize_output(kolnavn1 = "Var")
+
+forste_reg = SMAoversikt |>
+  dplyr::filter(MCEID == dplyr::first(MCEID), .by = PATIENT_ID) |>
+  dplyr::filter(CENTREID == reshID) |>
+  dplyr::summarise(to_aar = sum(ASSESSMENT_DATE > datoTil - years(2) &
+                                  ASSESSMENT_DATE <= datoTil),
+                   sist_kvartal = sum(ASSESSMENT_DATE > datoFra &
+                                        ASSESSMENT_DATE <= datoTil))
+
+tmp <- data.frame("rad1" = "Antall nye pasienter",
+                  "rad2" = forste_reg$sist_kvartal,
+                  "rad3" = forste_reg$to_aar)
+names(tmp) <- names(tabell_reg)
+tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
+
+
+# if (knitr::is_html_output()) {
+# kableExtra::kable(tabell_reg) |>
+#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+# } else if (knitr::is_latex_output()) {
+#    kableExtra::kable(
+#      tabell_reg, format = "latex",
+#      booktabs = TRUE,
+#      longtable = TRUE) |>
+#     kableExtra::kable_styling(
+#       latex_options = c("striped", "scale_down"))
+# }
+#
+
+if (knitr::is_html_output()) {
+  kableExtra::kable(tabell_reg) |>
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else if (knitr::is_latex_output()) {
+  kableExtra::kable(
+    tabell_reg, format = "latex",
+    booktabs  = TRUE,
+    longtable = TRUE
+  ) |>
+    # Avoid "scale_down" with longtable; use smaller font and/or widths:
+    kableExtra::kable_styling(
+      latex_options = c("striped", "repeat_header"),  # header repeats per page
+      font_size = 9
+    )
+  # Optionally, control widths column-by-column (example):
+  # |> kableExtra::column_spec(1, width = "3cm")
+  # |> kableExtra::column_spec(2, width = "3cm")
+}
+
+
+```
+
+<br>
+<br>
+
+Hvis du mistenker feil eller har spørsmål, kontakt registeret på nornmd@unn.no.
+
+<br>
+<br>
+
+Takk for den gode jobben dere gjør!

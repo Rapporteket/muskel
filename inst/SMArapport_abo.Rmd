@@ -1,15 +1,85 @@
-
 ---
 title: "SMA-rapport"
 author: "NORNMD"
+date: "`r format(Sys.Date(), '%-d. %B %Y')`"
+
+output:
+  html_document:
+    toc: false
+    # toc_depth: 3
+    number_sections: false
+    df_print: kable
+    theme: cosmo
+    highlight: tango
+  pdf_document:
+    latex_engine: pdflatex
+    toc: false
+    number_sections: false
+    df_print: kable
+    keep_tex: false
+
 params:
   reshID: 4001031
   startDate: !r lubridate::today() - lubridate::years(1)
   endDate: !r as.Date(cut(Sys.Date() + 1, "quarter")) - 1
-  userRole: MyRole
-  tableFormat: html
+  userRole: "MyRole"
+  tableFormat: "auto"
   shinySession: list()
+
+header-includes:
+  - |
+    ```{=latex}
+    % --- MiKTeX-friendly Norwegian typography ---
+    \usepackage[utf8]{inputenc}   % UTF-8 input
+    \usepackage[T1]{fontenc}      % proper glyph encoding
+    \usepackage{lmodern}          % Latin Modern fonts
+    \usepackage[norwegian]{babel} % hyphenation/localization
+    \usepackage{microtype}        % cleaner spacing/kerning
+
+    % --- Links and PDF metadata ---
+    \usepackage{hyperref}
+    \hypersetup{
+      colorlinks=true,
+      linkcolor=black,
+      urlcolor=MidnightBlue,
+      citecolor=black,
+      pdfauthor={NORNMD},
+      pdftitle={SMA-rapport}
+    }
+
+    % --- Optional page geometry ---
+    \usepackage{geometry}
+    \geometry{margin=25mm}
+
+    % --- Tables (optional) ---
+    \usepackage{booktabs}      % enhances tables (knitr::kable booktabs)
+    \usepackage{longtable}     % multi-page tables
+    \usepackage[table,dvipsnames]{xcolor}
+    \usepackage{colortbl}
+    \usepackage{array}
+
+    ```
+
 ---
+
+<!-- # (Optional) global chunk options can go here via a setup chunk in the Rmd body -->
+<!-- # For example: -->
+<!-- # -->
+<!-- # ```{r setup, include=FALSE} -->
+<!-- # knitr::opts_chunk$set( -->
+<!-- #   echo = FALSE, -->
+<!-- #   warning = FALSE, -->
+<!-- #   message = FALSE -->
+<!-- # ) -->
+<!-- # -->
+<!-- # # Detect output format for styling in code: -->
+<!-- # is_pdf  <- knitr::is_latex_output() -->
+<!-- # is_html <- knitr::is_html_output() -->
+<!-- # # Choose table format automatically -->
+<!-- # table_format <- if (params$tableFormat == "auto") { -->
+<!-- #   if (is_pdf) "latex" else "html" -->
+<!-- # } else params$tableFormat -->
+<!-- # ``` -->
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -86,28 +156,20 @@ tabell_avsluttede <- dplyr::bind_rows(tabell_avsluttede_2aar,
   dplyr::mutate(Periode = c("Siste 2 år", "", "Siste kvartal", "")) |> 
   dplyr::relocate(Periode)
 
-
-# knitr::kable(tabell_avsluttede, row.names = FALSE,
-#              caption = "BEHANDLNG_FUNKSJONSSTATUS")
-# rapbase::mst(tabell_avsluttede, type = params$tableFormat,
-#              cap = "BEHANDLNG FUNKSJONSSTATUS")
-
 if (knitr::is_html_output()) {
   kableExtra::kable(tabell_avsluttede) |>
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
 } else if (knitr::is_latex_output()) {
-   # kableExtra::kable(tabell_avsluttede, format = "latex") |>
-   #  kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
   kableExtra::kable(tabell_avsluttede, format = "latex", booktabs = TRUE, 
-      align = c("l", rep("p{2cm}", dim(tabell_avsluttede)[1]-1))) |> 
-    kableExtra::kable_styling(latex_options = c("striped"))
+      align = c("l", rep("p{2cm}", ncol(tabell_avsluttede)-1))) #|> 
+    # kableExtra::kable_styling(latex_options = c("striped"))
 }
 
 ```
 
 ## Registreringer siste år
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r figur registreringer, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(ggplot2)
 library(zoo)
@@ -201,15 +263,17 @@ tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
 #              cap = paste0("Registreringsaktivitet ved ", shusnavn))
 
 
-# if (knitr::is_html_output()) {
-  kableExtra::kable(tabell_reg) |>
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
-# } else if (knitr::is_latex_output()) {
-#    kableExtra::kable(tabell_reg, format = "latex", booktabs = TRUE, longtable = TRUE) |>
-#     kableExtra::kable_styling(latex_options = c("striped", "scale_down"))
-# }
-
-
+if (knitr::is_html_output()) {
+kableExtra::kable(tabell_reg) |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else if (knitr::is_latex_output()) {
+   kableExtra::kable(
+     tabell_reg, format = "latex", 
+     booktabs = TRUE, 
+     longtable = TRUE) |>
+    kableExtra::kable_styling(
+      latex_options = c("striped", "scale_down"))
+}
 
 ```
 
