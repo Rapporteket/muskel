@@ -7,9 +7,7 @@
 muskelRenderRmd2(
   sourceFile,
   outputType = c("html_document", "html_fragment", "pdf_document"),
-  params = list(),
-  keep_tex_on_pdf = TRUE,
-  verbose = FALSE
+  params = list()
 )
 }
 \arguments{

@@ -49,14 +49,6 @@ appUi <- function() {
     tabPanel("Datadump",
              muskel::datadump_ui("dataDumpMuskel")
     ),
-    tabPanel("Rapporter",
-             fluidPage(
-               numericInput("reshID", "Resh ID", value = 4001031),
-               dateInput("datoFra", "Fra dato", value = Sys.Date() - 90),
-               actionButton("refresh", "Oppdater rapport"),
-               uiOutput("report")
-             )
-    ),
 
     shiny::tabPanel(
       shiny::span("Abonnement",

@@ -83,9 +83,10 @@ muskelRenderRmd <- function(sourceFile, outputType = "html_document",
 #'
 muskelRenderRmd2 <- function(sourceFile,
                             outputType = c("html_document", "html_fragment", "pdf_document"),
-                            params = list(),
-                            keep_tex_on_pdf = TRUE,
-                            verbose = FALSE) {
+                            params = list()#,
+                            # keep_tex_on_pdf = TRUE,
+                            # verbose = FALSE
+                            ) {
 
   # outputType <- match.arg(as.character(outputType))
   stopifnot(file.exists(sourceFile))
@@ -122,7 +123,7 @@ muskelRenderRmd2 <- function(sourceFile,
     ),
     "pdf_document"  = rmarkdown::pdf_document(
       latex_engine = "pdflatex",
-      keep_tex = isTRUE(keep_tex_on_pdf),
+      # keep_tex = isTRUE(keep_tex_on_pdf),
       pandoc_args = resource_path_arg
     )
   )
@@ -138,7 +139,7 @@ muskelRenderRmd2 <- function(sourceFile,
     output_dir = work_dir,
     params = params,
     envir = render_env,
-    quiet = !isTRUE(verbose),
+    # quiet = !isTRUE(verbose),
     clean = TRUE
   )
 
@@ -148,4 +149,30 @@ muskelRenderRmd2 <- function(sourceFile,
     return(f)
   }
 }
+
+#' Render documents from rmarkdown files at Rapporteket for autorapport,
+#' either subscription (or dispatchment, soon)
+#'
+#' @export
+muskel_kjor_autorapport <- function(
+    report = "SMArapport_abo_v2.Rmd",
+    outputType = c("html_document", "html_fragment", "pdf_document"),
+    abonnement = TRUE,
+    reshID = 4001031
+) {
+
+  params <- list(
+    reshID = reshID,
+    abonnement = abonnement
+  )
+
+  fn <- muskel::muskelRenderRmd2(
+    sourceFile = system.file(report, package = "muskel"),
+    outputType = outputType[1],
+    params = params
+  )
+
+
+}
+
 

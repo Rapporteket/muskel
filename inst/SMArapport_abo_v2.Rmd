@@ -44,6 +44,7 @@ params:
   userRole: "MyRole"
   tableFormat: "auto"
   shinySession: list()
+  abonnement: FALSE
 ---
 
 
@@ -74,8 +75,12 @@ SMAoversikt <- dplyr::left_join(
   by = dplyr::join_by(CENTREID == AvdRESH))
 
 reshID <- params$reshID
-datoTil <- params$endDate
-datoTil <- as.Date(cut(datoTil + 1, "quarter")) - 1
+if (params$abonnement) {
+  datoTil <- as.Date(cut(Sys.Date() + 1, "quarter")) - 1
+} else {
+  datoTil <- as.Date(cut(params$endDate + 1, "quarter")) - 1
+}
+
 datoFra <- (datoTil + lubridate::days(1)) %m-% months(3)
 
 shusnavn <- SMAoversikt$SykehusNavn[match(reshID, SMAoversikt$CENTREID)]

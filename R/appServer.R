@@ -44,6 +44,18 @@ appServer <- function(input, output, session) {
     map_orgname = shiny::req(map_avdeling)
   )
 
+  shiny::observeEvent(
+    shiny::req(user$role()), {
+      if (user$role() != 'SC') {
+        shiny::hideTab("muskel_app_id", target = "Eksport")
+        shiny::hideTab("muskel_app_id", target = "Verktøy")
+      } else {
+        shiny::showTab("muskel_app_id", target = "Eksport")
+        shiny::showTab("muskel_app_id", target = "Verktøy")
+      }
+    })
+
+
   muskel::fordelingsfig_server("fordeling_id", RegData=RegData, reshID = user$org)
 
   muskel::fordeling_grvar_server("forgrvar", RegData=RegData, reshID = user$org,
@@ -76,26 +88,8 @@ appServer <- function(input, output, session) {
 
 
 
-  observeEvent(input$refresh, {
-    quarto::quarto_render(
-      input = system.file("SMArapport_abo.qmd", package = "muskel"),
-      output_file = "www/SMArapport_abo.html",  # Shiny's www folder
-      execute_params = list(
-        reshID = input$reshID
-      )
-    )
-    output$report <- renderUI({
-      includeHTML("www/SMArapport_abo.html")
-    })
-  })
-
-
   ##############################################################################
   ################ Subscription, Dispatchment and Stats ########################
-
-  ## Objects currently shared among subscription and dispathcment
-  # orgs <- as.list(BrValg$sykehus)
-  # org <- rapbase::autoReportOrgServer("norgastDispatch", orgs)
   orgs <- as.list(setNames(
     as.numeric(unique(RegData$AvdRESH)),
     RegData$SykehusNavn[match(unique(RegData$AvdRESH), RegData$AvdRESH)]))
@@ -113,11 +107,19 @@ appServer <- function(input, output, session) {
     paramNames = subParamNames,
     paramValues = subParamValues,
     reports = list(
-      "SMA-rapport" = list(
-        synopsis = "NORNMD: SMA-rapport",
-        fun = "lag_SMArapport",
-        paramNames = c("baseName", "reshID"),
-        paramValues = c("SMArapport", 999999)
+      "SMA-rapport - pdf" = list(
+        synopsis = "NORNMD: SMA-rapport - pdf",
+        fun = "muskel_kjor_autorapport",
+        paramNames = c("report", "outputType", "abonnement", "reshID"),
+        paramValues = c("SMArapport_abo_v2.Rmd",
+                        "pdf_document", TRUE, 999999)
+      ),
+      "SMA-rapport - html" = list(
+        synopsis = "NORNMD: SMA-rapport - html",
+        fun = "muskel_kjor_autorapport",
+        paramNames = c("report", "outputType", "abonnement", "reshID"),
+        paramValues = c("SMArapport_abo_v2.Rmd",
+                        "html_document", TRUE, 999999)
       )
     ),
     orgs = orgs,
@@ -125,36 +127,36 @@ appServer <- function(input, output, session) {
     user = user
   )
 
-  ## Dispatchment
-
-
-  vis_rapp <- reactiveVal(FALSE)
-  observeEvent(user$role(), {
-    vis_rapp(user$role() == "SC")
-  })
-  disParamNames <- shiny::reactive(c("reshID"))
-  disParamValues <- shiny::reactive(c(org$value()))
-
-  rapbase::autoReportServer(
-    id = "muskelDispatch",
-    registryName = "muskel",
-    type = "dispatchment",
-    org = org$value,
-    paramNames = disParamNames,
-    paramValues = disParamValues,
-    reports = list(
-      "SMA-rapport" = list(
-        synopsis = "NORNMD: SMA-rapport",
-        fun = "lag_SMArapport",
-        paramNames = c("baseName", "reshID"),
-        paramValues = c("SMArapport", 999999)
-      )
-    ),
-    orgs = orgs,
-    eligible = vis_rapp,
-    freq = "quarter",
-    user = user
-  )
+  # ## Dispatchment
+  #
+  #
+  # vis_rapp <- reactiveVal(FALSE)
+  # observeEvent(user$role(), {
+  #   vis_rapp(user$role() == "SC")
+  # })
+  # disParamNames <- shiny::reactive(c("reshID"))
+  # disParamValues <- shiny::reactive(c(org$value()))
+  #
+  # rapbase::autoReportServer(
+  #   id = "muskelDispatch",
+  #   registryName = "muskel",
+  #   type = "dispatchment",
+  #   org = org$value,
+  #   paramNames = disParamNames,
+  #   paramValues = disParamValues,
+  #   reports = list(
+  #     "SMA-rapport" = list(
+  #       synopsis = "NORNMD: SMA-rapport",
+  #       fun = "lag_SMArapport",
+  #       paramNames = c("baseName", "reshID"),
+  #       paramValues = c("SMArapport", 999999)
+  #     )
+  #   ),
+  #   orgs = orgs,
+  #   eligible = vis_rapp,
+  #   freq = "quarter",
+  #   user = user
+  # )
 
   ## Metadata
   meta <- shiny::reactive({
