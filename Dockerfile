@@ -7,7 +7,8 @@ WORKDIR /app/R
 
 COPY *.tar.gz .
 
-RUN R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
+RUN tlmgr install pakke \
+  && R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
   && rm ./*.tar.gz \
   && R -e "remotes::install_github(\"Rapporteket/rapbase\", ref = \"main\")"
 
