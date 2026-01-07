@@ -8,6 +8,7 @@ WORKDIR /app/R
 COPY *.tar.gz .
 
 RUN tlmgr install multirow \
+  && texlive-latex-extra \
   && R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
   && rm ./*.tar.gz \
   && R -e "remotes::install_github(\"Rapporteket/rapbase\", ref = \"main\")"
