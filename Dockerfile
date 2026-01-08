@@ -7,7 +7,8 @@ WORKDIR /app/R
 
 COPY *.tar.gz .
 
-RUN tlmgr install multirow collection-latexextra \
+RUN R -e "install.packages('tinytex'); tinytex::install_tinytex()" \
+  && tlmgr install multirow \
   && R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
   && rm ./*.tar.gz \
   && R -e "remotes::install_github(\"Rapporteket/rapbase\", ref = \"main\")"
