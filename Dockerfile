@@ -7,7 +7,7 @@ WORKDIR /app/R
 
 COPY *.tar.gz .
 
-RUN R -e "install.packages('tinytex'); tinytex::install_tinytex()" \
+RUN R -e "install.packages('tinytex'); tinytex::install_tinytex(force = TRUE)" \
   && tlmgr install multirow \
   && R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
   && rm ./*.tar.gz \
