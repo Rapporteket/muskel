@@ -128,36 +128,45 @@ appServer <- function(input, output, session) {
     runAutoReportButton = TRUE
   )
 
-  # ## Dispatchment
-  #
-  #
-  # vis_rapp <- reactiveVal(FALSE)
-  # observeEvent(user$role(), {
-  #   vis_rapp(user$role() == "SC")
-  # })
-  # disParamNames <- shiny::reactive(c("reshID"))
-  # disParamValues <- shiny::reactive(c(org$value()))
-  #
-  # rapbase::autoReportServer(
-  #   id = "muskelDispatch",
-  #   registryName = "muskel",
-  #   type = "dispatchment",
-  #   org = org$value,
-  #   paramNames = disParamNames,
-  #   paramValues = disParamValues,
-  #   reports = list(
-  #     "SMA-rapport" = list(
-  #       synopsis = "NORNMD: SMA-rapport",
-  #       fun = "lag_SMArapport",
-  #       paramNames = c("baseName", "reshID"),
-  #       paramValues = c("SMArapport", 999999)
-  #     )
-  #   ),
-  #   orgs = orgs,
-  #   eligible = vis_rapp,
-  #   freq = "quarter",
-  #   user = user
-  # )
+  ## Dispatchment
+
+
+  vis_rapp <- reactiveVal(FALSE)
+  observeEvent(user$role(), {
+    vis_rapp(user$role() == "SC")
+  })
+  disParamNames <- shiny::reactive(c("reshID"))
+  disParamValues <- shiny::reactive(c(org$value()))
+
+  rapbase::autoReportServer(
+    id = "muskelDispatch",
+    registryName = "muskel",
+    type = "dispatchment",
+    org = org$value,
+    paramNames = disParamNames,
+    paramValues = disParamValues,
+    reports = list(
+      "SMA-rapport - pdf" = list(
+        synopsis = "NORNMD: SMA-rapport - pdf",
+        fun = "muskel_kjor_autorapport",
+        paramNames = c("report", "outputType", "abonnement", "reshID"),
+        paramValues = c("SMArapport_abo_v2.Rmd",
+                        "pdf_document", TRUE, 999999)
+      ),
+      "SMA-rapport - html" = list(
+        synopsis = "NORNMD: SMA-rapport - html",
+        fun = "muskel_kjor_autorapport",
+        paramNames = c("report", "outputType", "abonnement", "reshID"),
+        paramValues = c("SMArapport_abo_v2.Rmd",
+                        "html_document", TRUE, 999999)
+      )
+    ),
+    orgs = orgs,
+    eligible = vis_rapp,
+    freq = "quarter",
+    user = user,
+    runAutoReportButton = TRUE
+  )
 
   ## Metadata
   meta <- shiny::reactive({
