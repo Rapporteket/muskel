@@ -13,7 +13,7 @@ startside_ui <- function(){
         div(
           class = "panel-heading" , style = "background-color : #E0E0E0 ",
           h2(
-            'Velkommen til Rapporteket - Muskelregisteret 3.2.8', align='center')),
+            'Velkommen til Rapporteket - Muskelregisteret 3.2.9', align='center')),
         div(
           class = "panel-body",style = "background-color:#F0F0F0",
           div(
