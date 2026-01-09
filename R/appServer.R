@@ -124,7 +124,8 @@ appServer <- function(input, output, session) {
     ),
     orgs = orgs,
     freq = "quarter",
-    user = user
+    user = user,
+    runAutoReportButton = TRUE
   )
 
   # ## Dispatchment
