@@ -145,7 +145,7 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         sketch <- htmltools::withTags(table(
           DT::tableHeader(ant_skjema[-dim(ant_skjema)[1], ]),
           DT::tableFooter(c('Sum' , as.numeric(ant_skjema[dim(ant_skjema)[1],
-                                                      2:dim(ant_skjema)[2]])))))
+                                                          2:dim(ant_skjema)[2]])))))
         list(ant_skjema=ant_skjema, sketch=sketch)
       }
 
@@ -176,30 +176,44 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           dplyr::filter(ASSESSMENT_DATE >= req(input$datoFra2),
                         ASSESSMENT_DATE <= req(input$datoTil2),
                         STATUS %in% as.numeric(req(input$regstatus)),
-                        BEHANDLNG_SPINRAZA ==1) %>%
+                        BEHANDLNG_SPINRAZA == 1) %>%
           dplyr::arrange(ASSESSMENT_DATE) %>%
           dplyr::summarise(
+            CENTREID = paste0(unique(CENTREID), collapse = ","),
             ASSESSMENT_DATE_baseline = dplyr::first(ASSESSMENT_DATE),
-            HFMSE_baseline = dplyr::first(KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
-            RULM_baseline = dplyr::first(KLINISK_RULM, order_by = ASSESSMENT_DATE),
-            x6MWT_baseline = dplyr::first(KLINISK_6MWT, order_by = ASSESSMENT_DATE),
-            ATEND_baseline = dplyr::first(KLINISK_ATEND, order_by = ASSESSMENT_DATE),
-            BIPAP_baseline = dplyr::first(KLINISK_BIPAP, order_by = ASSESSMENT_DATE),
-            FUNKSJONSSTATUS_baseline = dplyr::first(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE),
+            HFMSE_baseline = dplyr::first(
+              KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
+            RULM_baseline = dplyr::first(
+              KLINISK_RULM, order_by = ASSESSMENT_DATE),
+            x6MWT_baseline = dplyr::first(
+              KLINISK_6MWT, order_by = ASSESSMENT_DATE),
+            ATEND_baseline = dplyr::first(
+              KLINISK_ATEND, order_by = ASSESSMENT_DATE),
+            BIPAP_baseline = dplyr::first(
+              KLINISK_BIPAP, order_by = ASSESSMENT_DATE),
+            FUNKSJONSSTATUS_baseline = dplyr::first(
+              KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE),
             ASSESSMENT_DATE_latest = dplyr::last(ASSESSMENT_DATE),
-            HFMSE_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_HFMSE, order_by = ASSESSMENT_DATE)),
-            RULM_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                 NA, dplyr::last(KLINISK_RULM, order_by = ASSESSMENT_DATE)),
-            x6MWT_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_6MWT, order_by = ASSESSMENT_DATE)),
-            ATEND_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_ATEND, order_by = ASSESSMENT_DATE)),
-            BIPAP_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                  NA, dplyr::last(KLINISK_BIPAP, order_by = ASSESSMENT_DATE)),
-            FUNKSJONSSTATUS_latest = ifelse(dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-                                            NA, dplyr::last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
-            Tidsdiff_dager = difftime(ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
+            HFMSE_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_HFMSE, order_by = ASSESSMENT_DATE)),
+            RULM_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_RULM, order_by = ASSESSMENT_DATE)),
+            x6MWT_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_6MWT, order_by = ASSESSMENT_DATE)),
+            ATEND_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_ATEND, order_by = ASSESSMENT_DATE)),
+            BIPAP_latest = ifelse(dplyr::last(
+              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_BIPAP, order_by = ASSESSMENT_DATE)),
+            FUNKSJONSSTATUS_latest = ifelse(
+              dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
+              NA, dplyr::last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
+            Tidsdiff_dager = difftime(
+              ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
             FUNKSJONSSTATUS_all = paste0(BEHANDLNG_FUNKSJONSSTATUS, collapse = ","),
             BEHANDLING_all = paste0(BEHANDLNG_BEHANDLING, collapse = ","),
             .by = PATIENT_ID) %>%
@@ -208,12 +222,12 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
 
       output$TabellSykehusinnkjop <- function() {
         tabell_sma <- tabell_shusinnkjop()
-        names(tabell_sma) <- c("PATIENT_ID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
+        names(tabell_sma) <- c("PATIENT_ID", "CENTREID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
                                "ASSESSMENT_DATE ", "HFMSE ", "RULM ", "6MWT ", "ATEND ", "BIPAP ", "KLINISK FUNKSJONSSTATUS ",
                                "Tidsdiff_dager", "FUNKSJONSSTATUS ALLE", "BEHANDLING ALLE")
         tabell_sma %>% knitr::kable("html", row.names = F) %>%
           kableExtra::kable_styling("hover", full_width = F) %>%
-          kableExtra::add_header_above(c(" ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
+          kableExtra::add_header_above(c(" ", " ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
       }
 
       output$lastNedSykehusinnkjop <- shiny::downloadHandler(
