@@ -32,6 +32,17 @@ appUi <- function() {
     tabPanel("Kumulative andeler",
              muskel::kumulativAndel_ui(id = "kumAnd")
     ),
+    shiny::tabPanel(
+      "SMA-rapport",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          muskel::defaultReportInput("smarapp")
+        ),
+        shiny::mainPanel(
+          muskel::defaultReportUI("smarapp")
+        )
+      )
+    ),
     tabPanel("Administrative tabeller",
              muskel::admtab_ui("muskeltabell")
     ),
@@ -39,20 +50,33 @@ appUi <- function() {
              muskel::datadump_ui("dataDumpMuskel")
     ),
 
+    shiny::tabPanel(
+      shiny::span("Abonnement",
+                  title="Bestill tilsending av rapporter på e-post"),
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          rapbase::autoReportInput("muskelSubscription")
+        ),
+        shiny::mainPanel(
+          rapbase::autoReportUI("muskelSubscription")
+        )
+      )
+    ),
+
     shiny::navbarMenu(
       "Verktøy",
-      # shiny::tabPanel(
-      #   "Utsending",
-      #   shiny::sidebarLayout(
-      #     shiny::sidebarPanel(
-      #       rapbase::autoReportOrgInput("muskelDispatch"),
-      #       rapbase::autoReportInput("muskelDispatch")
-      #     ),
-      #     shiny::mainPanel(
-      #       rapbase::autoReportUI("muskelDispatch")
-      #     )
-      #   )
-      # ),
+      shiny::tabPanel(
+        "Utsending",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::autoReportOrgInput("muskelDispatch"),
+            rapbase::autoReportInput("muskelDispatch")
+          ),
+          shiny::mainPanel(
+            rapbase::autoReportUI("muskelDispatch")
+          )
+        )
+      ),
 
       shiny::tabPanel(
         "Eksport",
