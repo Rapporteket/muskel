@@ -3,6 +3,9 @@
 #' @return An object representing the muskel app
 #' @export
 
-muskelApp <- function() {
+muskelApp <- function(logAsJson = FALSE) {
+  if (logAsJson) {
+    rapbase::loggerSetup()
+  }
   shiny::shinyApp(ui = appUi, server = appServer)
 }
