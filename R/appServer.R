@@ -125,7 +125,7 @@ appServer <- function(input, output, session) {
     orgs = orgs,
     freq = "quarter",
     user = user,
-    runAutoReportButton = TRUE
+    runAutoReportButton = FALSE
   )
 
   ## Dispatchment
@@ -165,7 +165,7 @@ appServer <- function(input, output, session) {
     eligible = vis_rapp,
     freq = "quarter",
     user = user,
-    runAutoReportButton = TRUE
+    runAutoReportButton = FALSE
   )
 
   ## Metadata
