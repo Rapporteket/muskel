@@ -35,6 +35,6 @@ Suggests:
     knitr,
     covr
 Remotes: 
-    Rapporteket/rapbase@main,
+    Rapporteket/rapbase,
     Rapporteket/rapFigurer,
 Roxygen: list(markdown = TRUE)
