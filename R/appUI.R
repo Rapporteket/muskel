@@ -10,9 +10,9 @@ appUi <- function() {
   # Define UI for application
   ui <- shiny::navbarPage(
     id = "muskel_app_id",
-    title = rapbase::title(regTitle),
+    title = rapbase::regTitle(regTitle),
     windowTitle = regTitle,
-    theme = rapbase::theme(),
+    theme = rapbase::rapTheme(),
 
     shiny::tabPanel(
       "Startside",

@@ -20,7 +20,7 @@ Imports:
     kableExtra,
     shinyjs,
     lubridate,
-    rapbase,
+    rapbase (>= 3.6.0),
     rapFigurer,
     magrittr,
     shinyalert,
@@ -35,6 +35,6 @@ Suggests:
     knitr,
     covr
 Remotes: 
-    Rapporteket/rapbase@main,
+    Rapporteket/rapbase,
     Rapporteket/rapFigurer,
 Roxygen: list(markdown = TRUE)
