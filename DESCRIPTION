@@ -20,7 +20,7 @@ Imports:
     kableExtra,
     shinyjs,
     lubridate,
-    rapbase,
+    rapbase (>= 3.6.0),
     rapFigurer,
     magrittr,
     shinyalert,
