@@ -4,7 +4,7 @@
 \alias{muskelApp}
 \title{Run the muskel Shiny Application}
 \usage{
-muskelApp()
+muskelApp(logAsJson = FALSE)
 }
 \value{
 An object representing the muskel app

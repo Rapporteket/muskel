@@ -29,7 +29,7 @@ output:
       booktabs: null
       xcolor: ["table","dvipsnames"]
       colortbl: null
-      longtable: null       # <-- add this line
+      longtable: null
       makecell: null        # optional (useful for line breaks in header cells)
       ragged2e: null        # optional (used by some column specs)
       graphicx: null
