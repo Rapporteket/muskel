@@ -1,5 +1,5 @@
 ---
-title: "SMA-rapport"
+title: "SMA-rapport, nusinersen-registreringer"
 author: "NORNMD"
 date: "`r paste0(lubridate::day(Sys.Date()), '. ', format(Sys.Date(), '%B %Y'))`"
 
@@ -29,7 +29,7 @@ output:
       booktabs: null
       xcolor: ["table","dvipsnames"]
       colortbl: null
-      longtable: null       # <-- add this line
+      longtable: null
       makecell: null        # optional (useful for line breaks in header cells)
       ragged2e: null        # optional (used by some column specs)
       graphicx: null
@@ -91,36 +91,42 @@ Dette er en rapport fra Norsk register for arvelige nevromuskulære diagnoser (N
 
 
 
-### Avsluttede behandlinger siste kvartal
+### Registrerte behandlinger siste kvartal
 
 
 ```{r table-avsluttede, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
 # Kolonnenavn med linjeskift (LaTeX/HTML) via kableExtra::linebreak
 colnames_common_wrapped <- c(
-  kableExtra::linebreak("Fortsatt under behandling", align = "c"),
-  kableExtra::linebreak("Avsluttet på grunn av\nbivirkninger", align = "c"),
-  kableExtra::linebreak("Avsluttet på grunn av\nmanglende effekt", align = "c")
+  kableExtra::linebreak("Registrerte behandlinger", align = "c"),
+  kableExtra::linebreak("Registrert avsluttet på \n grunn av bivirkninger", 
+                        align = "c"),
+  kableExtra::linebreak("Registrert avsluttet på \n grunn av manglende effekt", align = "c")
 )
 
 # Funksjon som lager sammendrag for en gitt datoperiode
-make_summary <- function(df, from_date, to_date, reshID, shusnavn) {
+make_summary <- function(df, from_date, to_date, 
+                         reshID, shusnavn) {
   df |>
     mutate(
-      Avdeling = ifelse(CENTREID == reshID, shusnavn, "Resten av landet")
+      Avdeling = ifelse(CENTREID == reshID, shusnavn, 
+                        "Resten av landet") |> as.factor()
     ) |>
     # siste registrering per pasient
-    filter(ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE), .by = PATIENT_ID) |>
+    filter(ASSESSMENT_DATE == dplyr::last(ASSESSMENT_DATE), ## OBS: Fiks!
+           .by = PATIENT_ID) |>
     # filtrering på periode
-    filter(ASSESSMENT_DATE <= to_date, ASSESSMENT_DATE > from_date) |>
+    filter(ASSESSMENT_DATE <= to_date, 
+           ASSESSMENT_DATE > from_date) |>
+    group_by(Avdeling, .drop = F) |> 
     summarise(
-      "Fortsatt under behandling" = 
+      "Registrerte behandlinger" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = TRUE),
-      "Avsluttet på grunn av bivirkninger" = 
+      "Registrert avsluttet på grunn av bivirkninger" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = TRUE),
-      "Avsluttet på grunn av manglende effekt" = 
+      "Registrert avsluttet på grunn av manglende effekt" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = TRUE),
-      .by = Avdeling
+      # .by = Avdeling
     )
 }
 
@@ -147,9 +153,9 @@ add_period_col <- function(tbl, period_label) {
     tibble::tibble(
       Periode = period_label,
       Avdeling = c(shusnavn, "Resten av landet"),
-      "Fortsatt under behandling" = 0L,
-      "Avsluttet på grunn av bivirkninger" = 0L,
-      "Avsluttet på grunn av manglende effekt" = 0L
+      "Registrerte behandlinger" = 0L,
+      "Registrert avsluttet på grunn av bivirkninger" = 0L,
+      "Registrert avsluttet på grunn av manglende effekt" = 0L
     )
   } else {
     tibble::add_column(tbl, Periode = period_label, .before = 1)
@@ -159,12 +165,13 @@ add_period_col <- function(tbl, period_label) {
 tabell_2aar <- add_period_col(tabell_2aar, "Siste 2 år")
 tabell_kvartal <- add_period_col(tabell_kvartal, "Siste kvartal")
 
-tabell_avsluttede <- dplyr::bind_rows(tabell_2aar, tabell_kvartal) |>
+tabell_avsluttede <- dplyr::bind_rows(tabell_2aar, 
+                                      tabell_kvartal) |>
   select(
     Periode, Avdeling,
-    "Fortsatt under behandling",
-    "Avsluttet på grunn av bivirkninger",
-    "Avsluttet på grunn av manglende effekt"
+    "Registrerte behandlinger",
+    "Registrert avsluttet på grunn av bivirkninger",
+    "Registrert avsluttet på grunn av manglende effekt"
   )
 
 if (knitr::is_html_output()) {
@@ -186,27 +193,6 @@ if (knitr::is_html_output()) {
     ) |>
     kableExtra::collapse_rows(columns = 1, valign = "top")
   
-  # --- Løsning B (alternativ): Faste kolonnebredder og linjebryting i stedet for skalering ---
-  # Fjern kommentartegnene under og kommenter bort Løsning A dersom du heller vil bruke faste bredder.
-  # kableExtra::kbl(
-  #   tabell_avsluttede,
-  #   format = "latex",
-  #   booktabs = TRUE,
-  #   align = c("l", "l", "r", "r", "r"),
-  #   col.names = c("Periode", "Avdeling", colnames_common_wrapped),
-  #   escape = FALSE
-  # ) |>
-  #   kableExtra::kable_styling(
-  #     latex_options = c("striped", "hold_position"),
-  #     stripe_color = "gray!15"
-  #   ) |>
-  #   # Sett fornuftige bredder; justér etter behov (måleenhet = "em"/"cm"/"in")
-  #   kableExtra::column_spec(1, width = "8em") |>
-  #   kableExtra::column_spec(2, width = "14em") |>
-  #   kableExtra::column_spec(3, width = "10em") |>
-  #   kableExtra::column_spec(4, width = "12em") |>
-  #   kableExtra::column_spec(5, width = "12em") |>
-  #   kableExtra::collapse_rows(columns = 1, valign = "top")
 }
 
 ```
@@ -228,24 +214,45 @@ plotdata <- SMAoversikt |>
       ifelse(CENTREID == reshID, shusnavn, "Resten av landet"),
     ind=1)
 
-plotdata |>
-  ggplot(aes(
-    x = kvartal2,
-    y = ind,
-    colour = Avdeling,
-    group = Avdeling
-  )) +
-  stat_summary(fun = sum, geom = "line") +
+
+plotdata2 <- plotdata |>
+  count(kvartal2, Avdeling, wt = ind, name = "n") |>
+  tidyr::complete(kvartal2, Avdeling, fill = list(n = 0))
+
+ggplot(plotdata2, aes(
+  x = kvartal2,
+  y = n,
+  colour = Avdeling,
+  group = Avdeling
+)) +
+  geom_line() +
   scale_x_yearqtr(format = "%Y-Q%q") +
-  ggplot2::theme_classic() +
+  theme_classic() +
   labs(
     x = "Kvartal",
     y = "Antall registrerte skjema",
     colour = "Avdeling"
   ) +
-  # Prefer coord_cartesian to keep data and just limit the visible range
   coord_cartesian(ylim = c(0, NA)) +
-  ggplot2::theme(legend.position = "top")
+  theme(legend.position = "top")
+# plotdata |>
+#   ggplot(aes(
+#     x = kvartal2,
+#     y = ind,
+#     colour = Avdeling,
+#     group = Avdeling
+#   )) +
+#   stat_summary(fun = sum, geom = "line") +
+#   scale_x_yearqtr(format = "%Y-Q%q") +
+#   ggplot2::theme_classic() +
+#   labs(
+#     x = "Kvartal",
+#     y = "Antall registrerte skjema",
+#     colour = "Avdeling"
+#   ) +
+#   # Prefer coord_cartesian to keep data and just limit the visible range
+#   coord_cartesian(ylim = c(0, NA)) +
+#   ggplot2::theme(legend.position = "top")
 
 
 
@@ -298,20 +305,6 @@ tmp <- data.frame("rad1" = "Antall nye pasienter",
 names(tmp) <- names(tabell_reg)
 tabell_reg <- dplyr::bind_rows(tabell_reg, tmp)
 
-
-# if (knitr::is_html_output()) {
-# kableExtra::kable(tabell_reg) |>
-#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
-# } else if (knitr::is_latex_output()) {
-#    kableExtra::kable(
-#      tabell_reg, format = "latex",
-#      booktabs = TRUE,
-#      longtable = TRUE) |>
-#     kableExtra::kable_styling(
-#       latex_options = c("striped", "scale_down"))
-# }
-#
-
 if (knitr::is_html_output()) {
   kableExtra::kable(tabell_reg) |>
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
@@ -326,9 +319,7 @@ if (knitr::is_html_output()) {
       latex_options = c("striped", "repeat_header"),  # header repeats per page
       font_size = 9
     )
-  # Optionally, control widths column-by-column (example):
-  # |> kableExtra::column_spec(1, width = "3cm")
-  # |> kableExtra::column_spec(2, width = "3cm")
+
 }
 
 

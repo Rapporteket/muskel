@@ -56,13 +56,19 @@ appServer <- function(input, output, session) {
     })
 
 
-  muskel::fordelingsfig_server("fordeling_id", RegData=RegData, reshID = user$org)
+  muskel::fordelingsfig_server("fordeling_id",
+                               RegData=RegData,
+                               reshID = user$org)
 
-  muskel::fordeling_grvar_server("forgrvar", RegData=RegData, reshID = user$org,
+  muskel::fordeling_grvar_server("forgrvar",
+                                 RegData=RegData,
+                                 reshID = user$org,
                                  ss = session)
 
-  muskel::kumulativAndel_server("kumAnd", RegData=RegData,
-                                reshID = user$org, ss = session)
+  muskel::kumulativAndel_server("kumAnd",
+                                RegData=RegData,
+                                reshID = user$org,
+                                ss = session)
 
   reportParams <- shiny::reactive(
     list(
@@ -75,7 +81,9 @@ appServer <- function(input, output, session) {
   muskel::defaultReportServer(
     id = "smarapp",
     reportFileName = reactiveVal("SMArapport_abo_v2.Rmd"),
-    reportParams = reportParams
+    reportParams = reportParams,
+    avdeling = setNames(map_avdeling$UnitId,
+                        map_avdeling$orgname)
   )
 
   muskel::admtab_server("muskeltabell", RegData=RegData,

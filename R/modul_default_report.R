@@ -27,13 +27,20 @@ defaultReportInput <- function(
     max = "2100-01-01") {
 
   shiny::tagList(
-    shiny::dateRangeInput(shiny::NS(id, "dateRange"),
-                          label = "Velg periode:",
-                          start = startDate,
-                          end = endDate,
-                          min = min,
-                          max = max,
-                          separator = "-"),
+    # shiny::dateRangeInput(shiny::NS(id, "dateRange"),
+    #                       label = "Velg periode:",
+    #                       start = startDate,
+    #                       end = endDate,
+    #                       min = min,
+    #                       max = max,
+    #                       separator = "-"),
+    shiny::dateInput(shiny::NS(id, "datoTil"),
+                     label = "Til dato:",
+                     value = endDate,
+                     min = min,
+                     max = max
+    ),
+    uiOutput(outputId = shiny::NS(id, 'valgtShus_ui')),
     shiny::radioButtons(shiny::NS(id, "format"),
                         "Format for nedlasting",
                         list(PDF = "pdf_document", HTML = "html_document"),
@@ -55,13 +62,32 @@ defaultReportUI <- function(id) {
 
 #' @rdname defaultReport
 #' @export
-defaultReportServer <- function(id, reportFileName, reportParams) {
+defaultReportServer <- function(id, reportFileName,
+                                reportParams, avdeling) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    output$valgtShus_ui <- renderUI({
+      reportParams_list <- reportParams()
+      ns <- session$ns
+      if (reportParams_list$userRole == 'SC') {
+        selectInput(inputId = ns("valgtShus"), label = "Velg sykehus",
+                    choices = avdeling,
+                    selected = reportParams_list$reshID)
+      } else {
+        selectInput(inputId = ns("valgtShus"), label = "Velg sykehus",
+                    choices = avdeling[avdeling == reportParams_list$reshID],
+                    selected = reportParams_list$reshID)
+      }
+    })
 
     output$report <- shiny::renderUI({
       reportParams_list <- reportParams()
-      reportParams_list$startDate <- input$dateRange[1]
-      reportParams_list$endDate <- input$dateRange[2]
+      # reportParams_list$startDate <- input$dateRange[1]
+      # reportParams_list$endDate <- input$dateRange[2]
+      reportParams_list$endDate <- input$datoTil
+      if (!is.null(input$valgtShus)) {
+        reportParams_list$reshID <- input$valgtShus
+      }
       muskel::muskelRenderRmd2(
         sourceFile = system.file(reportFileName(), package = "muskel"),
         outputType = "html_fragment",
@@ -81,8 +107,12 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
       },
       content = function(file) {
         reportParams_list <- reportParams()
-        reportParams_list$startDate <- input$dateRange[1]
-        reportParams_list$endDate <- input$dateRange[2]
+        # reportParams_list$startDate <- input$dateRange[1]
+        # reportParams_list$endDate <- input$dateRange[2]
+        reportParams_list$endDate <- input$datoTil
+        if (!is.null(input$valgtShus)) {
+          reportParams_list$reshID <- input$valgtShus
+        }
         reportParams_list$tableFormat <- input$format
         fn <- muskel::muskelRenderRmd2(
           sourceFile = system.file(reportFileName(), package = "muskel"),
