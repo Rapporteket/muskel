@@ -110,6 +110,9 @@ defaultReportServer <- function(id, reportFileName,
         # reportParams_list$startDate <- input$dateRange[1]
         # reportParams_list$endDate <- input$dateRange[2]
         reportParams_list$endDate <- input$datoTil
+        if (!is.null(input$valgtShus)) {
+          reportParams_list$reshID <- input$valgtShus
+        }
         reportParams_list$tableFormat <- input$format
         fn <- muskel::muskelRenderRmd2(
           sourceFile = system.file(reportFileName(), package = "muskel"),

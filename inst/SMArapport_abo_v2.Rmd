@@ -120,11 +120,11 @@ make_summary <- function(df, from_date, to_date,
            ASSESSMENT_DATE > from_date) |>
     group_by(Avdeling, .drop = F) |> 
     summarise(
-      "Fortsatt under behandling" = 
+      "Registrerte behandlinger" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 1, na.rm = TRUE),
-      "Avsluttet på grunn av bivirkninger" = 
+      "Registrert avsluttet på grunn av bivirkninger" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 2, na.rm = TRUE),
-      "Avsluttet på grunn av manglende effekt" = 
+      "Registrert avsluttet på grunn av manglende effekt" = 
         sum(BEHANDLNG_FUNKSJONSSTATUS == 3, na.rm = TRUE),
       # .by = Avdeling
     )
@@ -153,9 +153,9 @@ add_period_col <- function(tbl, period_label) {
     tibble::tibble(
       Periode = period_label,
       Avdeling = c(shusnavn, "Resten av landet"),
-      "Fortsatt under behandling" = 0L,
-      "Avsluttet på grunn av bivirkninger" = 0L,
-      "Avsluttet på grunn av manglende effekt" = 0L
+      "Registrerte behandlinger" = 0L,
+      "Registrert avsluttet på grunn av bivirkninger" = 0L,
+      "Registrert avsluttet på grunn av manglende effekt" = 0L
     )
   } else {
     tibble::add_column(tbl, Periode = period_label, .before = 1)
@@ -169,9 +169,9 @@ tabell_avsluttede <- dplyr::bind_rows(tabell_2aar,
                                       tabell_kvartal) |>
   select(
     Periode, Avdeling,
-    "Fortsatt under behandling",
-    "Avsluttet på grunn av bivirkninger",
-    "Avsluttet på grunn av manglende effekt"
+    "Registrerte behandlinger",
+    "Registrert avsluttet på grunn av bivirkninger",
+    "Registrert avsluttet på grunn av manglende effekt"
   )
 
 if (knitr::is_html_output()) {
