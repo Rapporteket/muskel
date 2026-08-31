@@ -4,3 +4,21 @@
 AntReg.csv
 muskelreg.csv
 tid_utred_diagnose_gjsn.pdf
+
+# Many kinds of data files
+*.rda
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.sav
+*.dta
+*.sas7bdat
+*.rds
+*.RData
+*.sql
+
+*.zip
+*.tar
+*.gz
+
