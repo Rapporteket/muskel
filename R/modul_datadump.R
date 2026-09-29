@@ -217,17 +217,14 @@ datadump_server <- function(id, userRole, reshID, mainSession){
               )
           }
           write.csv2(dataDump, file, fileEncoding = "UTF-8")
-        }
-      )
-      shinyjs::onclick(
-        "dataDumpNedLasting",
-        rapbase::repLogger(
-          session = mainSession,
-          msg = paste0(
-            "Muskel: datadump ", input$ddselect, " ",
-            min(input$ddDateRange),"-",max(input$ddDateRange)
+          rapbase::repLogger2(
+            user = user,
+            msg = paste0(
+              "Muskel: datadump ", input$ddselect, " ",
+              min(input$ddDateRange),"-",max(input$ddDateRange)
           )
-        )
+          )
+        }
       )
     }
   )

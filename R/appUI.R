@@ -46,13 +46,14 @@ appUi <- function() {
     tabPanel("Administrative tabeller",
              muskel::admtab_ui("muskeltabell")
     ),
-    tabPanel("Datadump",
-             muskel::datadump_ui("dataDumpMuskel")
-    ),
+    # tabPanel("Datadump",
+    #          muskel::datadump_ui("dataDumpMuskel")
+    # ),
 
     shiny::tabPanel(
       shiny::span("Abonnement",
                   title="Bestill tilsending av rapporter på e-post"),
+      value = "abonnement_id",
       shiny::sidebarLayout(
         shiny::sidebarPanel(
           rapbase::autoReportInput("muskelSubscription")
@@ -63,44 +64,44 @@ appUi <- function() {
       )
     ),
 
-    shiny::navbarMenu(
-      "Verktøy",
-      shiny::tabPanel(
-        "Utsending",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::autoReportOrgInput("muskelDispatch"),
-            rapbase::autoReportInput("muskelDispatch")
-          ),
-          shiny::mainPanel(
-            rapbase::autoReportUI("muskelDispatch")
-          )
-        )
-      ),
-
-      shiny::tabPanel(
-        "Eksport",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::exportUCInput("muskelExport")
-          ),
-          shiny::mainPanel(
-            rapbase::exportGuideUI("muskelExportGuide")
-          )
-        )
-      ),
-
-      shiny::tabPanel(
-        "Bruksstatistikk",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
-          shiny::mainPanel(
-            rapbase::statsUI("muskelStats"),
-            rapbase::statsGuideUI("muskelStatsGuide")
-          )
-        )
-      )
-    )
+    # shiny::navbarMenu(
+    #   "Verktøy",
+    #   shiny::tabPanel(
+    #     "Utsending",
+    #     shiny::sidebarLayout(
+    #       shiny::sidebarPanel(
+    #         rapbase::autoReportOrgInput("muskelDispatch"),
+    #         rapbase::autoReportInput("muskelDispatch")
+    #       ),
+    #       shiny::mainPanel(
+    #         rapbase::autoReportUI("muskelDispatch")
+    #       )
+    #     )
+    #   ),
+    #
+    #   shiny::tabPanel(
+    #     "Eksport",
+    #     shiny::sidebarLayout(
+    #       shiny::sidebarPanel(
+    #         rapbase::exportUCInput("muskelExport")
+    #       ),
+    #       shiny::mainPanel(
+    #         rapbase::exportGuideUI("muskelExportGuide")
+    #       )
+    #     )
+    #   ),
+    #
+    #   shiny::tabPanel(
+    #     "Bruksstatistikk",
+    #     shiny::sidebarLayout(
+    #       shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
+    #       shiny::mainPanel(
+    #         rapbase::statsUI("muskelStats"),
+    #         rapbase::statsGuideUI("muskelStatsGuide")
+    #       )
+    #     )
+    #   )
+    # )
 
   )
 }
