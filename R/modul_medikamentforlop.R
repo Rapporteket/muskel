@@ -418,6 +418,7 @@ medikament_sma_server <- function(
       tabell_shusinnkjop2 <- function() {
         tabell_sma <- SMAoversikt |>
           dplyr::arrange(PATIENT_ID, ASSESSMENT_DATE) |>
+          dplyr::filter(STATUS %in% as.numeric(req(input$regstatus))) |>
           dplyr::mutate(
             forlop_id = cumsum(
               dplyr::row_number() == 1 |
@@ -430,11 +431,10 @@ medikament_sma_server <- function(
           dplyr::filter(
             ASSESSMENT_DATE >= req(input$datoFra),
             ASSESSMENT_DATE <= req(input$datoTil),
-            STATUS %in% as.numeric(req(input$regstatus)),
             user$role() == "SC" | CENTREID == user$org(),
             BEHANDLNG_SPINRAZA == 1) |>
           dplyr::summarise(
-            Medikamentforlop_SMA = first(BEHANDLNG_BEHANDLING),
+            Medikamentforlop_SMA = dplyr::first(BEHANDLNG_BEHANDLING),
             CENTREID = paste0(unique(CENTREID), collapse = ","),
             ASSESSMENT_DATE_baseline = dplyr::first(
               ASSESSMENT_DATE, order_by = ASSESSMENT_DATE),
