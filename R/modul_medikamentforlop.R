@@ -73,10 +73,12 @@ medikament_sma_server <- function(
       tabell_shusinnkjop <- function() {
         tabell_sma <- SMAoversikt %>%
           dplyr::mutate(ASSESSMENT_DATE = as.Date(ASSESSMENT_DATE)) %>%
-          dplyr::filter(ASSESSMENT_DATE >= req(input$datoFra),
-                        ASSESSMENT_DATE <= req(input$datoTil),
-                        STATUS %in% as.numeric(req(input$regstatus)),
-                        BEHANDLNG_SPINRAZA == 1) %>%
+          dplyr::filter(
+            ASSESSMENT_DATE >= req(input$datoFra),
+            ASSESSMENT_DATE <= req(input$datoTil),
+            STATUS %in% as.numeric(req(input$regstatus)),
+            user$role() == "SC" | CENTREID == user$org(),
+            BEHANDLNG_SPINRAZA == 1) %>%
           dplyr::arrange(ASSESSMENT_DATE) %>%
           dplyr::summarise(
             CENTREID = paste0(unique(CENTREID), collapse = ","),
@@ -429,6 +431,7 @@ medikament_sma_server <- function(
             ASSESSMENT_DATE >= req(input$datoFra),
             ASSESSMENT_DATE <= req(input$datoTil),
             STATUS %in% as.numeric(req(input$regstatus)),
+            user$role() == "SC" | CENTREID == user$org(),
             BEHANDLNG_SPINRAZA == 1) |>
           dplyr::summarise(
             Medikamentforlop_SMA = first(BEHANDLNG_BEHANDLING),

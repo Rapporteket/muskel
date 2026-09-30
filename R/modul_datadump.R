@@ -87,7 +87,7 @@ datadump_ui <- function(id) {
 #'
 #' @export
 #'
-datadump_server <- function(id, userRole, reshID, mainSession){
+datadump_server <- function(id, user){
   moduleServer(
     id,
     function(input, output, session) {
@@ -116,13 +116,13 @@ datadump_server <- function(id, userRole, reshID, mainSession){
 
       qry <-   reactive({
         if (input$ddselect %in% c("smafollowup", "TilSykehusinnkjøp")) {
-          if (userRole() ==  "SC") {"SELECT m.PATIENT_ID, sma.*
+          if (user$role() ==  "SC") {"SELECT m.PATIENT_ID, sma.*
                        FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"}
           else {paste0("SELECT m.PATIENT_ID, sma.*
                        FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID
-                       WHERE sma.CENTREID = ", reshID())}
+                       WHERE sma.CENTREID = ", user$org())}
         } else {
-          if (userRole() ==  "SC") {
+          if (user$role() ==  "SC") {
             paste0(
               "SELECT ", input$ddselect, ".* ", AddHovedDatoVariabels(),
               " FROM ", input$ddselect, " ", AddHovedDatoJoin())
@@ -130,7 +130,7 @@ datadump_server <- function(id, userRole, reshID, mainSession){
             paste0(
               "SELECT ",input$ddselect, ".* ", AddHovedDatoVariabels(),
               " FROM ", input$ddselect, " ", AddHovedDatoJoin(), " WHERE ",
-              input$ddselect, ".AvdRESH = ", reshID()
+              input$ddselect, ".AvdRESH = ", user$org()
             )
           }
         }

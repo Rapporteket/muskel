@@ -184,13 +184,10 @@ appServer <- function(input, output, session) {
 
   muskel::admtab_server(
     "muskeltabell", RegData=RegData,
-    SkjemaOversikt=SkjemaOversikt,
-    SMAoversikt=SMAoversikt, ss = session,
-    userRole=user$role)
+    SkjemaOversikt=SkjemaOversikt, user=user)
 
   muskel::datadump_server(
-    "dataDumpMuskel", userRole=user$role,
-    reshID = user$org, mainSession = session)
+    "dataDumpMuskel", user=user)
 
 
 

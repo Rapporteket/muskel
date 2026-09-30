@@ -40,8 +40,8 @@ admtab_ui <- function(id){
 #'
 #' @export
 #'
-admtab_server <- function(id, RegData, SkjemaOversikt,
-                          SMAoversikt, ss, userRole){
+admtab_server <- function(id, RegData,
+                          SkjemaOversikt, user){
   moduleServer(
     id,
     function(input, output, session) {
@@ -162,7 +162,12 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           "Skjematabel", Sys.Date(),".csv"
         ),
         content = function (file) {
-          write.csv2(antskjema()$ant_skjema, file, row.names = F)}
+          write.csv2(antskjema()$ant_skjema, file, row.names = F)
+          rapbase::repLogger2(
+            user = user,
+            msg = "Muskel: administrative tabeller "
+            )
+          }
       )
 
       observe({
@@ -285,6 +290,10 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         content = function(file) {
           tab <- tabellData()
           write.csv2(tab, file, row.names = T)
+          rapbase::repLogger2(
+            user = user,
+            msg = "Muskel: administrative tabell"
+          )
         }
       )
     }

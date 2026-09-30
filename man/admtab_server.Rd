@@ -4,7 +4,7 @@
 \alias{admtab_server}
 \title{server-modul for administrative tabeller i Muskelregisteret}
 \usage{
-admtab_server(id, RegData, SkjemaOversikt, SMAoversikt, ss, userRole)
+admtab_server(id, RegData, SkjemaOversikt, user)
 }
 \description{
 server-modul for administrative tabeller i Muskelregisteret
