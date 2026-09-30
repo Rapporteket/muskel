@@ -4,7 +4,7 @@
 \alias{datadump_server}
 \title{server-modul for datadump muskelregisteret}
 \usage{
-datadump_server(id, userRole, reshID, mainSession)
+datadump_server(id, user)
 }
 \description{
 server-modul for datadump muskelregisteret

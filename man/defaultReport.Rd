@@ -18,7 +18,7 @@ defaultReportInput(
 
 defaultReportUI(id)
 
-defaultReportServer(id, reportFileName, reportParams)
+defaultReportServer(id, reportFileName, reportParams, avdeling)
 
 defaultReportApp()
 }

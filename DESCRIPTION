@@ -29,7 +29,8 @@ Imports:
     janitor,
     quarto,
     ggplot2,
-    zoo
+    zoo,
+    openxlsx
 RoxygenNote: 7.3.3
 Suggests: 
     knitr,

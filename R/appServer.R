@@ -23,19 +23,19 @@ appServer <- function(input, output, session) {
     query = "SELECT sma.*, m.PATIENT_ID
              FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"
   ) |> dplyr::relocate(PATIENT_ID) |>
-    merge(RegData |>
-            dplyr::filter(ForlopsID == min(ForlopsID), .by = PasientID) |>
-            dplyr::select(PasientID, Foedselsdato),
-          by.x = "PATIENT_ID", by.y = "PasientID", all.x = TRUE) |>
-    dplyr::mutate(alder_v_reg = muskel::age(Foedselsdato, ASSESSMENT_DATE))
+    merge(
+      RegData |>
+        dplyr::filter(ForlopsID == min(ForlopsID), .by = PasientID) |>
+        dplyr::select(PasientID, Foedselsdato),
+      by.x = "PATIENT_ID", by.y = "PasientID", all.x = TRUE) |>
+    dplyr::mutate(alder_v_reg =
+                    muskel::age(Foedselsdato, ASSESSMENT_DATE))
 
   map_avdeling <- data.frame(
     UnitId = unique(RegData$AvdRESH),
     orgname = RegData$SykehusNavn[
       match(unique(RegData$AvdRESH), RegData$AvdRESH)]
   )
-
-  rapbase::appLogger(session = session, msg = "Muskel: shiny app starter")
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
@@ -44,17 +44,107 @@ appServer <- function(input, output, session) {
     map_orgname = shiny::req(map_avdeling)
   )
 
-  shiny::observeEvent(
-    shiny::req(user$role()), {
-      if (user$role() != 'SC') {
-        shiny::hideTab("muskel_app_id", target = "Eksport")
-        shiny::hideTab("muskel_app_id", target = "Verktøy")
-      } else {
-        shiny::showTab("muskel_app_id", target = "Eksport")
-        shiny::showTab("muskel_app_id", target = "Verktøy")
-      }
-    })
+  # Legg til SC-spesifikke faner, og fjern dem for andre roller
+  tabs_added <- shiny::reactiveVal(FALSE)
 
+  shiny::observeEvent(
+    shiny::req(user$role()),
+    {
+      if (user$role() %in% c("SC", "LC")) {
+        if (!tabs_added()) {
+          shiny::insertTab(
+            "muskel_app_id",
+            tab = shiny::tabPanel(
+              "Datadump",
+              muskel::datadump_ui("dataDumpMuskel"),
+              value = "dataDumpMuskel"
+            ),
+            target = "abonnement_id", position = "before"
+          )
+          shiny::insertTab(
+            "muskel_app_id",
+            tab = shiny::tabPanel(
+              "Medikamentforløp SMA",
+              muskel::medikament_sma_ui("medikament_sma_id"),
+              value = "medikament_sma_id"
+            ),
+            target = "SMA-rapport", position = "after"
+          )
+          tabs_added(TRUE)
+        }
+      } else {
+        if (tabs_added()) {
+          shiny::removeTab("muskel_app_id",
+                           target = "dataDumpMuskel")
+          shiny::removeTab("muskel_app_id",
+                           target = "medikament_sma_id")
+          tabs_added(FALSE)
+        }
+      }
+    }
+  )
+
+  # Legg til verktøy-fanen for SC-brukere, og fjern den for andre roller
+  tool_tabs_added <- shiny::reactiveVal(FALSE)
+
+  shiny::observeEvent(shiny::req(user$role()), {
+    if (user$role() == "SC") {
+      if (!tool_tabs_added()) {
+        shiny::appendTab(
+          inputId = "muskel_app_id",
+          tab = shiny::navbarMenu(
+            "Verktøy",
+            shiny::tabPanel(
+              "Utsending",
+              shiny::sidebarLayout(
+                shiny::sidebarPanel(
+                  rapbase::autoReportOrgInput("muskelDispatch"),
+                  rapbase::autoReportInput("muskelDispatch")
+                ),
+                shiny::mainPanel(
+                  rapbase::autoReportUI("muskelDispatch")
+                )
+              )
+            ),
+            shiny::tabPanel(
+              "Metadata",
+              shiny::sidebarLayout(
+                shiny::sidebarPanel(shiny::uiOutput("metaControl")),
+                shiny::mainPanel(shiny::htmlOutput("metaData"))
+              )
+            ),
+            shiny::tabPanel(
+              "Eksport",
+              shiny::sidebarLayout(
+                shiny::sidebarPanel(
+                  rapbase::exportUCInput("muskelExport")
+                ),
+                shiny::mainPanel(
+                  rapbase::exportGuideUI("muskelExportGuide")
+                )
+              )
+            ),
+            shiny::tabPanel(
+              "Bruksstatistikk",
+              shiny::sidebarLayout(
+                shiny::sidebarPanel(rapbase::statsInput("muskelStats")),
+                shiny::mainPanel(
+                  rapbase::statsUI("muskelStats"),
+                  rapbase::statsGuideUI("muskelStatsGuide")
+                )
+              )
+            )
+          )
+        )
+        tool_tabs_added(TRUE)
+      }
+    } else {
+      if (tool_tabs_added()) {
+        shiny::removeTab("muskel_app_id", target = "Verktøy")
+        tool_tabs_added(FALSE)
+      }
+    }
+  })
 
   muskel::fordelingsfig_server("fordeling_id",
                                RegData=RegData,
@@ -86,13 +176,18 @@ appServer <- function(input, output, session) {
                         map_avdeling$orgname)
   )
 
-  muskel::admtab_server("muskeltabell", RegData=RegData,
-                        SkjemaOversikt=SkjemaOversikt,
-                        SMAoversikt=SMAoversikt, ss = session,
-                        userRole=user$role)
+  muskel::medikament_sma_server(
+    id = "medikament_sma_id",
+    SMAoversikt = SMAoversikt,
+    user = user
+  )
 
-  muskel::datadump_server("dataDumpMuskel", userRole=user$role,
-                          reshID = user$org, mainSession = session)
+  muskel::admtab_server(
+    "muskeltabell", RegData=RegData,
+    SkjemaOversikt=SkjemaOversikt, user=user)
+
+  muskel::datadump_server(
+    "dataDumpMuskel", user=user)
 
 
 

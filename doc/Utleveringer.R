@@ -2,6 +2,17 @@
 library(muskel)
 rm(list=ls())
 
+### Tilpass filer fra Ida til Behandlingskvalitet #########################
+
+behdata <- readxl::read_xlsx(
+  "C:/Users/kth200/regdata/muskel/nornmd_behandlingskvalitet_0626.xlsx",
+  sheet = 2) |>
+  dplyr::mutate(context = ifelse(context == "bosted", "resident", context))
+
+write.csv2(behdata, "C:/Users/kth200/regdata/muskel/ind2025.csv",
+           row.names = F)
+
+
 ######### Aktuelle tabeller 30.04.2026 ####################################
 filsti <- "C:/Users/kth200/regdata/muskel/utleveringer/"
 rapbase::loadRegData(
