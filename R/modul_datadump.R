@@ -115,6 +115,7 @@ datadump_server <- function(id, user){
       })
 
       qry <-   reactive({
+        shiny::req(user$role() %in% c("SC", "LC"))
         if (input$ddselect %in% c("smafollowup", "TilSykehusinnkjøp")) {
           if (user$role() ==  "SC") {"SELECT m.PATIENT_ID, sma.*
                        FROM smafollowup sma LEFT JOIN mce m ON sma.MCEID = m.MCEID"}
