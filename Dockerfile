@@ -1,15 +1,10 @@
 FROM rapporteket/base-r:main
 
-LABEL maintainer = "Kevin Thon <kevin.otto.thon@helse-nord.no>"
-LABEL no.rapporteket.cd.enable="true"
-
 WORKDIR /app/R
 
-COPY *.tar.gz .
-
-RUN tlmgr install multirow collection-latexextra \
-  && R -e "remotes::install_local(list.files(pattern = \"*.tar.gz\"))" \
-  && rm ./*.tar.gz \
+RUN --mount=type=secret,id=github_pat,env=GITHUB_PAT \
+    --mount=type=bind,source=.,target=/app/R/pkg \
+    R -e "remotes::install_local(path = './pkg')" \
   && R -e "remotes::install_github(\"Rapporteket/rapbase\", ref = \"main\")"
 
 EXPOSE 3838
@@ -19,5 +14,4 @@ RUN adduser --uid "1000" --disabled-password rapporteket && \
     chmod -R 755 /app/R
 USER rapporteket
 
-CMD ["R", "-e", "options(shiny.port = 3838, shiny.host = \"0.0.0.0\"); muskel::muskelApp()"]
-
+CMD ["R", "-e", "options(shiny.port = 3838, shiny.host = \"0.0.0.0\"); muskel::run_app()"]

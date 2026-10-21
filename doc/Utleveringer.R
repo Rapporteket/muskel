@@ -1,6 +1,46 @@
-setwd('C:/GIT/muskel/doc/')
+# setwd('C:/GIT/muskel/doc/')
 library(muskel)
 rm(list=ls())
+
+### Tilpass filer fra Ida til Behandlingskvalitet #########################
+
+behdata <- readxl::read_xlsx(
+  "C:/Users/kth200/regdata/muskel/nornmd_behandlingskvalitet_0626.xlsx",
+  sheet = 2) |>
+  dplyr::mutate(context = ifelse(context == "bosted", "resident", context))
+
+write.csv2(behdata, "C:/Users/kth200/regdata/muskel/ind2025.csv",
+           row.names = F)
+
+
+######### Aktuelle tabeller 30.04.2026 ####################################
+filsti <- "C:/Users/kth200/regdata/muskel/utleveringer/"
+rapbase::loadRegData(
+  registryName = "data",
+  query = "SELECT * FROM generalquestions"
+) |> write.csv2(paste0(filsti, "generalquestions.csv"),
+                row.names = F, fileEncoding = "Latin1")
+rapbase::loadRegData(
+  registryName = "data",
+  query = "SELECT * FROM inqol"
+) |> write.csv2(paste0(filsti, "inqol.csv"),
+                row.names = F, fileEncoding = "Latin1")
+rapbase::loadRegData(
+  registryName = "data",
+  query = "SELECT * FROM rand36"
+) |> write.csv2(paste0(filsti, "rand36.csv"),
+                row.names = F, fileEncoding = "Latin1")
+rapbase::loadRegData(
+  registryName = "data",
+  query = "SELECT * FROM registration"
+) |> write.csv2(paste0(filsti, "registration.csv"),
+                row.names = F, fileEncoding = "Latin1")
+rapbase::loadRegData(
+  registryName = "data",
+  query = "SELECT * FROM smafollowup"
+) |> write.csv2(paste0(filsti, "smafollowup.csv"),
+                row.names = F, fileEncoding = "Latin1")
+
 
 ######### SMA-tabell Anders 17.12.2024 ########################################
 library(dplyr)

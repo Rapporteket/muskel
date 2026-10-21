@@ -165,11 +165,13 @@ tabell_sma_antall_reg <- SMAoversikt  |>
   dplyr::mutate(FILL_DATE = as.Date(FILL_DATE),
                 year = lubridate::year(FILL_DATE)) |>
   dplyr::filter(
-    year < 2025) |>
+    year < 2026) |>
   dplyr::arrange(FILL_DATE) |>
   dplyr::summarise(N = dplyr::n(),
                    .by = c(year, CENTREID)) |>
-  tidyr::pivot_wider(id_cols = CENTREID, values_from = N, names_from = year) |>
+  tidyr::pivot_wider(id_cols = CENTREID,
+                     values_from = N,
+                     names_from = year) |>
   dplyr::mutate(CENTREID = kobl_resh_orgnr$Sykehus[
     match(CENTREID, kobl_resh_orgnr$ReshID)])
 
@@ -179,27 +181,32 @@ tabell_sma_antall_pasienter <- SMAoversikt |>
   dplyr::mutate(ASSESSMENT_DATE = as.Date(FILL_DATE),
                 year = lubridate::year(ASSESSMENT_DATE)) |>
   dplyr::filter(
-    year < 2025) |>
+    year < 2026) |>
   dplyr::arrange(FILL_DATE) |>
   dplyr::summarise(N = length(unique(PATIENT_ID)),
                    .by = c(year, CENTREID)) |>
-  tidyr::pivot_wider(id_cols = CENTREID, values_from = N, names_from = year) |>
+  tidyr::pivot_wider(id_cols = CENTREID, values_from = N,
+                     names_from = year) |>
   dplyr::mutate(CENTREID = kobl_resh_orgnr$Sykehus[
     match(CENTREID, kobl_resh_orgnr$ReshID)])
 
 
 plot_long_sma_reg <- tabell_sma_antall_reg |>
-  pivot_longer(cols = names(tabell_sma_antall_reg)[-1], names_to = "År",
+  tidyr::pivot_longer(cols = names(tabell_sma_antall_reg)[-1],
+                      names_to = "År",
                values_to = "antall_reg")
 plot_long_sma_pas <- tabell_sma_antall_pasienter |>
-  pivot_longer(cols = names(tabell_sma_antall_pasienter)[-1], names_to = "År",
+  tidyr::pivot_longer(cols = names(tabell_sma_antall_pasienter)[-1],
+                      names_to = "År",
                values_to = "antall_pas")
 plot_long_sma <- merge(plot_long_sma_reg, plot_long_sma_pas,
                        by = c("CENTREID", "År")) |>
-  pivot_longer(cols = c("antall_reg", "antall_pas"),
+  tidyr::pivot_longer(cols = c("antall_reg", "antall_pas"),
                names_to = "Enhet", values_to = "Antall") |>
-  mutate(Antall = ifelse(is.na(Antall), 0, Antall))
+  dplyr::mutate(Antall = ifelse(is.na(Antall), 0, Antall))
 
+
+library(ggplot2)
 plotobjekt_sma <- plot_long_sma |>
   ggplot(aes(År, Antall,
              colour = CENTREID,
@@ -214,9 +221,11 @@ ggsave(filename = "sma_reg.svg",
        width = 5,
        height = 4)
 
-write.csv2(tabell_sma_antall_reg, "tabell_sma_antall_reg.csv", row.names = F,
+write.csv2(tabell_sma_antall_reg,
+           "tabell_sma_antall_reg.csv", row.names = F,
            fileEncoding = "Latin1", na = "")
-write.csv2(tabell_sma_antall_pasienter, "tabell_sma_antall_pas.csv", row.names = F,
+write.csv2(tabell_sma_antall_pasienter,
+           "tabell_sma_antall_pas.csv", row.names = F,
            fileEncoding = "Latin1", na = "")
 
 
