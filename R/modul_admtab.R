@@ -15,20 +15,20 @@ admtab_ui <- function(id){
       width = 9,
       tabsetPanel(
         id = ns("tab"),
-        tabPanel("Antall skjema", value = "antskjema",
-                 DT::DTOutput(ns("Tabell_adm1")),
-                 downloadButton(ns("lastNedAdm1"), "Last ned tabell")),
-        tabPanel("Antall unike Pasienter/pasientforløp", value = "pasforl",
-                 shiny::h3(textOutput(ns("txt1")),
-                           style = "text-align:center"),
-                 shiny::uiOutput(ns("tidsIntervall")),
-                 DT::DTOutput(ns("Tabell")),
-                 shiny::downloadButton(ns("lastNedTabell"), "Last ned tabell")
-        ),
-
-        tabPanel("Tabell til sykehusinnkjøp", value = "sykehusinnkjop",
-                 shiny::tableOutput(ns("TabellSykehusinnkjop")),
-                 shiny::downloadButton(ns("lastNedSykehusinnkjop"), "Last ned tabell")
+        tabPanel(
+          "Antall skjema", value = "antskjema",
+          DT::DTOutput(ns("Tabell_adm1")),
+          downloadButton(ns("lastNedAdm1"),
+                         "Last ned tabell")),
+        tabPanel(
+          "Antall unike Pasienter/pasientforløp",
+          value = "pasforl",
+          shiny::h3(textOutput(ns("txt1")),
+                    style = "text-align:center"),
+          shiny::uiOutput(ns("tidsIntervall")),
+          DT::DTOutput(ns("Tabell")),
+          shiny::downloadButton(ns("lastNedTabell"),
+                                "Last ned tabell")
         )
       )
     )
@@ -40,8 +40,8 @@ admtab_ui <- function(id){
 #'
 #' @export
 #'
-admtab_server <- function(id, RegData, SkjemaOversikt,
-                          SMAoversikt, ss, userRole){
+admtab_server <- function(id, RegData,
+                          SkjemaOversikt, user){
   moduleServer(
     id,
     function(input, output, session) {
@@ -57,17 +57,6 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           DT::tableFooter(names = fr ) )
         return(sketch)
       }
-
-      shiny::observeEvent(userRole(), {
-        if (userRole() != "SC") {
-          shiny::hideTab("tab", target = "sykehusinnkjop")
-        }
-        if (userRole() == "SC") {
-          shiny::showTab("tab", target = "sykehusinnkjop")
-        }
-      })
-
-
 
       output$sidebar <- renderUI({
         ns <- session$ns
@@ -113,18 +102,23 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
                                     label = "Nullstill Valg")
 
           )
-        } else if (input$tab %in% c("antskjema", "sykehusinnkjop")) {
-          tagList(div(id = ns("sbSkj"),
-                      dateInput(inputId = ns('datoFra2'), value = '2008-01-01', min = '2008-01-01',
-                                label = "F.o.m. dato", language="nb"),
-                      dateInput(inputId = ns('datoTil2'), value = Sys.Date(), min = '2012-01-01',
-                                label = "T.o.m. dato", language="nb"),
-                      selectInput(inputId = ns("regstatus"), label = "Skjemastatus",
-                                  choices = c('Ferdigstilt'=1, 'Kladd'=0, 'Opprettet' = -1),
-                                  multiple = TRUE, selected = 1)),
-                  shiny::actionLink(inputId=ns("nullstillSkj"),
-                                    style="color:black" ,
-                                    label = "Nullstill Valg")
+        } else if (input$tab %in% c("antskjema")) {
+          tagList(
+            div(id = ns("sbSkj"),
+                dateInput(inputId = ns('datoFra2'),
+                          value = '2008-01-01', min = '2008-01-01',
+                          label = "F.o.m. dato", language="nb"),
+                dateInput(inputId = ns('datoTil2'),
+                          value = Sys.Date(), min = '2012-01-01',
+                          label = "T.o.m. dato", language="nb"),
+                selectInput(inputId = ns("regstatus"),
+                            label = "Skjemastatus",
+                            choices = c('Ferdigstilt'=1, 'Kladd'=0,
+                                        'Opprettet' = -1),
+                            multiple = TRUE, selected = 1)),
+            shiny::actionLink(inputId=ns("nullstillSkj"),
+                              style="color:black" ,
+                              label = "Nullstill Valg")
 
           )
         }
@@ -167,77 +161,14 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         filename = paste0(
           "Skjematabel", Sys.Date(),".csv"
         ),
-        content = function (file) {write.csv2(antskjema()$ant_skjema, file, row.names = F)}
+        content = function (file) {
+          write.csv2(antskjema()$ant_skjema, file, row.names = F)
+          rapbase::repLogger2(
+            user = user,
+            msg = "Muskel: administrative tabeller "
+            )
+          }
       )
-
-      tabell_shusinnkjop <- function() {
-        tabell_sma <- SMAoversikt %>%
-          dplyr::mutate(ASSESSMENT_DATE = as.Date(ASSESSMENT_DATE)) %>%
-          dplyr::filter(ASSESSMENT_DATE >= req(input$datoFra2),
-                        ASSESSMENT_DATE <= req(input$datoTil2),
-                        STATUS %in% as.numeric(req(input$regstatus)),
-                        BEHANDLNG_SPINRAZA == 1) %>%
-          dplyr::arrange(ASSESSMENT_DATE) %>%
-          dplyr::summarise(
-            CENTREID = paste0(unique(CENTREID), collapse = ","),
-            ASSESSMENT_DATE_baseline = dplyr::first(ASSESSMENT_DATE),
-            HFMSE_baseline = dplyr::first(
-              KLINISK_HFMSE, order_by = ASSESSMENT_DATE),
-            RULM_baseline = dplyr::first(
-              KLINISK_RULM, order_by = ASSESSMENT_DATE),
-            x6MWT_baseline = dplyr::first(
-              KLINISK_6MWT, order_by = ASSESSMENT_DATE),
-            ATEND_baseline = dplyr::first(
-              KLINISK_ATEND, order_by = ASSESSMENT_DATE),
-            BIPAP_baseline = dplyr::first(
-              KLINISK_BIPAP, order_by = ASSESSMENT_DATE),
-            FUNKSJONSSTATUS_baseline = dplyr::first(
-              KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE),
-            ASSESSMENT_DATE_latest = dplyr::last(ASSESSMENT_DATE),
-            HFMSE_latest = ifelse(dplyr::last(
-              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_HFMSE, order_by = ASSESSMENT_DATE)),
-            RULM_latest = ifelse(dplyr::last(
-              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_RULM, order_by = ASSESSMENT_DATE)),
-            x6MWT_latest = ifelse(dplyr::last(
-              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_6MWT, order_by = ASSESSMENT_DATE)),
-            ATEND_latest = ifelse(dplyr::last(
-              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_ATEND, order_by = ASSESSMENT_DATE)),
-            BIPAP_latest = ifelse(dplyr::last(
-              ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_BIPAP, order_by = ASSESSMENT_DATE)),
-            FUNKSJONSSTATUS_latest = ifelse(
-              dplyr::last(ASSESSMENT_DATE)==dplyr::first(ASSESSMENT_DATE),
-              NA, dplyr::last(KLINISK_FUNKSJONSSTATUS, order_by = ASSESSMENT_DATE)),
-            Tidsdiff_dager = difftime(
-              ASSESSMENT_DATE_latest, ASSESSMENT_DATE_baseline, units = "days"),
-            FUNKSJONSSTATUS_all = paste0(BEHANDLNG_FUNKSJONSSTATUS, collapse = ","),
-            BEHANDLING_all = paste0(BEHANDLNG_BEHANDLING, collapse = ","),
-            .by = PATIENT_ID) %>%
-          dplyr::filter(Tidsdiff_dager != 0)
-      }
-
-      output$TabellSykehusinnkjop <- function() {
-        tabell_sma <- tabell_shusinnkjop()
-        names(tabell_sma) <- c("PATIENT_ID", "CENTREID", "ASSESSMENT_DATE", "HFMSE", "RULM", "6MWT", "ATEND", "BIPAP", "KLINISK FUNKSJONSSTATUS",
-                               "ASSESSMENT_DATE ", "HFMSE ", "RULM ", "6MWT ", "ATEND ", "BIPAP ", "KLINISK FUNKSJONSSTATUS ",
-                               "Tidsdiff_dager", "FUNKSJONSSTATUS ALLE", "BEHANDLING ALLE")
-        tabell_sma %>% knitr::kable("html", row.names = F) %>%
-          kableExtra::kable_styling("hover", full_width = F) %>%
-          kableExtra::add_header_above(c(" ", " ", "Baseline" = 7, "Siste måling" = 7, " ", " ", " "))
-      }
-
-      output$lastNedSykehusinnkjop <- shiny::downloadHandler(
-        filename = paste0(
-          "sykehusinnkjop", Sys.Date(),".csv"
-        ),
-        content = function (file) {write.csv2(tabell_shusinnkjop(), file,
-                                              row.names = F, fileEncoding = "Latin1")}
-      )
-
 
       observe({
         if ( input$tab == "pasforl" ) {
@@ -250,7 +181,10 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
           }else{ "år"}  })
 
 
-          output$txt1 <- renderText({ paste0("Antall " ,forloptxt()," per ",tidenhtxt(), " per avdeling") })
+          output$txt1 <- renderText({
+            paste0("Antall " ,
+                   forloptxt()," per ",tidenhtxt(),
+                   " per avdeling") })
         }
       })
 
@@ -261,13 +195,14 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         if ( req(input$tidenh) == "maaned") {
           tagList(
             shiny::fluidRow(
-              column(3,offset = 9,
-                     shiny::actionButton(ns("tre"), "3 mnd",
-                                         ic, style = st, width = "30%"),
-                     shiny::actionButton(ns("seks"), "6 mnd",
-                                         ic, style = st,width = "30%"),
-                     shiny::actionButton(ns("et"), "1 år", ic,
-                                         style =st,width = "30%")
+              column(
+                3, offset = 9,
+                shiny::actionButton(ns("tre"), "3 mnd",
+                                    ic, style = st, width = "30%"),
+                shiny::actionButton(ns("seks"), "6 mnd",
+                                    ic, style = st,width = "30%"),
+                shiny::actionButton(ns("et"), "1 år", ic,
+                                    style =st,width = "30%")
               )
             )
           )
@@ -324,16 +259,10 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
       )
       })
 
-      #render table
-      observe({
-        cont <- headerFooter(tabellData())
-        subS <- dim(tabellData())[1]-1
-        rapbase::repLogger(
-          session = ss,
-          msg = "Muskel: tabell unikepasienter/pasientforløp"
-        )
 
-        output$Tabell <-  DT::renderDT(
+        output$Tabell <-  DT::renderDT({
+          cont <- headerFooter(tabellData())
+          subS <- dim(tabellData())[1]-1
           as.data.frame.matrix(tabellData())[1:subS, ] %>%
             DT::datatable(
               container = cont,
@@ -344,8 +273,7 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
                 fixedHeader = TRUE,
                 lengthChange = FALSE,
                 dom = "t"))
-        )
-      })
+        })
 
       output$lastNedTabell <- downloadHandler(
         filename = function() {
@@ -362,32 +290,12 @@ admtab_server <- function(id, RegData, SkjemaOversikt,
         content = function(file) {
           tab <- tabellData()
           write.csv2(tab, file, row.names = T)
+          rapbase::repLogger2(
+            user = user,
+            msg = "Muskel: administrative tabell"
+          )
         }
       )
-
-
-      observe({
-        shinyjs::onclick(
-          "lastNedTabell",
-          rapbase::repLogger(
-            session = ss,
-            msg = "Muskel: nedlasting tabell unikepasienter/pasientforløp"
-          )
-        )
-        shinyjs::onclick(
-          "lastNedAdm1",
-          rapbase::repLogger(
-            session = ss,
-            msg = "Muskel: Nedlasting tabell admin-skjema"
-          )
-        )
-        if ( input$tab == "antskjema"){
-          rapbase::repLogger(
-            session = ss,
-            msg = "Muskel: tabell - admin-skjema"
-          )
-        }
-      })
     }
   )
 
