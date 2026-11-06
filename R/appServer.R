@@ -29,7 +29,8 @@ appServer <- function(input, output, session) {
         dplyr::select(PasientID, Foedselsdato),
       by.x = "PATIENT_ID", by.y = "PasientID", all.x = TRUE) |>
     dplyr::mutate(alder_v_reg =
-                    muskel::age(Foedselsdato, ASSESSMENT_DATE))
+                    muskel::age(Foedselsdato, ASSESSMENT_DATE)) |>
+    dplyr::filter(alder_v_reg >= 18)
 
   map_avdeling <- data.frame(
     UnitId = unique(RegData$AvdRESH),
